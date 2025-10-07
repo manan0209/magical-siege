@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import { copyFileSync, mkdirSync, existsSync } from 'fs';
 
 export default defineConfig({
   build: {
@@ -17,4 +18,17 @@ export default defineConfig({
       },
     },
   },
+  plugins: [
+    {
+      name: 'copy-assets',
+      closeBundle() {
+        copyFileSync('manifest.json', 'dist/manifest.json');
+        
+        if (!existsSync('dist/styles')) {
+          mkdirSync('dist/styles', { recursive: true });
+        }
+        copyFileSync('styles/content.css', 'dist/styles/content.css');
+      }
+    }
+  ]
 });
