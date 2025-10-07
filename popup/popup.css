@@ -1,0 +1,14 @@
+body {
+  width: 300px;
+  padding: 1rem;
+  font-family: "IM Fell English", serif;
+}
+
+.popup-container {
+  text-align: center;
+}
+
+h1 {
+  font-family: "Jaini", "IM Fell English", serif;
+  color: #402b20;
+}

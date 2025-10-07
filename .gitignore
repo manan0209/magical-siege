@@ -1,0 +1,102 @@
+# Dependencies
+node_modules/
+bower_components/
+jspm_packages/
+
+# Build outputs
+dist/
+build/
+out/
+*.crx
+*.pem
+*.xpi
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.settings/
+.history/
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Test coverage
+coverage/
+.nyc_output/
+*.lcov
+
+# Cache and temporary files
+.cache/
+.temp/
+.tmp/
+*.tmp
+.sass-cache/
+.parcel-cache/
+
+# Archive files
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Documentation files (except README)
+*.md
+!README.md
+docs/
+documentation/
+
+
+# Backup files
+*.bak
+*.backup
+*.old
+*~
+
+# Debug files
+*.map
+*.orig
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Misc
+*.seed
+*.pid
+*.pid.lock

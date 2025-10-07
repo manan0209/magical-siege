@@ -1,0 +1,29 @@
+{
+  "name": "magical-siege",
+  "version": "1.0.0",
+  "description": "Make your siege magical, powerful, and beautiful",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch --mode development",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "siege",
+    "hack-club",
+    "chrome-extension",
+    "productivity"
+  ],
+  "author": "Siege Participant",
+  "license": "MIT",
+  "dependencies": {
+    "chart.js": "^4.4.0",
+    "date-fns": "^2.30.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.8",
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32"
+  }
+}

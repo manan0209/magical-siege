@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --castle-brown: #402b20;
+  --parchment: #F5E7B7;
+  --border-light: rgba(64, 43, 32, 0.15);
+  --purple-primary: #8B5CF6;
+  --purple-dark: #7C3AED;
+  --success: #10b981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --info: #3B82F6;
+}
+
+.magical-widget {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--border-light);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  font-family: "IM Fell English", serif;
+}
+
+.magical-button {
+  background: linear-gradient(180deg, #f5f5f0 0%, #e8e4d8 100%);
+  border: 3px solid rgba(64, 43, 32, 0.75);
+  border-radius: 8px;
+  padding: 0.75rem 1.25rem;
+  font-family: "IM Fell English", serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.magical-button:hover {
+  filter: brightness(1.05);
+  transform: translateY(-2px);
+}
