@@ -3,10 +3,13 @@ import { DOMInjector } from '../utils/dom-injector.js';
 import { TimeUtils } from '../utils/time.js';
 
 export function injectKeepEnhancements() {
-  console.log('Keep enhancements loaded');
+  console.log('Keep enhancements loaded, my liege!');
   
   injectProgressTracker();
+  injectDeadlineCountdown();
 }
+
+// makin keep awesome :hehe:
 
 function injectProgressTracker() {
   const progressData = DOMExtractor.getProgressData();
@@ -74,5 +77,42 @@ function injectProgressTracker() {
   const targetElement = document.querySelector('main') || document.querySelector('.container');
   if (targetElement) {
     DOMInjector.injectAtTop(targetElement, widget);
+  }
+}
+
+function injectDeadlineCountdown() {
+  const timeRemaining = TimeUtils.getTimeRemaining();
+  const isVoting = TimeUtils.isVotingDay();
+  
+  const countdownWidget = document.createElement('div');
+  countdownWidget.id = 'ms-deadline-countdown';
+  countdownWidget.className = 'ms-countdown ms-slide-in';
+  
+  function updateCountdown() {
+    const time = TimeUtils.getTimeRemaining();
+    const formatted = TimeUtils.formatTimeRemaining(time);
+    const urgencyClass = time.totalHours < 24 ? 'animate-pulse' : '';
+    
+    countdownWidget.innerHTML = `
+      <div class="${urgencyClass}">
+        <div class="ms-countdown-label">
+          ${isVoting ? 'Voting Period Ends In' : 'Week Deadline In'}
+        </div>
+        <div class="ms-countdown-value">
+          ${formatted}
+        </div>
+        <div class="text-xs mt-2 opacity-75">
+          ${isVoting ? 'Cast your votes now!' : 'Monday 12:00 AM EST'}
+        </div>
+      </div>
+    `;
+  }
+  
+  updateCountdown();
+  setInterval(updateCountdown, 60000);
+  
+  const progressTracker = document.querySelector('.ms-widget');
+  if (progressTracker) {
+    DOMInjector.injectAfter(progressTracker, countdownWidget);
   }
 }
