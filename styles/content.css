@@ -2,6 +2,222 @@
 @tailwind components;
 @tailwind utilities;
 
+/*This file is the heart of the Magical Siege extension's styling :hehe: hope you guys love it !*/
+:root {
+  --ms-castle-brown: #402b20;
+  --ms-parchment: #F5E7B7;
+  --ms-purple-primary: #8B5CF6;
+  --ms-purple-light: #A78BFA;
+  --ms-purple-dark: #7C3AED;
+  --ms-gold: #F59E0B;
+  --ms-shadow: rgba(64, 43, 32, 0.1);
+  --ms-shadow-heavy: rgba(64, 43, 32, 0.25);
+}
+
+.ms-widget {
+  @apply bg-white border-2 border-castle-brown rounded-lg shadow-lg;
+  font-family: 'IM Fell English', serif;
+  color: var(--ms-castle-brown);
+}
+
+.ms-widget-header {
+  @apply bg-castle-brown text-parchment px-4 py-3 rounded-t-md font-bold;
+  font-family: 'Jaini', cursive;
+  font-size: 1.25rem;
+  border-bottom: 2px solid var(--ms-castle-brown);
+}
+
+.ms-widget-content {
+  @apply p-4;
+}
+
+.ms-button {
+  @apply bg-purple-primary text-white px-4 py-2 rounded-md font-semibold;
+  @apply hover:bg-purple-dark transition-colors duration-200;
+  @apply active:scale-95 transform;
+  border: 2px solid transparent;
+}
+
+.ms-button:hover {
+  border-color: var(--ms-purple-dark);
+}
+
+.ms-button-secondary {
+  @apply bg-parchment text-castle-brown border-2 border-castle-brown;
+  @apply hover:bg-castle-brown hover:text-parchment;
+}
+
+.ms-stat-card {
+  @apply bg-parchment border-2 border-castle-brown rounded-md p-3;
+  box-shadow: 2px 2px 4px var(--ms-shadow);
+}
+
+.ms-stat-label {
+  @apply text-sm text-castle-brown opacity-75 mb-1;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ms-stat-value {
+  @apply text-2xl font-bold text-purple-primary;
+  font-family: 'Jaini', cursive;
+}
+
+.ms-progress-bar {
+  @apply w-full h-3 bg-parchment rounded-full overflow-hidden;
+  border: 2px solid var(--ms-castle-brown);
+}
+
+.ms-progress-fill {
+  @apply h-full bg-gradient-to-r from-purple-primary to-purple-light;
+  @apply transition-all duration-500 ease-out;
+}
+
+.ms-badge {
+  @apply inline-block px-3 py-1 rounded-full text-sm font-semibold;
+  border: 2px solid currentColor;
+}
+
+.ms-badge-success {
+  @apply bg-green-100 text-green-700 border-green-700;
+}
+
+.ms-badge-warning {
+  @apply bg-yellow-100 text-yellow-700 border-yellow-700;
+}
+
+.ms-badge-danger {
+  @apply bg-red-100 text-red-700 border-red-700;
+}
+
+.ms-badge-info {
+  @apply bg-blue-100 text-blue-700 border-blue-700;
+}
+
+.ms-countdown {
+  @apply text-center p-4 bg-gradient-to-br from-purple-primary to-purple-dark;
+  @apply text-white rounded-lg shadow-lg;
+}
+
+.ms-countdown-value {
+  @apply text-4xl font-bold;
+  font-family: 'Jaini', cursive;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.ms-countdown-label {
+  @apply text-sm uppercase tracking-wider opacity-90 mt-2;
+}
+
+.ms-leaderboard-row {
+  @apply flex items-center justify-between p-3 rounded-md;
+  @apply hover:bg-parchment transition-colors duration-150;
+  border-bottom: 1px solid var(--ms-shadow);
+}
+
+.ms-leaderboard-row:last-child {
+  border-bottom: none;
+}
+
+.ms-rank {
+  @apply flex items-center justify-center w-10 h-10 rounded-full;
+  @apply font-bold text-white;
+  font-family: 'Jaini', cursive;
+}
+
+.ms-rank-1 {
+  @apply bg-gradient-to-br from-yellow-400 to-yellow-600;
+}
+
+.ms-rank-2 {
+  @apply bg-gradient-to-br from-gray-300 to-gray-500;
+}
+
+.ms-rank-3 {
+  @apply bg-gradient-to-br from-orange-400 to-orange-600;
+}
+
+.ms-rank-default {
+  @apply bg-gradient-to-br from-purple-primary to-purple-dark;
+}
+
+.ms-topbar {
+  @apply fixed top-0 left-0 right-0 z-50;
+  @apply bg-castle-brown text-parchment shadow-lg;
+  @apply flex items-center justify-between px-6 py-3;
+  border-bottom: 3px solid var(--ms-gold);
+}
+
+.ms-topbar-section {
+  @apply flex items-center gap-4;
+}
+
+.ms-tooltip {
+  @apply absolute bg-castle-brown text-parchment text-sm px-3 py-2 rounded-md;
+  @apply opacity-0 pointer-events-none transition-opacity duration-200;
+  box-shadow: 0 4px 6px var(--ms-shadow-heavy);
+  z-index: 9999;
+}
+
+.ms-tooltip.show {
+  @apply opacity-100;
+}
+
+.ms-fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+.ms-slide-in {
+  animation: slideIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.ms-chart-container {
+  @apply relative w-full;
+  min-height: 300px;
+}
+
+.ms-divider {
+  @apply border-t-2 border-castle-brown my-4;
+  opacity: 0.2;
+}
+
+.ms-input {
+  @apply w-full px-4 py-2 border-2 border-castle-brown rounded-md;
+  @apply focus:outline-none focus:ring-2 focus:ring-purple-primary;
+  font-family: 'IM Fell English', serif;
+  background: var(--ms-parchment);
+}
+
+.ms-select {
+  @apply ms-input appearance-none cursor-pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23402b20' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
 :root {
   --castle-brown: #402b20;
   --parchment: #F5E7B7;
