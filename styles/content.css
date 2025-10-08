@@ -253,3 +253,46 @@
   filter: brightness(1.05);
   transform: translateY(-2px);
 }
+
+[data-ms-theme="dark"] .ms-widget {
+  background: var(--ms-bg-primary);
+  border-color: var(--ms-border);
+  color: var(--ms-text-primary);
+}
+
+[data-ms-theme="dark"] .ms-widget-header {
+  background: var(--ms-castle-brown);
+  color: var(--ms-parchment);
+}
+
+[data-ms-theme="dark"] .ms-stat-card {
+  background: var(--ms-bg-secondary);
+  border-color: var(--ms-border);
+  color: var(--ms-text-primary);
+}
+
+[data-ms-theme="dark"] .ms-topbar {
+  background: var(--ms-bg-secondary);
+  border-color: var(--ms-gold);
+}
+
+[data-ms-theme="dark"] .ms-button {
+  background: var(--ms-purple-primary);
+  color: var(--ms-text-primary);
+}
+
+[data-ms-theme="dark"] .ms-countdown {
+  background: linear-gradient(135deg, var(--ms-purple-dark), var(--ms-purple-primary));
+}
+
+[data-ms-theme="midnight"] .ms-widget {
+  background: var(--ms-bg-primary);
+  border-color: var(--ms-purple-primary);
+  color: var(--ms-text-primary);
+  box-shadow: 0 0 20px rgba(157, 78, 221, 0.3);
+}
+
+[data-ms-theme="midnight"] .ms-topbar {
+  background: var(--ms-bg-secondary);
+  border-color: var(--ms-purple-light);
+}

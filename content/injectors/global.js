@@ -1,13 +1,19 @@
 import { DOMExtractor } from '../utils/dom-extractor.js';
 import { TimeUtils } from '../utils/time.js';
 import { Settings } from '../utils/storage.js';
+import { Theme } from '../utils/theme.js';
 
 export function injectGlobalEnhancements() {
   console.log('Global enhancements loaded');
   
+  initializeTheme();
   injectTopNavigationBar();
   setupNotificationSystem();
   setupKeyboardShortcuts();
+}
+
+async function initializeTheme() {
+  await Theme.applyStoredTheme();
 }
 
 async function injectTopNavigationBar() {
@@ -69,6 +75,12 @@ async function injectTopNavigationBar() {
           </div>
         ` : ''}
         
+        <button id="ms-theme-toggle" class="ms-button text-xs px-3 py-1 mr-2" title="Toggle Theme (D)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+          </svg>
+        </button>
+        
         <button id="ms-settings-btn" class="ms-button text-xs px-3 py-1">
           Settings
         </button>
@@ -81,6 +93,18 @@ async function injectTopNavigationBar() {
   
   document.body.insertBefore(topBar, document.body.firstChild);
   document.body.style.paddingTop = '60px';
+  
+  const themeToggle = document.getElementById('ms-theme-toggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', async () => {
+      const newTheme = await Theme.toggleDarkMode();
+      showInPageNotification(
+        'Theme Changed',
+        `Switched to ${Theme.THEMES[newTheme].name}`,
+        'info'
+      );
+    });
+  }
   
   const settingsBtn = document.getElementById('ms-settings-btn');
   if (settingsBtn) {
@@ -197,6 +221,7 @@ async function setupKeyboardShortcuts() {
     'm': () => window.location.href = 'https://siege.hackclub.com/market',
     'c': () => window.location.href = 'https://siege.hackclub.com/castle',
     's': () => chrome.runtime.sendMessage({ type: 'OPEN_SETTINGS' }),
+    'd': () => toggleTheme(),
     '?': () => showShortcutsHelp(),
     'r': () => location.reload(),
     't': () => toggleTopBar()
@@ -273,6 +298,10 @@ function showShortcutsHelp() {
               <kbd class="px-2 py-1 bg-parchment border-2 border-castle-brown rounded text-sm font-mono">S</kbd>
             </div>
             <div class="flex justify-between items-center">
+              <span class="text-sm">Toggle Theme</span>
+              <kbd class="px-2 py-1 bg-parchment border-2 border-castle-brown rounded text-sm font-mono">D</kbd>
+            </div>
+            <div class="flex justify-between items-center">
               <span class="text-sm">Reload Page</span>
               <kbd class="px-2 py-1 bg-parchment border-2 border-castle-brown rounded text-sm font-mono">R</kbd>
             </div>
@@ -330,4 +359,13 @@ async function toggleTopBar() {
       'info'
     );
   }
+}
+
+async function toggleTheme() {
+  const newTheme = await Theme.toggleDarkMode();
+  showInPageNotification(
+    'Theme Changed',
+    `Switched to ${Theme.THEMES[newTheme].name}`,
+    'info'
+  );
 }
