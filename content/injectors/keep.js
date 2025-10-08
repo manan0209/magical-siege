@@ -7,6 +7,8 @@ export function injectKeepEnhancements() {
   
   injectProgressTracker();
   injectDeadlineCountdown();
+  injectProjectSnapshot();
+  injectQuickStats();
 }
 
 // makin keep awesome :hehe:
@@ -114,5 +116,147 @@ function injectDeadlineCountdown() {
   const progressTracker = document.querySelector('.ms-widget');
   if (progressTracker) {
     DOMInjector.injectAfter(progressTracker, countdownWidget);
+  }
+}
+
+function injectProjectSnapshot() {
+  const projects = DOMExtractor.getProjectData();
+  const weekInfo = DOMExtractor.getWeekInfo();
+  
+  if (projects.length === 0) {
+    return;
+  }
+  
+  const totalProjects = projects.length;
+  const completedProjects = projects.filter(p => 
+    p.status.toLowerCase().includes('complete') || 
+    p.status.toLowerCase().includes('done') ||
+    p.status.toLowerCase().includes('submitted')
+  ).length;
+  
+  const inProgressProjects = projects.filter(p => 
+    p.status.toLowerCase().includes('progress') ||
+    p.status.toLowerCase().includes('working') ||
+    p.status.toLowerCase().includes('active')
+  ).length;
+  
+  const projectsList = projects.slice(0, 5).map(project => {
+    const statusBadge = project.status.toLowerCase().includes('complete') ? 'ms-badge-success' :
+                       project.status.toLowerCase().includes('progress') ? 'ms-badge-warning' :
+                       'ms-badge-info';
+    
+    return `
+      <div class="flex items-center justify-between py-2 border-b border-gray-200 last:border-0">
+        <span class="font-medium text-sm truncate flex-1">${project.name}</span>
+        <span class="ms-badge ${statusBadge} ml-2 text-xs">${project.status}</span>
+      </div>
+    `;
+  }).join('');
+  
+  const widget = DOMInjector.createWidget(
+    'Project Snapshot',
+    `
+      <div class="space-y-4">
+        <div class="grid grid-cols-3 gap-3">
+          <div class="ms-stat-card text-center">
+            <div class="ms-stat-label">Total</div>
+            <div class="ms-stat-value">${totalProjects}</div>
+          </div>
+          <div class="ms-stat-card text-center">
+            <div class="ms-stat-label">Completed</div>
+            <div class="ms-stat-value text-green-600">${completedProjects}</div>
+          </div>
+          <div class="ms-stat-card text-center">
+            <div class="ms-stat-label">In Progress</div>
+            <div class="ms-stat-value text-yellow-600">${inProgressProjects}</div>
+          </div>
+        </div>
+
+        <div class="ms-divider"></div>
+
+        <div>
+          <h3 class="font-bold text-sm mb-3 text-castle-brown">Recent Projects</h3>
+          <div class="space-y-1">
+            ${projectsList}
+          </div>
+          ${projects.length > 5 ? `
+            <div class="text-center mt-3">
+              <span class="text-xs text-gray-500">+${projects.length - 5} more projects</span>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `,
+    'ms-fade-in'
+  );
+  
+  const countdownWidget = document.getElementById('ms-deadline-countdown');
+  if (countdownWidget) {
+    DOMInjector.injectAfter(countdownWidget, widget);
+  }
+}
+
+function injectQuickStats() {
+  const userData = DOMExtractor.getUserData();
+  const weekInfo = DOMExtractor.getWeekInfo();
+  const progressData = DOMExtractor.getProgressData();
+  
+  const currentWeek = weekInfo.currentWeek || 0;
+  const totalWeeks = weekInfo.totalWeeks;
+  const weeksRemaining = Math.max(totalWeeks - currentWeek, 0);
+  const siegeProgress = currentWeek > 0 ? ((currentWeek / totalWeeks) * 100).toFixed(0) : 0;
+  
+  const averageHoursPerWeek = currentWeek > 0 ? (progressData.hoursThisWeek / currentWeek).toFixed(1) : progressData.hoursThisWeek.toFixed(1);
+  const projectedTotal = currentWeek > 0 ? (averageHoursPerWeek * totalWeeks).toFixed(0) : (progressData.hoursThisWeek * totalWeeks).toFixed(0);
+  
+  const widget = DOMInjector.createWidget(
+    'Quick Stats',
+    `
+      <div class="grid grid-cols-2 gap-4">
+        <div class="ms-stat-card">
+          <div class="ms-stat-label">Current Week</div>
+          <div class="ms-stat-value">${currentWeek} / ${totalWeeks}</div>
+          <div class="text-xs text-gray-600 mt-1">${weeksRemaining} weeks left</div>
+        </div>
+
+        <div class="ms-stat-card">
+          <div class="ms-stat-label">Siege Progress</div>
+          <div class="ms-stat-value">${siegeProgress}%</div>
+          <div class="w-full h-2 bg-gray-200 rounded-full mt-2">
+            <div class="h-full bg-gradient-to-r from-purple-primary to-purple-light rounded-full" 
+                 style="width: ${siegeProgress}%"></div>
+          </div>
+        </div>
+
+        ${userData.coins !== null ? `
+          <div class="ms-stat-card">
+            <div class="ms-stat-label">Total Coins</div>
+            <div class="ms-stat-value text-yellow-600">${userData.coins}</div>
+            ${userData.rank ? `<div class="text-xs text-gray-600 mt-1">Rank #${userData.rank}</div>` : ''}
+          </div>
+        ` : ''}
+
+        <div class="ms-stat-card">
+          <div class="ms-stat-label">Avg Hours/Week</div>
+          <div class="ms-stat-value">${averageHoursPerWeek}h</div>
+          <div class="text-xs text-gray-600 mt-1">~${projectedTotal}h total</div>
+        </div>
+
+        ${userData.name ? `
+          <div class="ms-stat-card col-span-2 bg-gradient-to-r from-purple-50 to-blue-50">
+            <div class="text-center">
+              <div class="text-sm text-gray-600 mb-1">Sieger</div>
+              <div class="text-xl font-bold text-purple-primary">${userData.name}</div>
+            </div>
+          </div>
+        ` : ''}
+      </div>
+    `,
+    'ms-fade-in'
+  );
+  
+  const projectSnapshot = document.querySelectorAll('.ms-widget')[2];
+  if (projectSnapshot) {
+    DOMInjector.injectAfter(projectSnapshot, widget);
   }
 }
