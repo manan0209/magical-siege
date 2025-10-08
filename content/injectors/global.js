@@ -7,6 +7,7 @@ export function injectGlobalEnhancements() {
   
   injectTopNavigationBar();
   setupNotificationSystem();
+  setupKeyboardShortcuts();
 }
 
 async function injectTopNavigationBar() {
@@ -180,4 +181,153 @@ function showInPageNotification(title, message, type = 'info') {
   setTimeout(() => {
     notification.remove();
   }, 8000);
+}
+
+async function setupKeyboardShortcuts() {
+  const settings = await Settings.getAll();
+  
+  if (!settings.keyboardShortcuts) {
+    return;
+  }
+  
+  const shortcuts = {
+    'k': () => window.location.href = 'https://siege.hackclub.com/keep',
+    'a': () => window.location.href = 'https://siege.hackclub.com/armory',
+    'h': () => window.location.href = 'https://siege.hackclub.com/great-hall',
+    'm': () => window.location.href = 'https://siege.hackclub.com/market',
+    'c': () => window.location.href = 'https://siege.hackclub.com/castle',
+    's': () => chrome.runtime.sendMessage({ type: 'OPEN_SETTINGS' }),
+    '?': () => showShortcutsHelp(),
+    'r': () => location.reload(),
+    't': () => toggleTopBar()
+  };
+  
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
+      return;
+    }
+    
+    if (e.ctrlKey || e.metaKey || e.altKey) {
+      return;
+    }
+    
+    const handler = shortcuts[e.key];
+    if (handler) {
+      e.preventDefault();
+      handler();
+    }
+  });
+  
+  showInPageNotification(
+    'Keyboard Shortcuts Active',
+    'Press ? to see all available shortcuts',
+    'info'
+  );
+}
+
+function showShortcutsHelp() {
+  const helpOverlay = document.createElement('div');
+  helpOverlay.id = 'ms-shortcuts-help';
+  helpOverlay.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center';
+  
+  helpOverlay.innerHTML = `
+    <div class="ms-widget max-w-2xl m-4 animate-fade-in">
+      <div class="ms-widget-header flex items-center justify-between">
+        <span>Keyboard Shortcuts</span>
+        <button id="ms-close-help" class="text-parchment hover:text-white">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="ms-widget-content">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <h3 class="font-bold text-purple-primary mb-3">Navigation</h3>
+            <div class="flex justify-between items-center">
+              <span class="text-sm">Keep Page</span>
+              <kbd class="px-2 py-1 bg-parchment border-2 border-castle-brown rounded text-sm font-mono">K</kbd>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm">Armory</span>
+              <kbd class="px-2 py-1 bg-parchment border-2 border-castle-brown rounded text-sm font-mono">A</kbd>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm">Great Hall</span>
+              <kbd class="px-2 py-1 bg-parchment border-2 border-castle-brown rounded text-sm font-mono">H</kbd>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm">Market</span>
+              <kbd class="px-2 py-1 bg-parchment border-2 border-castle-brown rounded text-sm font-mono">M</kbd>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm">Castle</span>
+              <kbd class="px-2 py-1 bg-parchment border-2 border-castle-brown rounded text-sm font-mono">C</kbd>
+            </div>
+          </div>
+          
+          <div class="space-y-2">
+            <h3 class="font-bold text-purple-primary mb-3">Actions</h3>
+            <div class="flex justify-between items-center">
+              <span class="text-sm">Settings</span>
+              <kbd class="px-2 py-1 bg-parchment border-2 border-castle-brown rounded text-sm font-mono">S</kbd>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm">Reload Page</span>
+              <kbd class="px-2 py-1 bg-parchment border-2 border-castle-brown rounded text-sm font-mono">R</kbd>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm">Toggle Top Bar</span>
+              <kbd class="px-2 py-1 bg-parchment border-2 border-castle-brown rounded text-sm font-mono">T</kbd>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm">Show This Help</span>
+              <kbd class="px-2 py-1 bg-parchment border-2 border-castle-brown rounded text-sm font-mono">?</kbd>
+            </div>
+          </div>
+        </div>
+        
+        <div class="ms-divider"></div>
+        
+        <div class="text-center text-sm text-gray-600">
+          Shortcuts work on any page except when typing in input fields
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(helpOverlay);
+  
+  const closeHelp = () => helpOverlay.remove();
+  
+  document.getElementById('ms-close-help').addEventListener('click', closeHelp);
+  helpOverlay.addEventListener('click', (e) => {
+    if (e.target === helpOverlay) {
+      closeHelp();
+    }
+  });
+  
+  document.addEventListener('keydown', function escHandler(e) {
+    if (e.key === 'Escape') {
+      closeHelp();
+      document.removeEventListener('keydown', escHandler);
+    }
+  });
+}
+
+async function toggleTopBar() {
+  const topBar = document.getElementById('ms-top-bar');
+  if (topBar) {
+    const isHidden = topBar.style.display === 'none';
+    topBar.style.display = isHidden ? 'flex' : 'none';
+    document.body.style.paddingTop = isHidden ? '60px' : '0';
+    
+    await Settings.set('showTopBar', isHidden);
+    
+    showInPageNotification(
+      'Top Bar ' + (isHidden ? 'Shown' : 'Hidden'),
+      'Press T to toggle again',
+      'info'
+    );
+  }
 }
