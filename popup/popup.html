@@ -8,8 +8,95 @@
 </head>
 <body>
   <div class="popup-container">
-    <h1>Magical Siege</h1>
-    <p>Settings coming soon...</p>
+    <div class="popup-header">
+      <h1 class="popup-title">Magical Siege</h1>
+      <p class="popup-subtitle">Enhance your Siege experience</p>
+    </div>
+
+    <div class="settings-section">
+      <h2 class="section-title">Appearance</h2>
+      <div class="setting-item">
+        <label for="theme-select" class="setting-label">Theme</label>
+        <select id="theme-select" class="setting-select">
+          <option value="default">Default</option>
+          <option value="dark">Dark Mode</option>
+          <option value="light">Light Mode</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label class="setting-label">
+          <input type="checkbox" id="show-topbar" class="setting-checkbox">
+          <span>Show Top Navigation Bar</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2 class="section-title">Notifications</h2>
+      <div class="setting-item">
+        <label class="setting-label">
+          <input type="checkbox" id="notifications-enabled" class="setting-checkbox">
+          <span>Enable Notifications</span>
+        </label>
+      </div>
+      <div class="setting-item">
+        <label class="setting-label">
+          <input type="checkbox" id="deadline-reminders" class="setting-checkbox">
+          <span>Deadline Reminders</span>
+        </label>
+      </div>
+      <div class="setting-item">
+        <label class="setting-label">
+          <input type="checkbox" id="voting-alerts" class="setting-checkbox">
+          <span>Voting Period Alerts</span>
+        </label>
+      </div>
+      <div class="setting-item">
+        <label class="setting-label">
+          <input type="checkbox" id="progress-updates" class="setting-checkbox">
+          <span>Progress Updates</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2 class="section-title">Features</h2>
+      <div class="setting-item">
+        <label class="setting-label">
+          <input type="checkbox" id="keyboard-shortcuts" class="setting-checkbox">
+          <span>Keyboard Shortcuts</span>
+        </label>
+      </div>
+      <div class="setting-item">
+        <label class="setting-label">
+          <input type="checkbox" id="auto-sync" class="setting-checkbox">
+          <span>Auto Sync Data</span>
+        </label>
+      </div>
+      <div class="setting-item">
+        <label for="sync-interval" class="setting-label">Sync Interval (minutes)</label>
+        <input type="number" id="sync-interval" class="setting-input" min="1" max="60" value="5">
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2 class="section-title">About</h2>
+      <div class="about-content">
+        <p class="about-text">
+          <strong>Version:</strong> 1.0.0<br>
+          <strong>Created for:</strong> Hack Club Siege<br>
+          <strong>Week 6 Project</strong>
+        </p>
+        <div class="button-group">
+          <button id="reset-settings" class="button button-secondary">Reset Settings</button>
+          <button id="open-siege" class="button button-primary">Open Siege</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="popup-footer">
+      <div id="save-status" class="save-status"></div>
+    </div>
   </div>
   <script type="module" src="popup.js"></script>
 </body>
