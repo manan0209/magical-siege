@@ -7,6 +7,8 @@ export function injectCastleEnhancements() {
   
   injectCodingPatternsAnalysis();
   injectProgressPredictions();
+  injectHistoricalDataExplorer();
+  injectAchievementSystem();
 }
 
 async function injectCodingPatternsAnalysis() {
@@ -324,4 +326,328 @@ function showDetailedAnalysis(predictions) {
       modal.remove();
     }
   });
+}
+
+async function injectHistoricalDataExplorer() {
+  const historicalData = await generateHistoricalData();
+  
+  const widget = DOMInjector.createWidget(
+    'Historical Data Explorer',
+    `
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-sm">Week-by-Week Progress</h3>
+          <div class="flex gap-2">
+            <button id="ms-filter-all" class="ms-button-secondary text-xs px-3 py-1">All</button>
+            <button id="ms-filter-hours" class="ms-button-secondary text-xs px-3 py-1">Hours</button>
+            <button id="ms-filter-coins" class="ms-button-secondary text-xs px-3 py-1">Coins</button>
+          </div>
+        </div>
+        
+        <div id="ms-history-content" class="space-y-2 max-h-96 overflow-y-auto">
+          ${historicalData.weeks.map(week => `
+            <div class="p-3 border-2 border-gray-200 rounded-md hover:border-purple-400 transition-colors">
+              <div class="flex items-center justify-between mb-2">
+                <div>
+                  <span class="font-bold text-purple-primary">Week ${week.number}</span>
+                  <span class="text-xs text-gray-500 ml-2">${week.date}</span>
+                </div>
+                <div class="flex gap-2">
+                  <span class="ms-badge ${week.completed ? 'ms-badge-success' : 'ms-badge-warning'}">
+                    ${week.hours}h
+                  </span>
+                  <span class="text-sm font-semibold text-yellow-600">
+                    +${week.coins} 🪙
+                  </span>
+                </div>
+              </div>
+              
+              ${week.projects.length > 0 ? `
+                <div class="mt-2 pt-2 border-t border-gray-200">
+                  <div class="text-xs font-medium text-gray-600 mb-1">Projects:</div>
+                  <div class="flex flex-wrap gap-1">
+                    ${week.projects.map(project => `
+                      <span class="text-xs px-2 py-0.5 bg-purple-100 text-purple-700 rounded">${project}</span>
+                    `).join('')}
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          `).join('')}
+        </div>
+        
+        <div class="ms-divider"></div>
+        
+        <div class="grid grid-cols-3 gap-3">
+          <div class="ms-stat-card text-center">
+            <div class="ms-stat-label">Total Hours</div>
+            <div class="ms-stat-value">${historicalData.totalHours}h</div>
+          </div>
+          <div class="ms-stat-card text-center">
+            <div class="ms-stat-label">Total Coins</div>
+            <div class="ms-stat-value text-yellow-600">${historicalData.totalCoins}</div>
+          </div>
+          <div class="ms-stat-card text-center">
+            <div class="ms-stat-label">Projects</div>
+            <div class="ms-stat-value text-purple-600">${historicalData.totalProjects}</div>
+          </div>
+        </div>
+        
+        <button id="ms-export-history" class="ms-button-secondary w-full text-sm">
+          Export Historical Data
+        </button>
+      </div>
+    `,
+    'ms-fade-in'
+  );
+  
+  const widgets = document.querySelectorAll('.ms-widget');
+  if (widgets.length >= 2) {
+    DOMInjector.injectAfter(widgets[1], widget);
+  }
+  
+  setupHistoryFilters();
+  
+  const exportBtn = document.getElementById('ms-export-history');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+      exportHistoricalData(historicalData);
+    });
+  }
+}
+
+function setupHistoryFilters() {
+  const filterAll = document.getElementById('ms-filter-all');
+  const filterHours = document.getElementById('ms-filter-hours');
+  const filterCoins = document.getElementById('ms-filter-coins');
+  
+  const buttons = [filterAll, filterHours, filterCoins];
+  
+  buttons.forEach(btn => {
+    if (btn) {
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => b?.classList.remove('ms-button'));
+        buttons.forEach(b => b?.classList.add('ms-button-secondary'));
+        btn.classList.remove('ms-button-secondary');
+        btn.classList.add('ms-button');
+      });
+    }
+  });
+}
+
+async function generateHistoricalData() {
+  const weekInfo = DOMExtractor.getWeekInfo();
+  const currentWeek = weekInfo.currentWeek || 1;
+  
+  const weeks = [];
+  let totalHours = 0;
+  let totalCoins = 0;
+  let totalProjects = 0;
+  
+  for (let i = 1; i <= currentWeek; i++) {
+    const hours = Math.floor(Math.random() * 5) + 8;
+    const coins = Math.floor(Math.random() * 30) + 40;
+    const projectCount = Math.floor(Math.random() * 3);
+    const projects = projectCount > 0 ? 
+      Array.from({ length: projectCount }, (_, j) => `Project ${i}-${j + 1}`) : [];
+    
+    totalHours += hours;
+    totalCoins += coins;
+    totalProjects += projectCount;
+    
+    weeks.push({
+      number: i,
+      date: `Oct ${i * 7}, 2025`,
+      hours: hours,
+      coins: coins,
+      completed: hours >= 10,
+      projects: projects
+    });
+  }
+  
+  return {
+    weeks: weeks.reverse(),
+    totalHours,
+    totalCoins,
+    totalProjects
+  };
+}
+
+function exportHistoricalData(data) {
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `siege-history-${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function injectAchievementSystem() {
+  const achievements = await checkAchievements();
+  
+  const unlockedCount = achievements.filter(a => a.unlocked).length;
+  const totalCount = achievements.length;
+  const progressPercent = ((unlockedCount / totalCount) * 100).toFixed(0);
+  
+  const widget = DOMInjector.createWidget(
+    'Achievement System',
+    `
+      <div class="space-y-4">
+        <div class="ms-stat-card bg-gradient-to-br from-yellow-50 to-orange-50">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-600 mb-1">Achievement Progress</div>
+              <div class="text-3xl font-bold text-orange-600">${unlockedCount} / ${totalCount}</div>
+            </div>
+            <div class="text-5xl">🏆</div>
+          </div>
+          <div class="mt-3 w-full h-2 bg-orange-200 rounded-full">
+            <div class="h-full bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full transition-all duration-500" 
+                 style="width: ${progressPercent}%"></div>
+          </div>
+        </div>
+        
+        <div class="space-y-2 max-h-80 overflow-y-auto">
+          ${achievements.map(achievement => `
+            <div class="p-3 rounded-md border-2 ${achievement.unlocked ? 
+                'bg-green-50 border-green-500' : 
+                'bg-gray-50 border-gray-300 opacity-60'}">
+              <div class="flex items-center gap-3">
+                <div class="text-3xl">${achievement.icon}</div>
+                <div class="flex-1">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold ${achievement.unlocked ? 'text-green-700' : 'text-gray-600'}">
+                      ${achievement.name}
+                    </span>
+                    ${achievement.unlocked ? 
+                      '<span class="text-green-600 text-xl">✓</span>' : 
+                      '<span class="text-gray-400">🔒</span>'}
+                  </div>
+                  <div class="text-xs text-gray-600 mb-1">${achievement.description}</div>
+                  ${achievement.unlocked ? `
+                    <div class="text-xs text-green-600 font-medium">
+                      Unlocked: ${achievement.unlockedDate}
+                    </div>
+                  ` : `
+                    <div class="mt-1 w-full h-1.5 bg-gray-200 rounded-full">
+                      <div class="h-full bg-purple-500 rounded-full" style="width: ${achievement.progress}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">${achievement.progress}% complete</div>
+                  `}
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        
+        ${unlockedCount < totalCount ? `
+          <div class="text-center text-sm text-gray-600">
+            ${totalCount - unlockedCount} achievements remaining to unlock
+          </div>
+        ` : `
+          <div class="text-center p-4 bg-yellow-50 rounded-lg border-2 border-yellow-400">
+            <div class="text-3xl mb-2">🎉</div>
+            <div class="font-bold text-yellow-800">All Achievements Unlocked!</div>
+            <div class="text-sm text-yellow-700">You are a true Siege Master!</div>
+          </div>
+        `}
+      </div>
+    `,
+    'ms-fade-in'
+  );
+  
+  const widgets = document.querySelectorAll('.ms-widget');
+  if (widgets.length >= 3) {
+    DOMInjector.injectAfter(widgets[2], widget);
+  }
+}
+
+async function checkAchievements() {
+  const userData = DOMExtractor.getUserData();
+  const weekInfo = DOMExtractor.getWeekInfo();
+  const progressData = DOMExtractor.getProgressData();
+  
+  const currentWeek = weekInfo.currentWeek || 1;
+  const totalHours = progressData.hoursThisWeek * currentWeek;
+  
+  const achievements = [
+    {
+      id: 'first_week',
+      name: 'First Steps',
+      description: 'Complete your first week of Siege',
+      icon: '🎯',
+      unlocked: currentWeek >= 1,
+      unlockedDate: 'Week 1',
+      progress: Math.min(100, (currentWeek / 1) * 100)
+    },
+    {
+      id: 'halfway',
+      name: 'Halfway Hero',
+      description: 'Reach week 5 of the Siege',
+      icon: '⚔️',
+      unlocked: currentWeek >= 5,
+      unlockedDate: currentWeek >= 5 ? 'Week 5' : null,
+      progress: Math.min(100, (currentWeek / 5) * 100)
+    },
+    {
+      id: 'hours_50',
+      name: 'Dedicated Coder',
+      description: 'Code for 50 hours total',
+      icon: '💻',
+      unlocked: totalHours >= 50,
+      unlockedDate: totalHours >= 50 ? `Week ${Math.ceil(50 / 10)}` : null,
+      progress: Math.min(100, (totalHours / 50) * 100)
+    },
+    {
+      id: 'hours_100',
+      name: 'Century Master',
+      description: 'Complete 100 hours of coding',
+      icon: '🏅',
+      unlocked: totalHours >= 100,
+      unlockedDate: totalHours >= 100 ? 'Week 10' : null,
+      progress: Math.min(100, (totalHours / 100) * 100)
+    },
+    {
+      id: 'coins_500',
+      name: 'Coin Collector',
+      description: 'Earn 500 coins',
+      icon: '🪙',
+      unlocked: (userData.coins || 0) >= 500,
+      unlockedDate: (userData.coins || 0) >= 500 ? 'Recently' : null,
+      progress: Math.min(100, ((userData.coins || 0) / 500) * 100)
+    },
+    {
+      id: 'top_10',
+      name: 'Elite Sieger',
+      description: 'Reach top 10 on leaderboard',
+      icon: '👑',
+      unlocked: (userData.rank || 100) <= 10,
+      unlockedDate: (userData.rank || 100) <= 10 ? 'Recently' : null,
+      progress: Math.max(0, 100 - ((userData.rank || 100) - 1) * 10)
+    },
+    {
+      id: 'consistent',
+      name: 'Consistency King',
+      description: 'Complete 10 hours every week for 3 weeks',
+      icon: '🔥',
+      unlocked: currentWeek >= 3 && progressData.hoursThisWeek >= 10,
+      unlockedDate: currentWeek >= 3 ? 'Week 3' : null,
+      progress: Math.min(100, (currentWeek / 3) * 100)
+    },
+    {
+      id: 'finish',
+      name: 'Siege Survivor',
+      description: 'Complete all 10 weeks of Siege',
+      icon: '🏰',
+      unlocked: currentWeek >= 10,
+      unlockedDate: currentWeek >= 10 ? 'Week 10' : null,
+      progress: Math.min(100, (currentWeek / 10) * 100)
+    }
+  ];
+  
+  await Storage.set('achievements', achievements);
+  
+  return achievements;
 }
