@@ -7,12 +7,11 @@ import { injectGlobalEnhancements } from './injectors/global.js';
 
 const PAGES = {
   KEEP: '/keep',
-  ARMORY: '/armory',
-  GREAT_HALL: '/great-hall',
+  ARMORY: '/projects',
+  GREAT_HALL: '/great_hall',
   MARKET: '/market',
   CASTLE: '/castle',
-  COUNTDOWN: '/countdown',
-  MAP: '/map'
+  CHAMBERS: '/chambers'
 };
 
 class MagicalSiege {
