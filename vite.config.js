@@ -28,6 +28,13 @@ export default defineConfig({
           mkdirSync('dist/styles', { recursive: true });
         }
         copyFileSync('styles/content.css', 'dist/styles/content.css');
+        
+        if (!existsSync('dist/assets/icons')) {
+          mkdirSync('dist/assets/icons', { recursive: true });
+        }
+        copyFileSync('assets/icons/icon-16.png', 'dist/assets/icons/icon-16.png');
+        copyFileSync('assets/icons/icon-48.png', 'dist/assets/icons/icon-48.png');
+        copyFileSync('assets/icons/icon-128.png', 'dist/assets/icons/icon-128.png');
       }
     }
   ]

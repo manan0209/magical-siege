@@ -4,9 +4,9 @@
   "version": "1.0.0",
   "description": "Make your siege magical, powerful, and beautiful",
   "icons": {
-    "16": "assets/icons/icon16.png",
-    "48": "assets/icons/icon48.png",
-    "128": "assets/icons/icon128.png"
+    "16": "assets/icons/icon-16.png",
+    "48": "assets/icons/icon-48.png",
+    "128": "assets/icons/icon-128.png"
   },
   "permissions": [
     "storage",
@@ -18,13 +18,13 @@
     "https://waka.hackclub.com/*"
   ],
   "background": {
-    "service_worker": "background/service-worker.js",
+    "service_worker": "background.js",
     "type": "module"
   },
   "content_scripts": [
     {
       "matches": ["https://siege.hackclub.com/*"],
-      "js": ["content/main.js"],
+      "js": ["content.js"],
       "css": ["styles/content.css"],
       "run_at": "document_end"
     }
@@ -32,9 +32,9 @@
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
-      "16": "assets/icons/icon16.png",
-      "48": "assets/icons/icon48.png",
-      "128": "assets/icons/icon128.png"
+      "16": "assets/icons/icon-16.png",
+      "48": "assets/icons/icon-48.png",
+      "128": "assets/icons/icon-128.png"
     },
     "default_title": "Magical Siege Settings"
   },
