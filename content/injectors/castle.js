@@ -9,6 +9,7 @@ export function injectCastleEnhancements() {
   injectProgressPredictions();
   injectHistoricalDataExplorer();
   injectAchievementSystem();
+  injectDataExport();
 }
 
 async function injectCodingPatternsAnalysis() {
@@ -327,7 +328,7 @@ function showDetailedAnalysis(predictions) {
     }
   });
 }
-
+// if you are here, eat a cupcake 🧁
 async function injectHistoricalDataExplorer() {
   const historicalData = await generateHistoricalData();
   
@@ -577,7 +578,7 @@ async function checkAchievements() {
       id: 'first_week',
       name: 'First Steps',
       description: 'Complete your first week of Siege',
-      icon: '🎯',
+      icon: '👟',
       unlocked: currentWeek >= 1,
       unlockedDate: 'Week 1',
       progress: Math.min(100, (currentWeek / 1) * 100)
@@ -622,7 +623,7 @@ async function checkAchievements() {
       id: 'top_10',
       name: 'Elite Sieger',
       description: 'Reach top 10 on leaderboard',
-      icon: '👑',
+      icon: '🥇',
       unlocked: (userData.rank || 100) <= 10,
       unlockedDate: (userData.rank || 100) <= 10 ? 'Recently' : null,
       progress: Math.max(0, 100 - ((userData.rank || 100) - 1) * 10)
@@ -651,3 +652,250 @@ async function checkAchievements() {
   
   return achievements;
 }
+
+async function injectDataExport() {
+  const widget = DOMInjector.createWidget(
+    'Data Export & Settings',
+    `
+      <div class="space-y-4">
+        <div class="text-sm text-gray-700 mb-3">
+          Export all your Siege data for backup or analysis
+        </div>
+        
+        <div class="space-y-2">
+          <button id="ms-export-json" class="ms-button w-full flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+            </svg>
+            Export as JSON
+          </button>
+          
+          <button id="ms-export-csv" class="ms-button-secondary w-full flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            Export as CSV
+          </button>
+        </div>
+        
+        <div class="ms-divider"></div>
+        
+        <div class="space-y-2">
+          <h3 class="font-bold text-sm text-castle-brown">What's Included</h3>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="text-green-600">✓</span>
+              <span>User Profile</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-green-600">✓</span>
+              <span>Weekly Progress</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-green-600">✓</span>
+              <span>Achievements</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-green-600">✓</span>
+              <span>Coding Patterns</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-green-600">✓</span>
+              <span>Predictions</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-green-600">✓</span>
+              <span>Settings</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="ms-divider"></div>
+        
+        <div class="space-y-2">
+          <h3 class="font-bold text-sm text-castle-brown">Import Settings</h3>
+          <label class="ms-button-secondary w-full flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+            </svg>
+            Import Settings
+            <input type="file" id="ms-import-settings" accept=".json" class="hidden">
+          </label>
+        </div>
+        
+        <div class="ms-stat-card bg-yellow-50 border-2 border-yellow-400">
+          <div class="text-xs text-yellow-800 text-center">
+            <strong>Pro Tip:</strong> Export your data regularly to keep a backup of your progress
+          </div>
+        </div>
+      </div>
+    `,
+    'ms-fade-in'
+  );
+  
+  const widgets = document.querySelectorAll('.ms-widget');
+  if (widgets.length >= 4) {
+    DOMInjector.injectAfter(widgets[3], widget);
+  }
+  
+  setupExportHandlers();
+}
+
+function setupExportHandlers() {
+  const jsonBtn = document.getElementById('ms-export-json');
+  const csvBtn = document.getElementById('ms-export-csv');
+  const importInput = document.getElementById('ms-import-settings');
+  
+  if (jsonBtn) {
+    jsonBtn.addEventListener('click', async () => {
+      await exportAllDataAsJSON();
+    });
+  }
+  
+  if (csvBtn) {
+    csvBtn.addEventListener('click', async () => {
+      await exportAllDataAsCSV();
+    });
+  }
+  
+  if (importInput) {
+    importInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        await importSettings(file);
+      }
+    });
+  }
+}
+
+async function exportAllDataAsJSON() {
+  const userData = DOMExtractor.getUserData();
+  const weekInfo = DOMExtractor.getWeekInfo();
+  const progressData = DOMExtractor.getProgressData();
+  const patterns = await Cache.get('coding_patterns');
+  const achievements = await Storage.get('achievements', []);
+  const settings = await Storage.get('settings', {});
+  const historicalData = await generateHistoricalData();
+  
+  const exportData = {
+    version: '1.0.0',
+    exportDate: new Date().toISOString(),
+    user: userData,
+    week: weekInfo,
+    progress: progressData,
+    codingPatterns: patterns,
+    achievements: achievements,
+    history: historicalData,
+    settings: settings,
+    extension: {
+      name: 'Magical Siege',
+      version: '1.0.0'
+    }
+  };
+  
+  const json = JSON.stringify(exportData, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `magical-siege-export-${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  showNotification('Export Complete', 'Your data has been exported as JSON', 'success');
+}
+
+async function exportAllDataAsCSV() {
+  const historicalData = await generateHistoricalData();
+  const achievements = await Storage.get('achievements', []);
+  
+  let csv = 'Week,Date,Hours,Coins,Completed,Projects\n';
+  historicalData.weeks.forEach(week => {
+    csv += `${week.number},${week.date},${week.hours},${week.coins},${week.completed},${week.projects.join(';')}\n`;
+  });
+  
+  csv += '\n\nAchievement,Unlocked,Progress\n';
+  achievements.forEach(achievement => {
+    csv += `${achievement.name},${achievement.unlocked},${achievement.progress}%\n`;
+  });
+  
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `magical-siege-export-${Date.now()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  showNotification('Export Complete', 'Your data has been exported as CSV', 'success');
+}
+
+async function importSettings(file) {
+  const reader = new FileReader();
+  
+  reader.onload = async (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      
+      if (data.settings) {
+        await Storage.set('settings', data.settings);
+      }
+      
+      if (data.achievements) {
+        await Storage.set('achievements', data.achievements);
+      }
+      
+      showNotification('Import Complete', 'Settings have been imported successfully', 'success');
+      
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
+    } catch (error) {
+      showNotification('Import Failed', 'Invalid file format', 'error');
+    }
+  };
+  
+  reader.readAsText(file);
+}
+
+function showNotification(title, message, type) {
+  const notification = document.createElement('div');
+  notification.className = 'ms-widget fixed bottom-4 right-4 z-50 max-w-sm shadow-2xl ms-slide-in';
+  
+  const bgColor = type === 'success' ? 'bg-green-50' : 
+                  type === 'error' ? 'bg-red-50' : 
+                  'bg-blue-50';
+  
+  const iconColor = type === 'success' ? 'text-green-600' : 
+                    type === 'error' ? 'text-red-600' : 
+                    'text-blue-600';
+  
+  notification.innerHTML = `
+    <div class="${bgColor} p-4 rounded-lg">
+      <div class="flex items-start">
+        <div class="flex-1">
+          <h3 class="font-bold ${iconColor} mb-1">${title}</h3>
+          <p class="text-sm text-gray-700">${message}</p>
+        </div>
+        <button class="ms-notification-close ml-2 text-gray-500 hover:text-gray-700">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  const closeBtn = notification.querySelector('.ms-notification-close');
+  closeBtn.addEventListener('click', () => {
+    notification.remove();
+  });
+  
+  setTimeout(() => {
+    notification.remove();
+  }, 5000);
+}
+
+// if you are here, you are too deep in my code... go get some fresh air
