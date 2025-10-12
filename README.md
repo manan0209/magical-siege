@@ -1,126 +1,46 @@
 # Magical Siege
 
 **Week 6 Project for Siege**  
-**Updated**: October 7, 2025
 
-Make your siege magical, powerful, and maybe maybe.. beautiful with this extension.
-
----
-
-## What is Magical Siege?
-
-A Chrome extension that transforms the Siege experience by injecting powerful features directly into siege.hackclub.com. No popups, no separate interfaces - just pure enhancement of the website you already love.
+This is a Chrome extension that transforms the Siege experience into a magical one, i have invested a lot of time in hit and trial, by trying out different ui upgrades and features, dug too deep into siege code for that :cryin: but good thing is that I have fairly good idea about siege web structure now, after multiple versions and trials, I have kinda accepted how keep and armory page have been upgraded as of now, I have also tried to make a magical theme for the website do try it out, I'll keep working on this one, to make it much more useful and upgrade siege into truly a magical experience :)
 
 ---
 
-## Features
+## Features as of now (Implemented succesfully)
+
+### Magical themes
+I have implemented two more themes, magical and a dark theme do check them out :)
 
 ### Live Deadline Countdown
-Never miss a Monday midnight deadline with a real-time countdown widget showing days, hours, minutes, and seconds remaining in EDT timezone.
+A live countdown according to edt, to keep you on your feet :)
 
-### Enhanced Progress Tracking
-See your coding hours in beautiful charts with daily breakdowns, weekly comparisons, and productivity insights.
+### Better stats on keep
+I have tried to improved the stats in keep page, so that you have better experience sieging!
 
-### Smart Project Assistant
-Get intelligent help while creating projects with live URL validation, description quality checks, and submission readiness indicators.
+### Armory upgrades
+Armory page is upgraded now with predicted coins, and project stats that will help you, It's still work in progress, i am working on more features
 
-### Powerful Voting Tools
-Vote faster and fairer with keyboard shortcuts, batch processing, and helpful rating guidance.
+### Keyboard shortcuts
+yeah i added some keyboard shortcut as well, idk how they are better, but it seemed cool to me :)
 
-### Intelligent Shopping Advisor
-Make smart coin purchases with recommendations, device comparisons, and optimal upgrade paths.
+## Future (yet to be implemented)
 
-### Beautiful Themes
-Choose from Dark Mode, High Contrast, Minimal, or keep the classic medieval aesthetic - all matching Siege's visual style perfectly.
+I did try some of these but they were broken, so I am not shipping them yet!
 
-### And Much More
-Keyboard shortcuts, desktop notifications, analytics dashboards, achievement tracking, and countless quality-of-life improvements.
+### Voting Tools
+Vote faster and fairer with ai detection, and ai comparison for all projects for maybe better star rating
+
+### shop upgrades
+I maybe able to give some shop items for free (Olive dont kill me for that :hehe:) also a better shop layout maybe
+
 
 ---
 
 ## Installation
 
-### From Chrome Web Store
-Coming soon!
-
 ### Manual Installation (Development)
-1. Clone this repository
-2. Run `npm install`
-3. Run `npm run build`
+1. Download extension from gh releases and extract it
 4. Open Chrome and go to `chrome://extensions/`
 5. Enable "Developer mode"
 6. Click "Load unpacked"
-7. Select the `dist` folder
-
----
-
-## Usage
-
-1. Install the extension
-2. Navigate to siege.hackclub.com
-3. Log in to your Siege account
-4. Features are automatically injected into the website
-5. Click the extension icon to access settings
-
----
-
-## Development
-
-### Setup
-```bash
-npm install
-npm run dev
-```
-
-### Build
-```bash
-npm run build
-```
-
-### Project Structure
-```
-magical-siege/
-├── manifest.json
-├── content/
-│   ├── main.js
-│   ├── injectors/
-│   └── components/
-├── background/
-├── popup/
-└── styles/
-```
-
----
-
-## Technology Stack
-
-- Manifest V3 Chrome Extension
-- Vanilla JavaScript
-- Tailwind CSS
-- Chart.js for visualizations
-- IndexedDB for storage
-
----
-
-## Contributing
-
-This is a Week 6 Siege project. Feel free to fork and make it your own!
-
----
-
-## License
-
-MIT License - See LICENSE file for details
-
----
-
-## Acknowledgments
-
-Built for Siege by Hack Club participants.  
-Making the castle more magical, one commit at a time.
-
----
-
-**Status**: Under Development  
-**Week**: 6 of 10  
-**Goal**: Ship by Monday midnight
+7. Select the `extracted` folder
