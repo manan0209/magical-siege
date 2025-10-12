@@ -18,10 +18,10 @@ export const Theme = {
     dark: {
       name: 'Dark Mode',
       vars: {
-        '--ms-dark-bg': '#1a1a1a',
-        '--ms-dark-card': '#2a2a2a',
-        '--ms-dark-text': '#f5f5f4',
-        '--ms-dark-border': 'rgba(245, 245, 244, 0.2)',
+        '--ms-dark-bg': '#2d1f1a',
+        '--ms-dark-card': 'rgba(45, 31, 26, 0.95)',
+        '--ms-dark-text': '#e8dcc8',
+        '--ms-dark-border': 'rgba(232, 220, 200, 0.15)',
         '--ms-dark-accent': '#785437'
       }
     }
