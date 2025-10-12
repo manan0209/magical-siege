@@ -6,11 +6,80 @@ export function injectGlobalEnhancements() {
   
   initializeTheme();
   injectFloatingActionButton();
+  injectThemeIndicator();
   setupKeyboardShortcuts();
 }
 
 async function initializeTheme() {
   await Theme.applyStoredTheme();
+  updateThemeIndicator();
+}
+
+function injectThemeIndicator() {
+  const indicator = document.createElement('div');
+  indicator.id = 'ms-theme-indicator';
+  indicator.style.cssText = `
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 9998;
+    background: rgba(255,255,255,0.95);
+    border: 2px solid rgba(64,43,32,0.75);
+    border-radius: 12px;
+    padding: 0.5rem 1rem;
+    font-family: 'IM Fell English', serif;
+    font-size: 0.875rem;
+    color: #3b2a1a;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  `;
+  
+  indicator.addEventListener('click', async () => {
+    const newTheme = await Theme.cycleTheme();
+    updateThemeIndicator();
+    const themeNames = { default: 'Default', magical: 'Magical', dark: 'Dark Mode' };
+    showNotification(`Theme: ${themeNames[newTheme]}`);
+  });
+  
+  indicator.addEventListener('mouseover', () => {
+    indicator.style.transform = 'scale(1.05)';
+  });
+  
+  indicator.addEventListener('mouseout', () => {
+    indicator.style.transform = 'scale(1)';
+  });
+  
+  document.body.appendChild(indicator);
+  updateThemeIndicator();
+}
+
+async function updateThemeIndicator() {
+  const indicator = document.getElementById('ms-theme-indicator');
+  if (!indicator) return;
+  
+  const theme = await Theme.getCurrentTheme();
+  const themeNames = {
+    default: 'Default',
+    magical: 'Magical',
+    dark: 'Dark Mode'
+  };
+  
+  indicator.textContent = `Theme: ${themeNames[theme]}`;
+  
+  if (theme === 'dark') {
+    indicator.style.background = '#2a2a2a';
+    indicator.style.color = '#f5f5f4';
+    indicator.style.borderColor = 'rgba(245, 245, 244, 0.2)';
+  } else if (theme === 'magical') {
+    indicator.style.background = 'rgba(139, 92, 246, 0.1)';
+    indicator.style.color = '#6D28D9';
+    indicator.style.borderColor = '#8B5CF6';
+  } else {
+    indicator.style.background = 'rgba(255,255,255,0.95)';
+    indicator.style.color = '#3b2a1a';
+    indicator.style.borderColor = 'rgba(64,43,32,0.75)';
+  }
 }
 
 async function injectFloatingActionButton() {
@@ -32,7 +101,7 @@ async function injectFloatingActionButton() {
   fab.innerHTML = `
     <div id="ms-fab-menu" style="display: none; background: rgba(255,255,255,0.95); border: 2px solid rgba(64,43,32,0.75); border-radius: 12px; padding: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
       <button id="ms-theme-toggle" style="display: block; width: 100%; text-align: left; padding: 0.5rem 1rem; border: none; background: none; cursor: pointer; font-family: 'IM Fell English', serif; color: #3b2a1a; border-radius: 6px;" onmouseover="this.style.background='rgba(64,43,32,0.1)'" onmouseout="this.style.background='none'">
-        Toggle Theme (D)
+        Cycle Theme (T)
       </button>
       <button id="ms-refresh-data" style="display: block; width: 100%; text-align: left; padding: 0.5rem 1rem; border: none; background: none; cursor: pointer; font-family: 'IM Fell English', serif; color: #3b2a1a; border-radius: 6px;" onmouseover="this.style.background='rgba(64,43,32,0.1)'" onmouseout="this.style.background='none'">
         Refresh Data (R)
@@ -41,8 +110,8 @@ async function injectFloatingActionButton() {
         Shortcuts (?)
       </button>
     </div>
-    <button id="ms-fab-button" style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%); border: 3px solid rgba(64,43,32,0.75); box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-      ⚔️
+    <button id="ms-fab-button" style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%); border: 3px solid rgba(64,43,32,0.75); box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px; font-weight: bold; font-family: 'Jaini', serif; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+      M
     </button>
   `;
   
@@ -58,8 +127,10 @@ async function injectFloatingActionButton() {
   });
   
   document.getElementById('ms-theme-toggle')?.addEventListener('click', async () => {
-    const newTheme = await Theme.toggleDarkMode();
-    showNotification(`Theme: ${newTheme.charAt(0).toUpperCase() + newTheme.slice(1)}`);
+    const newTheme = await Theme.cycleTheme();
+    updateThemeIndicator();
+    const themeNames = { default: 'Default', magical: 'Magical', dark: 'Dark Mode' };
+    showNotification(`Theme: ${themeNames[newTheme]}`);
     menuOpen = false;
     fabMenu.style.display = 'none';
   });
@@ -132,7 +203,7 @@ function showShortcutsModal() {
           <span><strong>C</strong></span><span>Go to Chambers</span>
         </div>
         <div style="display: flex; justify-content: space-between; padding: 0.5rem; border-bottom: 1px dashed rgba(64,43,32,0.3);">
-          <span><strong>D</strong></span><span>Toggle Theme</span>
+          <span><strong>T</strong></span><span>Cycle Theme</span>
         </div>
         <div style="display: flex; justify-content: space-between; padding: 0.5rem; border-bottom: 1px dashed rgba(64,43,32,0.3);">
           <span><strong>R</strong></span><span>Refresh Data</span>
@@ -178,10 +249,12 @@ function setupKeyboardShortcuts() {
       case 'c':
         window.location.href = '/chambers';
         break;
-      case 'd':
+      case 't':
         e.preventDefault();
-        const newTheme = await Theme.toggleDarkMode();
-        showNotification(`Theme: ${newTheme.charAt(0).toUpperCase() + newTheme.slice(1)}`);
+        const newTheme = await Theme.cycleTheme();
+        updateThemeIndicator();
+        const themeNames = { default: 'Default', magical: 'Magical', dark: 'Dark Mode' };
+        showNotification(`Theme: ${themeNames[newTheme]}`);
         break;
       case 'r':
         e.preventDefault();

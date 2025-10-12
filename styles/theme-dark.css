@@ -1,0 +1,79 @@
+body.ms-theme-dark {
+  background: var(--ms-dark-bg) !important;
+  color: var(--ms-dark-text) !important;
+}
+
+body.ms-theme-dark * {
+  color: var(--ms-dark-text) !important;
+}
+
+body.ms-theme-dark .home-card,
+body.ms-theme-dark .project-card {
+  background: var(--ms-dark-card) !important;
+  border-color: var(--ms-dark-border) !important;
+}
+
+body.ms-theme-dark .home-card-body {
+  background: var(--ms-dark-card) !important;
+  color: var(--ms-dark-text) !important;
+}
+
+body.ms-theme-dark .home-section-title {
+  color: var(--ms-dark-text) !important;
+}
+
+body.ms-theme-dark .submit-button {
+  background: var(--ms-dark-card) !important;
+  border-color: var(--ms-dark-border) !important;
+  color: var(--ms-dark-text) !important;
+}
+
+body.ms-theme-dark .submit-button::after {
+  border-color: var(--ms-dark-border) !important;
+}
+
+body.ms-theme-dark .submit-button:hover {
+  background: var(--ms-dark-accent) !important;
+  color: #ffffff !important;
+}
+
+body.ms-theme-dark .project-card {
+  background: var(--ms-dark-card) !important;
+  border-color: var(--ms-dark-border) !important;
+}
+
+body.ms-theme-dark .home-progress-top,
+body.ms-theme-dark .home-progress-bottom {
+  color: var(--ms-dark-text) !important;
+}
+
+body.ms-theme-dark nav {
+  background: var(--ms-dark-card) !important;
+  border-bottom-color: var(--ms-dark-border) !important;
+}
+
+body.ms-theme-dark a {
+  color: var(--ms-dark-accent) !important;
+}
+
+body.ms-theme-dark input,
+body.ms-theme-dark textarea,
+body.ms-theme-dark select {
+  background: var(--ms-dark-card) !important;
+  border-color: var(--ms-dark-border) !important;
+  color: var(--ms-dark-text) !important;
+}
+
+body.ms-theme-dark .home-container {
+  background: var(--ms-dark-bg) !important;
+}
+
+body.ms-theme-dark .home-wave {
+  filter: brightness(0.7);
+}
+
+body.ms-theme-dark svg path,
+body.ms-theme-dark svg rect {
+  stroke: var(--ms-dark-border) !important;
+}
+

@@ -25,7 +25,13 @@
     {
       "matches": ["https://siege.hackclub.com/*"],
       "js": ["content.js"],
-      "css": ["styles/content.css"],
+      "css": [
+        "styles/content.css",
+        "styles/theme-default.css",
+        "styles/theme-magical.css",
+        "styles/theme-dark.css",
+        "styles/animations.css"
+      ],
       "run_at": "document_end"
     }
   ],

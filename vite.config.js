@@ -28,6 +28,10 @@ export default defineConfig({
           mkdirSync('dist/styles', { recursive: true });
         }
         copyFileSync('styles/content.css', 'dist/styles/content.css');
+        copyFileSync('styles/theme-default.css', 'dist/styles/theme-default.css');
+        copyFileSync('styles/theme-magical.css', 'dist/styles/theme-magical.css');
+        copyFileSync('styles/theme-dark.css', 'dist/styles/theme-dark.css');
+        copyFileSync('styles/animations.css', 'dist/styles/animations.css');
         
         if (!existsSync('dist/assets/icons')) {
           mkdirSync('dist/assets/icons', { recursive: true });
