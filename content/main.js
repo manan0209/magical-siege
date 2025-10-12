@@ -92,3 +92,38 @@ if (document.readyState === 'loading') {
 } else {
   new MagicalSiege();
 }
+
+document.addEventListener('click', (e) => {
+  const theme = document.body.className.match(/ms-theme-(\w+)/)?.[1];
+  if (theme !== 'magical') return;
+
+  const x = e.clientX;
+  const y = e.clientY;
+
+  const ripple = document.createElement('div');
+  ripple.className = 'magical-ripple';
+  ripple.style.left = `${x - 10}px`;
+  ripple.style.top = `${y - 10}px`;
+  document.body.appendChild(ripple);
+
+  setTimeout(() => ripple.remove(), 600);
+
+  for (let i = 0; i < 6; i++) {
+    const sparkle = document.createElement('div');
+    sparkle.className = 'magical-sparkle';
+    
+    const angle = (Math.PI * 2 * i) / 6;
+    const distance = 40 + Math.random() * 40;
+    const sparkleX = Math.cos(angle) * distance;
+    const sparkleY = Math.sin(angle) * distance;
+    
+    sparkle.style.left = `${x}px`;
+    sparkle.style.top = `${y}px`;
+    sparkle.style.setProperty('--sparkle-x', `${sparkleX}px`);
+    sparkle.style.setProperty('--sparkle-y', `${sparkleY}px`);
+    
+    document.body.appendChild(sparkle);
+    
+    setTimeout(() => sparkle.remove(), 800);
+  }
+});
