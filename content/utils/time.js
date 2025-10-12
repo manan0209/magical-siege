@@ -1,4 +1,18 @@
 export const TimeUtils = {
+  getSiegeWeekEnd() {
+    const now = new Date();
+    const nowEDT = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    
+    const dayOfWeek = nowEDT.getDay();
+    const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+    
+    const sundayEDT = new Date(nowEDT);
+    sundayEDT.setDate(nowEDT.getDate() + daysUntilSunday);
+    sundayEDT.setHours(23, 59, 59, 999);
+    
+    return sundayEDT;
+  },
+
   getNextMondayMidnight() {
     const now = new Date();
     const dayOfWeek = now.getDay();
@@ -12,8 +26,13 @@ export const TimeUtils = {
   },
 
   getTimeRemaining(targetDate) {
+    if (!targetDate) {
+      targetDate = this.getSiegeWeekEnd();
+    }
+    
     const now = new Date();
-    const diff = targetDate - now;
+    const nowEDT = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const diff = targetDate - nowEDT;
     
     if (diff <= 0) {
       return {

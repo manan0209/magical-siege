@@ -1,5 +1,6 @@
 import { Settings } from '../utils/storage.js';
 import { Theme } from '../utils/theme.js';
+import { TimeUtils } from '../utils/time.js';
 
 export function injectGlobalEnhancements() {
   console.log('Global enhancements loaded');
@@ -7,6 +8,7 @@ export function injectGlobalEnhancements() {
   initializeTheme();
   injectFloatingActionButton();
   injectThemeIndicator();
+  injectWeekCountdown();
   setupKeyboardShortcuts();
 }
 
@@ -79,6 +81,94 @@ async function updateThemeIndicator() {
     indicator.style.background = 'rgba(255,255,255,0.95)';
     indicator.style.color = '#3b2a1a';
     indicator.style.borderColor = 'rgba(64,43,32,0.75)';
+  }
+}
+
+function injectWeekCountdown() {
+  const countdown = document.createElement('div');
+  countdown.id = 'ms-week-countdown';
+  countdown.style.cssText = `
+    position: fixed;
+    top: 1rem;
+    right: 10rem;
+    z-index: 9998;
+    background: rgba(255,255,255,0.95);
+    border: 2px solid rgba(64,43,32,0.75);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-family: 'IM Fell English', serif;
+    color: #3b2a1a;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    min-width: 200px;
+  `;
+  
+  //ello, if you are seeing this, if you are seeing this, have a cupcake (nooo not mee please :hehe:)
+  
+  countdown.innerHTML = `
+    <div style="font-size: 0.75rem; opacity: 0.7; margin-bottom: 0.25rem; text-align: center;">
+      Week Ends In
+    </div>
+    <div id="ms-countdown-time" style="font-size: 1.25rem; font-weight: 700; font-family: 'Jaini', serif; text-align: center;">
+      Loading...
+    </div>
+  `;
+  
+  document.body.appendChild(countdown);
+  
+  updateWeekCountdown();
+  setInterval(updateWeekCountdown, 1000);
+}
+
+function updateWeekCountdown() {
+  const countdownElement = document.getElementById('ms-countdown-time');
+  const countdownContainer = document.getElementById('ms-week-countdown');
+  if (!countdownElement || !countdownContainer) return;
+  
+  const timeRemaining = TimeUtils.getTimeRemaining();
+  
+  if (timeRemaining.total <= 0) {
+    countdownElement.textContent = 'Week Ended!';
+    countdownContainer.style.borderColor = '#ef4444';
+    countdownElement.style.color = '#ef4444';
+    return;
+  }
+  
+  const parts = [];
+  
+  if (timeRemaining.days > 0) {
+    parts.push(`${timeRemaining.days}d`);
+  }
+  if (timeRemaining.hours > 0 || timeRemaining.days > 0) {
+    parts.push(`${timeRemaining.hours}h`);
+  }
+  parts.push(`${timeRemaining.minutes}m`);
+  parts.push(`${timeRemaining.seconds}s`);
+  
+  countdownElement.textContent = parts.join(' ');
+  
+  if (timeRemaining.days === 0 && timeRemaining.hours < 6) {
+    countdownContainer.style.borderColor = '#ef4444';
+    countdownElement.style.color = '#ef4444';
+  } else if (timeRemaining.days === 0 && timeRemaining.hours < 24) {
+    countdownContainer.style.borderColor = '#f59e0b';
+    countdownElement.style.color = '#f59e0b';
+  } else {
+    countdownContainer.style.borderColor = 'rgba(64,43,32,0.75)';
+    countdownElement.style.color = '#3b2a1a';
+  }
+  
+  const theme = document.body.getAttribute('data-ms-theme');
+  if (theme === 'dark') {
+    countdownContainer.style.background = '#2a2a2a';
+    if (timeRemaining.days === 0 && timeRemaining.hours >= 6) {
+      countdownElement.style.color = '#e8dcc8';
+    }
+  } else if (theme === 'magical') {
+    countdownContainer.style.background = 'rgba(139, 92, 246, 0.1)';
+    countdownContainer.style.borderColor = '#8B5CF6';
+    if (timeRemaining.days === 0 && timeRemaining.hours >= 6) {
+      countdownElement.style.color = '#6D28D9';
+    }
   }
 }
 
