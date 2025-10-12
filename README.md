@@ -1,8 +1,12 @@
 # Magical Siege
 
-**Week 6 Project for Siege**  
+**Week 6 Siege Yayy**  
 
 This is a Chrome extension that transforms the Siege experience into a magical one, i have invested a lot of time in hit and trial, by trying out different ui upgrades and features, dug too deep into siege code for that :cryin: but good thing is that I have fairly good idea about siege web structure now, after multiple versions and trials, I have kinda accepted how keep and armory page have been upgraded as of now, I have also tried to make a magical theme for the website do try it out, I'll keep working on this one, to make it much more useful and upgrade siege into truly a magical experience :)
+
+---
+
+![Keep updated](public/keep.png)
 
 ---
 
@@ -19,6 +23,8 @@ I have tried to improved the stats in keep page, so that you have better experie
 
 ### Armory upgrades
 Armory page is upgraded now with predicted coins, and project stats that will help you, It's still work in progress, i am working on more features
+
+![Armory updated](public/armory.png)
 
 ### Keyboard shortcuts
 yeah i added some keyboard shortcut as well, idk how they are better, but it seemed cool to me :)
