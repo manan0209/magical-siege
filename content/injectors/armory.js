@@ -1,240 +1,218 @@
-import { DOMExtractor } from '../utils/dom-extractor.js';
-import { DOMInjector } from '../utils/dom-injector.js';
-
 export function injectArmoryEnhancements() {
-  console.log('Armory upgraded, my liege!');
+  console.log('Armory page enhancements loading...');
   
-  injectTechTreeVisualization();
-  injectUpgradeRecommendations();
-}
-
-function injectTechTreeVisualization() {
-  const techTree = extractTechTreeData();
-  
-  if (!techTree || techTree.length === 0) {
-    return;
-  }
-  
-  const unlockedCount = techTree.filter(tech => tech.unlocked).length;
-  const totalCount = techTree.length;
-  const progressPercent = ((unlockedCount / totalCount) * 100).toFixed(0);
-  
-  const categories = {};
-  techTree.forEach(tech => {
-    if (!categories[tech.category]) {
-      categories[tech.category] = {
-        name: tech.category,
-        items: [],
-        unlocked: 0,
-        total: 0
-      };
-    }
-    categories[tech.category].items.push(tech);
-    categories[tech.category].total++;
-    if (tech.unlocked) {
-      categories[tech.category].unlocked++;
-    }
+  waitForProjectCards().then(() => {
+    console.log('Project cards detected, enhancing...');
+    enhanceProjectCards();
+    injectProjectSummaryCard();
   });
-  
-  const categoriesHtml = Object.values(categories).map(category => {
-    const categoryPercent = ((category.unlocked / category.total) * 100).toFixed(0);
-    const statusClass = category.unlocked === category.total ? 'bg-green-100 border-green-600' :
-                       category.unlocked > 0 ? 'bg-yellow-100 border-yellow-600' :
-                       'bg-gray-100 border-gray-400';
-    
-    return `
-      <div class="mb-4">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="font-bold text-lg text-castle-brown">${category.name}</h3>
-          <span class="text-sm font-semibold text-purple-primary">${category.unlocked}/${category.total}</span>
-        </div>
-        <div class="ms-progress-bar mb-3">
-          <div class="ms-progress-fill" style="width: ${categoryPercent}%"></div>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          ${category.items.map(tech => `
-            <div class="p-3 rounded-md border-2 ${tech.unlocked ? 'bg-green-50 border-green-500' : 'bg-gray-50 border-gray-300 opacity-60'}">
-              <div class="flex items-center justify-between mb-1">
-                <span class="font-semibold text-sm ${tech.unlocked ? 'text-green-700' : 'text-gray-600'}">${tech.name}</span>
-                ${tech.unlocked ? '<span class="text-green-600">✓</span>' : '<span class="text-gray-400">🔒</span>'}
-              </div>
-              ${tech.cost ? `<div class="text-xs text-gray-600">${tech.cost} coins</div>` : ''}
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }).join('');
-  
-  const widget = DOMInjector.createWidget(
-    'Tech Tree Overview',
-    `
-      <div class="space-y-4">
-        <div class="ms-stat-card bg-purple-50">
-          <div class="flex items-center justify-between">
-            <div>
-              <div class="ms-stat-label">Overall Progress</div>
-              <div class="ms-stat-value">${unlockedCount} / ${totalCount}</div>
-            </div>
-            <div class="text-right">
-              <div class="text-3xl font-bold text-purple-primary">${progressPercent}%</div>
-              <div class="text-xs text-gray-600">Complete</div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="ms-divider"></div>
-        
-        ${categoriesHtml}
-      </div>
-    `,
-    'ms-fade-in'
-  );
-  
-  const targetElement = document.querySelector('main') || document.querySelector('.container');
-  if (targetElement) {
-    DOMInjector.injectAtTop(targetElement, widget);
-  }
 }
 
-function extractTechTreeData() {
-  const techItems = [];
+function waitForProjectCards() {
+  return new Promise((resolve) => {
+    const checkCards = () => {
+      const projectCards = document.querySelectorAll('.project-card');
+      console.log('Checking for project cards...', projectCards.length);
+      
+      if (projectCards.length > 0) {
+        console.log('Found project cards:', projectCards.length);
+        resolve();
+      } else {
+        setTimeout(checkCards, 200);
+      }
+    };
+    checkCards();
+  });
+}
+
+function extractProjectHours(card) {
+  const timeElement = card.querySelector('.project-time');
+  if (timeElement) {
+    const text = timeElement.textContent;
+    const hourMatch = text.match(/(\d+)h\s*(\d+)m/);
+    if (hourMatch) {
+      const hours = parseInt(hourMatch[1]);
+      const minutes = parseInt(hourMatch[2]);
+      return hours + (minutes / 60);
+    }
+  }
   
-  const techElements = document.querySelectorAll('[data-tech], .tech-item, .upgrade-item');
+  const text = card.textContent || '';
+  const patterns = [
+    /Time spent:\s*(\d+)h\s*(\d+)m/i,
+    /(\d+)h\s*(\d+)m/,
+    /(\d+)h/i
+  ];
   
-  techElements.forEach(element => {
-    const nameEl = element.querySelector('.tech-name, .upgrade-name, h3, h4');
-    const costEl = element.querySelector('.cost, .price');
-    const isUnlocked = element.classList.contains('unlocked') || 
-                      element.classList.contains('purchased') ||
-                      element.querySelector('.unlocked, .purchased');
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match) {
+      if (match[2]) {
+        return parseInt(match[1]) + (parseInt(match[2]) / 60);
+      }
+      return parseInt(match[1]);
+    }
+  }
+  
+  return 0;
+}
+
+function predictCoins(hours) {
+  const REVIEWER_BONUS_MULTIPLIER = 2;
+  const STARS_MULTIPLIER = 3;
+  const TOTAL_MULTIPLIER = REVIEWER_BONUS_MULTIPLIER + STARS_MULTIPLIER;
+  
+  return hours * TOTAL_MULTIPLIER;
+}
+
+function enhanceProjectCards() {
+  const projectCards = document.querySelectorAll('.project-card');
+  console.log('Enhancing project cards:', projectCards.length);
+  
+  let enhancedCount = 0;
+  
+  projectCards.forEach(card => {
+    if (card.querySelector('.ms-coin-prediction')) {
+      return;
+    }
     
-    const categoryEl = element.closest('[data-category]') || 
-                      element.querySelector('[data-category]');
-    const category = categoryEl ? 
-                    (categoryEl.dataset.category || categoryEl.textContent.trim()) :
-                    'General';
+    const hours = extractProjectHours(card);
+    console.log('Extracted hours:', hours, 'from card');
     
-    if (nameEl) {
-      techItems.push({
-        name: nameEl.textContent.trim(),
-        cost: costEl ? parseInt(costEl.textContent.match(/\d+/)?.[0]) : null,
-        unlocked: isUnlocked,
-        category: category,
-        element: element
+    if (hours > 0) {
+      const predictedCoins = predictCoins(hours);
+      
+      const predictionBadge = document.createElement('div');
+      predictionBadge.className = 'ms-coin-prediction';
+      predictionBadge.style.cssText = `
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        border: 2px solid rgba(64, 43, 32, 0.75);
+        border-radius: 8px;
+        margin-top: 0.75rem;
+        font-family: 'IM Fell English', serif;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #3b2a1a;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      `;
+      
+      predictionBadge.innerHTML = `
+        <span style="font-family: 'Jaini', serif; font-size: 1.25rem;">${predictedCoins}</span>
+        <span>coins expected</span>
+      `;
+      
+      const projectFooter = card.querySelector('.project-footer');
+      if (projectFooter) {
+        projectFooter.parentNode.insertBefore(predictionBadge, projectFooter);
+      } else {
+        card.appendChild(predictionBadge);
+      }
+      
+      enhancedCount++;
+      
+      card.style.transition = 'transform 0.2s ease, box-shadow 0.2s ease';
+      card.addEventListener('mouseenter', () => {
+        card.style.transform = 'translateY(-2px)';
+        card.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'translateY(0)';
+        card.style.boxShadow = '';
       });
     }
   });
   
-  return techItems;
+  console.log('Enhanced', enhancedCount, 'project cards');
 }
 
-function injectUpgradeRecommendations() {
-  const userData = DOMExtractor.getUserData();
-  const techTree = extractTechTreeData();
+function injectProjectSummaryCard() {
+  const projectCards = document.querySelectorAll('.project-card');
   
-  if (!userData.coins || !techTree || techTree.length === 0) {
+  let totalProjects = 0;
+  let totalHours = 0;
+  let totalPredictedCoins = 0;
+  
+  projectCards.forEach(card => {
+    const hours = extractProjectHours(card);
+    if (hours > 0) {
+      totalProjects++;
+      totalHours += hours;
+      totalPredictedCoins += predictCoins(hours);
+    }
+  });
+  
+  console.log('Summary:', totalProjects, 'projects,', totalHours.toFixed(1), 'hours,', totalPredictedCoins, 'coins');
+  
+  if (totalProjects === 0) {
+    console.log('No projects found for summary');
     return;
   }
   
-  const availableUpgrades = techTree.filter(tech => 
-    !tech.unlocked && tech.cost && tech.cost <= userData.coins
-  ).sort((a, b) => a.cost - b.cost);
+  const avgHoursPerProject = (totalHours / totalProjects).toFixed(1);
+  const avgCoinsPerProject = Math.round(totalPredictedCoins / totalProjects);
   
-  const recommendedUpgrades = availableUpgrades.slice(0, 5);
+  const summaryCard = document.createElement('div');
+  summaryCard.className = 'home-card ms-summary-card';
+  summaryCard.style.cssText = 'margin-bottom: 1.5rem; max-width: 100%;';
   
-  const futureUpgrades = techTree.filter(tech => 
-    !tech.unlocked && tech.cost && tech.cost > userData.coins
-  ).sort((a, b) => a.cost - b.cost).slice(0, 3);
-  
-  if (recommendedUpgrades.length === 0 && futureUpgrades.length === 0) {
-    return;
-  }
-  
-  const widget = DOMInjector.createWidget(
-    'Upgrade Recommendations',
-    `
-      <div class="space-y-4">
-        ${recommendedUpgrades.length > 0 ? `
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="font-bold text-green-700">Available Now</h3>
-              <span class="ms-badge ms-badge-success">${recommendedUpgrades.length} Ready</span>
-            </div>
-            <div class="space-y-2">
-              ${recommendedUpgrades.map(tech => {
-                const coinsAfter = userData.coins - tech.cost;
-                const affordability = ((tech.cost / userData.coins) * 100).toFixed(0);
-                
-                return `
-                  <div class="p-3 bg-green-50 border-2 border-green-500 rounded-md hover:bg-green-100 transition-colors cursor-pointer">
-                    <div class="flex items-center justify-between">
-                      <div class="flex-1">
-                        <div class="font-semibold text-green-800">${tech.name}</div>
-                        <div class="text-xs text-green-600">${tech.category}</div>
-                      </div>
-                      <div class="text-right">
-                        <div class="font-bold text-green-700">${tech.cost} 🪙</div>
-                        <div class="text-xs text-gray-600">${coinsAfter} left</div>
-                      </div>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
+  summaryCard.innerHTML = `
+    <div class="home-card-body" style="padding: 1.5rem;">
+      <h3 style="font-family: 'Jaini', serif; font-size: 1.5rem; margin-bottom: 1rem; color: #3b2a1a; text-align: center;">
+        Project Summary
+      </h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem;">
+        <div style="text-align: center; padding: 0.75rem; background: rgba(139, 92, 246, 0.1); border: 2px solid rgba(139, 92, 246, 0.3); border-radius: 8px;">
+          <div style="font-size: 0.875rem; opacity: 0.7; font-family: 'IM Fell English', serif; margin-bottom: 0.25rem;">
+            Total Projects
           </div>
-        ` : ''}
+          <div style="font-size: 2rem; font-weight: 700; color: #6D28D9; font-family: 'Jaini', serif;">
+            ${totalProjects}
+          </div>
+        </div>
         
-        ${futureUpgrades.length > 0 ? `
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="font-bold text-blue-700">Coming Soon</h3>
-              <span class="ms-badge ms-badge-info">Save Up</span>
-            </div>
-            <div class="space-y-2">
-              ${futureUpgrades.map(tech => {
-                const coinsNeeded = tech.cost - userData.coins;
-                const progressPercent = ((userData.coins / tech.cost) * 100).toFixed(0);
-                
-                return `
-                  <div class="p-3 bg-blue-50 border-2 border-blue-400 rounded-md">
-                    <div class="flex items-center justify-between mb-2">
-                      <div class="flex-1">
-                        <div class="font-semibold text-blue-800">${tech.name}</div>
-                        <div class="text-xs text-blue-600">${tech.category}</div>
-                      </div>
-                      <div class="text-right">
-                        <div class="font-bold text-blue-700">${tech.cost} 🪙</div>
-                        <div class="text-xs text-red-600">Need ${coinsNeeded} more</div>
-                      </div>
-                    </div>
-                    <div class="w-full h-1.5 bg-blue-200 rounded-full">
-                      <div class="h-full bg-blue-500 rounded-full" style="width: ${progressPercent}%"></div>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
+        <div style="text-align: center; padding: 0.75rem; background: rgba(59, 130, 246, 0.1); border: 2px solid rgba(59, 130, 246, 0.3); border-radius: 8px;">
+          <div style="font-size: 0.875rem; opacity: 0.7; font-family: 'IM Fell English', serif; margin-bottom: 0.25rem;">
+            Total Hours
           </div>
-        ` : ''}
+          <div style="font-size: 2rem; font-weight: 700; color: #2563eb; font-family: 'Jaini', serif;">
+            ${totalHours.toFixed(1)}h
+          </div>
+        </div>
         
-        ${recommendedUpgrades.length === 0 && futureUpgrades.length === 0 ? `
-          <div class="text-center py-8 text-gray-600">
-            <div class="text-4xl mb-2">🎉</div>
-            <div class="font-semibold">All upgrades unlocked!</div>
-            <div class="text-sm">You are a true master of the Armory</div>
+        <div style="text-align: center; padding: 0.75rem; background: rgba(245, 158, 11, 0.1); border: 2px solid rgba(245, 158, 11, 0.3); border-radius: 8px;">
+          <div style="font-size: 0.875rem; opacity: 0.7; font-family: 'IM Fell English', serif; margin-bottom: 0.25rem;">
+            Expected Coins
           </div>
-        ` : ''}
+          <div style="font-size: 2rem; font-weight: 700; color: #d97706; font-family: 'Jaini', serif;">
+            ${totalPredictedCoins}
+          </div>
+        </div>
+        
+        <div style="text-align: center; padding: 0.75rem; background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 8px;">
+          <div style="font-size: 0.875rem; opacity: 0.7; font-family: 'IM Fell English', serif; margin-bottom: 0.25rem;">
+            Avg per Project
+          </div>
+          <div style="font-size: 1.25rem; font-weight: 700; color: #16a34a; font-family: 'Jaini', serif;">
+            ${avgHoursPerProject}h / ${avgCoinsPerProject}c
+          </div>
+        </div>
       </div>
-    `,
-    'ms-fade-in'
-  );
+      
+      <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(59, 42, 26, 0.05); border-radius: 8px; text-align: center;">
+        <div style="font-size: 0.875rem; font-family: 'IM Fell English', serif; color: #3b2a1a; line-height: 1.4;">
+          Prediction based on 6x multiplier (2x reviewer bonus + 3x stars avg)
+        </div>
+      </div>
+    </div>
+  `;
   
-  //well leavin a comment here to say hello, to anyone cheking this out
-  //hope you have a great day!
-
-  const techTreeWidget = document.querySelector('.ms-widget');
-  if (techTreeWidget) {
-    DOMInjector.injectAfter(techTreeWidget, widget);
+  const firstProjectCard = document.querySelector('.project-card');
+  if (firstProjectCard && firstProjectCard.parentNode) {
+    console.log('Inserting summary card before first project');
+    firstProjectCard.parentNode.insertBefore(summaryCard, firstProjectCard);
   }
 }

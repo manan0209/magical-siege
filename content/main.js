@@ -7,8 +7,8 @@ import { injectGlobalEnhancements } from './injectors/global.js';
 
 const PAGES = {
   KEEP: '/keep',
-  ARMORY: '/projects',
-  GREAT_HALL: '/great_hall',
+  ARMORY: '/armory',
+  GREAT_HALL: '/great-hall',
   MARKET: '/market',
   CASTLE: '/castle',
   CHAMBERS: '/chambers'
@@ -33,13 +33,17 @@ class MagicalSiege {
   }
 
   async init() {
+    console.log(`Magical Siege initializing on: ${window.location.pathname}`);
+    console.log(`Detected page: ${this.currentPage || 'Unknown'}`);
+
+    injectGlobalEnhancements();
+
     if (!this.currentPage) {
+      console.log('Page not recognized, but global features active');
       return;
     }
 
     console.log(`Magical Siege active on: ${this.currentPage}`);
-
-    injectGlobalEnhancements();
 
     switch (this.currentPage) {
       case 'KEEP':
