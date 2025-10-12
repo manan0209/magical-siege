@@ -33,29 +33,64 @@ function waitForProgressData() {
 
 function extractActualProgress() {
   const progressText = document.querySelector('.home-progress-top');
-  if (!progressText) return { hours: 0, percent: 0 };
+  if (!progressText) return { hours: 0, percent: 0, pillaging: false, pillageTime: '0h 0m' };
   
   const text = progressText.textContent;
   
+  
   if (text.includes("you've been pillaging")) {
-    const match = text.match(/(\d+)h\s*(\d+)m/);
-    if (match) {
-      return {
-        hours: parseInt(match[1]) + parseInt(match[2]) / 60,
-        percent: 100,
-        pillaging: true
-      };
+    const pillageMatch = text.match(/(\d+)h\s*(\d+)m/);
+    
+    let pillageTime = '0h 0m';
+    if (pillageMatch) {
+      pillageTime = `${pillageMatch[1]}h ${pillageMatch[2]}m`;
     }
+    
+    
+    const progressBar = document.querySelector('.home-progress-bar');
+    let totalHours = 10; 
+    
+    if (progressBar) {
+      const barWidth = progressBar.style.width;
+      if (barWidth) {
+        const percent = parseFloat(barWidth);
+        if (!isNaN(percent) && percent > 0) {
+          totalHours = (percent / 100) * 10;
+        }
+      }
+    }
+    
+    return {
+      hours: totalHours,
+      percent: (totalHours / 10) * 100,
+      pillaging: true,
+      pillageTime
+    };
   }
+  
   
   const percentMatch = text.match(/(\d+\.?\d*)%/);
   if (percentMatch) {
     const percent = parseFloat(percentMatch[1]);
     const hours = (percent / 100) * 10;
-    return { hours, percent, pillaging: false };
+    return { hours, percent, pillaging: false, pillageTime: null };
   }
   
-  return { hours: 0, percent: 0, pillaging: false };
+  return { hours: 0, percent: 0, pillaging: false, pillageTime: null };
+}
+
+function extractTodaysCoding() {
+  const todayText = document.querySelector('.home-progress-bottom');
+  if (!todayText) return 0;
+  
+  const text = todayText.textContent;
+  const match = text.match(/today you coded (\d+)h\s*(\d+)m/);
+  
+  if (match) {
+    return parseInt(match[1]) + parseInt(match[2]) / 60;
+  }
+  
+  return 0;
 }
 
 function injectEnhancedStats() {
@@ -63,42 +98,63 @@ function injectEnhancedStats() {
   if (!homeContainer) return;
   
   const progress = extractActualProgress();
-  const timeData = TimeUtils.getTimeRemaining();
+  const todayHours = extractTodaysCoding();
+  const dailyTargetHours = 2; 
   
   const statsCard = document.createElement('div');
   statsCard.className = 'home-card';
   statsCard.style.cssText = 'margin-top: 1rem;';
   
-  const hoursNeeded = Math.max(0, 10 - progress.hours);
-  const daysLeft = timeData.days + (timeData.hours / 24);
-  const dailyTarget = daysLeft > 0 ? hoursNeeded / daysLeft : hoursNeeded;
+  const hoursNeeded = 10 - progress.hours;
+  const isSuccessful = progress.hours >= 10;
   
-  statsCard.innerHTML = `
+  const dailyTargetColor = todayHours >= dailyTargetHours ? '#16a34a' : 
+                          todayHours >= dailyTargetHours * 0.5 ? '#f59e0b' : '#ef4444';
+  
+  
+  let statsHTML = `
     <div class="home-card-body">
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
         <div style="text-align: center;">
           <div style="font-size: 0.875rem; opacity: 0.7; font-family: 'IM Fell English', serif;">Hours Left</div>
-          <div style="font-size: 1.5rem; font-weight: 700; color: #3b2a1a; font-family: 'Jaini', serif;">
-            ${hoursNeeded.toFixed(1)}h
+          <div style="font-size: 1.5rem; font-weight: 700; color: ${isSuccessful ? '#16a34a' : '#3b2a1a'}; font-family: 'Jaini', serif;">
+            ${isSuccessful ? 'Successful' : hoursNeeded.toFixed(1) + 'h'}
           </div>
         </div>
         
         <div style="text-align: center;">
-          <div style="font-size: 0.875rem; opacity: 0.7; font-family: 'IM Fell English', serif;">Daily Target</div>
-          <div style="font-size: 1.5rem; font-weight: 700; color: ${dailyTarget > 5 ? '#ef4444' : '#3b2a1a'}; font-family: 'Jaini', serif;">
-            ${dailyTarget.toFixed(1)}h/day
+          <div style="font-size: 0.875rem; opacity: 0.7; font-family: 'IM Fell English', serif;">Daily Target (2h)</div>
+          <div style="font-size: 1.5rem; font-weight: 700; color: ${dailyTargetColor}; font-family: 'Jaini', serif;">
+            ${todayHours.toFixed(1)}h today
           </div>
-        </div>
-        
+        </div>`;
+  
+  
+  if (progress.pillaging && progress.pillageTime) {
+    statsHTML += `
+        <div style="text-align: center;">
+          <div style="font-size: 0.875rem; opacity: 0.7; font-family: 'IM Fell English', serif;">Pillage Time</div>
+          <div style="font-size: 1.5rem; font-weight: 700; color: #16a34a; font-family: 'Jaini', serif;">
+            ${progress.pillageTime}
+          </div>
+        </div>`;
+  } else {
+    const timeData = TimeUtils.getTimeRemaining();
+    statsHTML += `
         <div style="text-align: center;">
           <div style="font-size: 0.875rem; opacity: 0.7; font-family: 'IM Fell English', serif;">Time Left</div>
           <div style="font-size: 1.5rem; font-weight: 700; color: ${timeData.days < 2 ? '#ef4444' : '#8B5CF6'}; font-family: 'Jaini', serif;">
             ${timeData.days}d ${timeData.hours}h
           </div>
-        </div>
+        </div>`;
+  }
+  
+  statsHTML += `
       </div>
     </div>
   `;
+  
+  statsCard.innerHTML = statsHTML;
   
   const insertAfter = homeContainer.children[1] || homeContainer.children[0];
   if (insertAfter && insertAfter.nextSibling) {
