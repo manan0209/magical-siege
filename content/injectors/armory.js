@@ -71,7 +71,7 @@ function predictCoins(hours) {
     baseCoins = 5 + (extraHours * 2);
   }
   
-  return baseCoins * TOTAL_MULTIPLIER;
+  return Math.round(baseCoins * TOTAL_MULTIPLIER);
 }
 
 function enhanceProjectCards() {
