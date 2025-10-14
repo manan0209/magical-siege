@@ -62,7 +62,16 @@ function predictCoins(hours) {
   const STARS_MULTIPLIER = 3;
   const TOTAL_MULTIPLIER = REVIEWER_BONUS_MULTIPLIER + STARS_MULTIPLIER;
   
-  return hours * TOTAL_MULTIPLIER;
+  let baseCoins = 0;
+  
+  if (hours <= 10) {
+    baseCoins = 5;
+  } else {
+    const extraHours = hours - 10;
+    baseCoins = 5 + (extraHours * 2);
+  }
+  
+  return baseCoins * TOTAL_MULTIPLIER;
 }
 
 function enhanceProjectCards() {
