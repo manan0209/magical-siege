@@ -201,3 +201,191 @@ body.ms-theme-dark .home-row-sm,
 body.ms-theme-dark .home-checkrow {
   color: #f5f5f4 !important;
 }
+
+body.ms-theme-dark .home-info {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .home-button {
+  background: rgba(120, 84, 55, 0.3) !important;
+  border-color: rgba(120, 84, 55, 0.6) !important;
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .home-button:hover {
+  background: rgba(120, 84, 55, 0.5) !important;
+}
+
+body.ms-theme-dark .coin-icon {
+  filter: brightness(1.2);
+}
+
+body.ms-theme-dark .home-collapse {
+  background: transparent !important;
+}
+
+body.ms-theme-dark .home-list {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .home-row {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark label {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .home-checkrow-help {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .home-header {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .home-center {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .home-full {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .home-collapse-content {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .home-thisweek-title {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .project-header {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .project-title {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .project-description {
+  color: rgba(245, 245, 244, 0.85) !important;
+}
+
+body.ms-theme-dark .project-updated {
+  color: rgba(245, 245, 244, 0.7) !important;
+}
+
+body.ms-theme-dark .project-tags {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .ms-coin-prediction {
+  background: rgba(120, 84, 55, 0.3) !important;
+  border-color: rgba(120, 84, 55, 0.6) !important;
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .ms-stats-container {
+  background: rgba(40, 40, 40, 0.85) !important;
+  border-color: rgba(120, 84, 55, 0.6) !important;
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .ms-stat-card {
+  background: rgba(30, 30, 30, 0.6) !important;
+  border-color: rgba(120, 84, 55, 0.5) !important;
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .ms-stat-label {
+  color: rgba(245, 245, 244, 0.7) !important;
+}
+
+body.ms-theme-dark .ms-stat-value {
+  color: #D4A574 !important;
+}
+
+body.ms-theme-dark #ms-fab-menu {
+  background: rgba(40, 40, 40, 0.95) !important;
+  border-color: rgba(120, 84, 55, 0.6) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark #ms-fab-menu button {
+  background: transparent !important;
+  color: #f5f5f4 !important;
+  border-bottom-color: rgba(120, 84, 55, 0.3) !important;
+}
+
+body.ms-theme-dark #ms-fab-menu button:hover {
+  background: rgba(120, 84, 55, 0.2) !important;
+}
+
+body.ms-theme-dark .ms-theme-indicator {
+  background: rgba(120, 84, 55, 0.8) !important;
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .ms-countdown {
+  background: rgba(40, 40, 40, 0.85) !important;
+  border-color: rgba(120, 84, 55, 0.6) !important;
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .ms-countdown-value {
+  color: #D4A574 !important;
+}
+
+body.ms-theme-dark .ms-countdown-label {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark #ms-week-countdown {
+  background: rgba(40, 40, 40, 0.95) !important;
+  border-color: rgba(120, 84, 55, 0.6) !important;
+  color: #f5f5f4 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.ms-theme-dark #ms-week-countdown > div {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark #ms-countdown-time {
+  color: #D4A574 !important;
+}
+
+body.ms-theme-dark * {
+  scrollbar-color: rgba(120, 84, 55, 0.5) rgba(30, 30, 30, 0.3);
+}
+
+body.ms-theme-dark ::-webkit-scrollbar {
+  background: rgba(30, 30, 30, 0.3);
+}
+
+body.ms-theme-dark ::-webkit-scrollbar-thumb {
+  background: rgba(120, 84, 55, 0.5);
+  border-radius: 4px;
+}
+
+body.ms-theme-dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 84, 55, 0.7);
+}
+
+body.ms-theme-dark .home-leader-item .home-user {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .home-card * {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .project-card * {
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark .project-link * {
+  color: #f5f5f4 !important;
+}
