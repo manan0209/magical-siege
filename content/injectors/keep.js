@@ -1,6 +1,9 @@
 import { DOMExtractor } from '../utils/dom-extractor.js';
 import { TimeUtils } from '../utils/time.js';
 import { syncUserData, getLeaderboard, getUserRank } from '../utils/leaderboard.js';
+import { SIGNAL_TYPES, sendSignal, canSendMoreSignals, getDailySentCount } from '../utils/signals.js';
+
+let currentUsername = 'Anonymous';
 
 export function injectKeepEnhancements() {
   console.log('Keep page enhancements loading...');
@@ -11,11 +14,28 @@ export function injectKeepEnhancements() {
     return;
   }
   
+  setupUsernameMessageHandler();
+  
   waitForProgressData().then(() => {
     injectEnhancedStats();
     injectWeeklyInsights();
     injectQuickActions();
     injectGlobalRank();
+  });
+}
+
+function setupUsernameMessageHandler() {
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.type === 'GET_USERNAME') {
+      sendResponse({ username: currentUsername });
+    }
+    if (request.type === 'CLEAR_LEADERBOARD_CACHE') {
+      localStorage.removeItem('ms_global_leaderboard');
+      localStorage.removeItem('ms_global_leaderboard_timestamp');
+      console.log('✅ Leaderboard cache cleared');
+      sendResponse({ success: true });
+    }
+    return true;
   });
 }
 
@@ -257,6 +277,8 @@ async function injectGlobalRank() {
     }
   }
   
+  currentUsername = username;
+  
   const coinsMatch = coffersTitle.textContent.match(/(\d+)/);
   const coins = coinsMatch ? parseInt(coinsMatch[1]) : 0;
   
@@ -296,6 +318,9 @@ async function injectGlobalRank() {
           <span style="font-weight: 600;">Rank #${rank}</span>
           <span style="opacity: 0.7; margin-left: 0.5rem;">of ${totalUsers}</span>
         `;
+        
+        rankBadge.style.cursor = 'pointer';
+        rankBadge.addEventListener('click', () => showLeaderboardModal(leaderboard, username));
       } else {
         rankBadge.innerHTML = `<span style="opacity: 0.7;">Rank unavailable</span>`;
       }
@@ -305,4 +330,344 @@ async function injectGlobalRank() {
   } catch (error) {
     rankBadge.innerHTML = `<span style="opacity: 0.7;">Sync error</span>`;
   }
+}
+
+function showLeaderboardModal(leaderboard, currentUser) {
+  const existing = document.getElementById('ms-leaderboard-modal');
+  if (existing) {
+    existing.remove();
+  }
+  
+  const modal = document.createElement('div');
+  modal.id = 'ms-leaderboard-modal';
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(4px);
+  `;
+  
+  const content = document.createElement('div');
+  content.style.cssText = `
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    font-family: 'IM Fell English', serif;
+  `;
+  
+  const header = document.createElement('div');
+  header.style.cssText = `
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  `;
+  
+  const titleSection = document.createElement('div');
+  titleSection.style.cssText = `
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  `;
+  
+  const title = document.createElement('h2');
+  title.textContent = '🪙 Coffers Leaderboard';
+  title.style.cssText = `
+    margin: 0;
+    font-family: 'Jaini', serif;
+    font-size: 1.75rem;
+    color: #3b2a1a;
+  `;
+  
+  const refreshBtn = document.createElement('button');
+  refreshBtn.innerHTML = `
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="23 4 23 10 17 10"></polyline>
+      <polyline points="1 20 1 14 7 14"></polyline>
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+    </svg>
+  `;
+  refreshBtn.title = 'Refresh leaderboard';
+  refreshBtn.style.cssText = `
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(109, 40, 217, 0.1));
+    border: 2px solid rgba(139, 92, 246, 0.3);
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6D28D9;
+    padding: 0;
+  `;
+  
+  refreshBtn.addEventListener('mouseenter', () => {
+    refreshBtn.style.background = 'rgba(139, 92, 246, 0.2)';
+    refreshBtn.querySelector('svg').style.transform = 'rotate(180deg)';
+  });
+  
+  refreshBtn.addEventListener('mouseleave', () => {
+    refreshBtn.style.background = 'linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(109, 40, 217, 0.1))';
+    refreshBtn.querySelector('svg').style.transform = 'rotate(0deg)';
+  });
+  
+  const svgElement = refreshBtn.querySelector('svg');
+  svgElement.style.transition = 'transform 0.3s ease';
+  
+  refreshBtn.addEventListener('click', async () => {
+    refreshBtn.disabled = true;
+    refreshBtn.style.opacity = '0.5';
+    
+    const svg = refreshBtn.querySelector('svg');
+    svg.style.animation = 'spin 1s linear infinite';
+    
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    localStorage.removeItem('ms_global_leaderboard');
+    localStorage.removeItem('ms_global_leaderboard_timestamp');
+    
+    const freshLeaderboard = await getLeaderboard();
+    modal.remove();
+    showLeaderboardModal(freshLeaderboard, currentUser);
+    
+    showToast('Leaderboard refreshed!', 'success');
+  });
+  
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = '×';
+  closeBtn.style.cssText = `
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #666;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+  `;
+  closeBtn.addEventListener('click', () => modal.remove());
+  closeBtn.addEventListener('mouseenter', () => closeBtn.style.background = '#f3f4f6');
+  closeBtn.addEventListener('mouseleave', () => closeBtn.style.background = 'none');
+  
+  titleSection.appendChild(title);
+  titleSection.appendChild(refreshBtn);
+  header.appendChild(titleSection);
+  header.appendChild(closeBtn);
+  
+  const signalInfo = document.createElement('div');
+  const sentCount = getDailySentCount();
+  const remaining = 5 - sentCount;
+  signalInfo.style.cssText = `
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(109, 40, 217, 0.1));
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    color: #6D28D9;
+  `;
+  signalInfo.innerHTML = `
+    <strong>Signals remaining today:</strong> ${remaining}/5
+    <br>
+    <span style="opacity: 0.8; font-size: 0.8rem;">Send signals to motivate fellow siegers!</span>
+  `;
+  
+  const list = document.createElement('div');
+  list.style.cssText = `
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  `;
+  
+  leaderboard.forEach((user, index) => {
+    const row = createLeaderboardRow(user, index + 1, currentUser);
+    list.appendChild(row);
+  });
+  
+  content.appendChild(header);
+  content.appendChild(signalInfo);
+  content.appendChild(list);
+  modal.appendChild(content);
+  document.body.appendChild(modal);
+  
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  });
+}
+
+function createLeaderboardRow(user, rank, currentUser) {
+  const row = document.createElement('div');
+  row.style.cssText = `
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: ${user.username === currentUser ? 'rgba(139, 92, 246, 0.1)' : '#f9fafb'};
+    border: 2px solid ${user.username === currentUser ? 'rgba(139, 92, 246, 0.4)' : 'rgba(64,43,32,0.1)'};
+    border-radius: 8px;
+    transition: all 0.2s;
+  `;
+  
+  const rankBadge = document.createElement('span');
+  rankBadge.textContent = `#${rank}`;
+  rankBadge.style.cssText = `
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: ${rank <= 3 ? '#d97706' : '#6b7280'};
+    min-width: 3rem;
+  `;
+  
+  const userInfo = document.createElement('div');
+  userInfo.style.cssText = `
+    flex: 1;
+    margin: 0 1rem;
+  `;
+  
+  const username = document.createElement('div');
+  const displayName = user.username + (user.username === currentUser ? ' (You)' : '');
+  username.textContent = displayName;
+  
+  username.style.cssText = `
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 1rem;
+  `;
+  
+  const stats = document.createElement('div');
+  stats.style.cssText = `
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+  `;
+  stats.innerHTML = `🪙 ${user.coins} coins`;
+  
+  userInfo.appendChild(username);
+  userInfo.appendChild(stats);
+  
+  const actions = document.createElement('div');
+  actions.style.cssText = `
+    display: flex;
+    gap: 0.5rem;
+  `;
+  
+  if (user.username !== currentUser) {
+    Object.values(SIGNAL_TYPES).forEach(signalType => {
+      const btn = document.createElement('button');
+      btn.innerHTML = signalType.icon;
+      btn.title = signalType.description;
+      btn.style.cssText = `
+        width: 36px;
+        height: 36px;
+        border: 2px solid rgba(139, 92, 246, 0.3);
+        background: white;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(139, 92, 246, 0.8);
+      `;
+      
+      btn.addEventListener('mouseenter', () => {
+        btn.style.background = 'rgba(139, 92, 246, 0.1)';
+        btn.style.borderColor = 'rgba(139, 92, 246, 0.6)';
+        btn.style.transform = 'scale(1.1)';
+        btn.style.color = 'rgba(139, 92, 246, 1)';
+      });
+      
+      btn.addEventListener('mouseleave', () => {
+        btn.style.background = 'white';
+        btn.style.borderColor = 'rgba(139, 92, 246, 0.3)';
+        btn.style.transform = 'scale(1)';
+        btn.style.color = 'rgba(139, 92, 246, 0.8)';
+      });
+      
+      btn.addEventListener('click', async () => {
+        if (!canSendMoreSignals()) {
+          showToast('Daily signal limit reached (5/day)', 'error');
+          return;
+        }
+        
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        
+        try {
+          await sendSignal(currentUser, user.username, signalType.id);
+          showToast(`${signalType.label} sent to ${user.username}!`, 'success');
+          
+          const modal = document.getElementById('ms-leaderboard-modal');
+          if (modal) {
+            const leaderboard = await getLeaderboard();
+            modal.remove();
+            showLeaderboardModal(leaderboard, currentUser);
+          }
+        } catch (error) {
+          showToast(error.message, 'error');
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        }
+      });
+      
+      actions.appendChild(btn);
+    });
+  }
+  
+  row.appendChild(rankBadge);
+  row.appendChild(userInfo);
+  row.appendChild(actions);
+  
+  return row;
+}
+
+function showToast(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    padding: 1rem 1.5rem;
+    background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#6366f1'};
+    color: white;
+    border-radius: 8px;
+    font-family: 'IM Fell English', serif;
+    font-size: 0.95rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    z-index: 10001;
+    animation: slideIn 0.3s ease;
+  `;
+  toast.textContent = message;
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
 }

@@ -43,10 +43,21 @@
         <span class="button-icon">🏰</span>
         <span>Open Siege</span>
       </button>
-      <button id="open-leaderboard" class="action-button action-secondary">
-        <span class="button-icon">🏆</span>
-        <span>Global Rank</span>
+      <button id="open-signals" class="action-button action-secondary">
+        <span class="button-icon">📡</span>
+        <span>Signals</span>
+        <span id="signal-badge" class="signal-badge" style="display: none;">0</span>
       </button>
+    </div>
+
+    <div id="signals-panel" class="signals-panel" style="display: none;">
+      <div class="signals-header">
+        <button id="close-signals" class="close-button">←</button>
+        <h3>📡 Siege Signals</h3>
+      </div>
+      <div id="signals-list" class="signals-list">
+        <div class="signals-loading">Loading signals...</div>
+      </div>
     </div>
 
     <div class="popup-footer">

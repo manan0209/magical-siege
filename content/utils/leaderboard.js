@@ -4,32 +4,11 @@ const DATA_EXPIRY = 7 * 24 * 60 * 60 * 1000;
 
 async function syncUserData(username, coins, hours) {
   try {
-    const localData = getLocalLeaderboard();
+    await syncToCloud({ username, coins, hours, lastUpdated: Date.now() });
     
-    const userData = {
-      username,
-      coins,
-      hours,
-      lastUpdated: Date.now()
-    };
+    const freshLeaderboard = await getLeaderboard();
     
-    const existingIndex = localData.findIndex(u => u.username === username);
-    
-    if (existingIndex >= 0) {
-      localData[existingIndex] = userData;
-    } else {
-      localData.push(userData);
-    }
-    
-    const cleanedData = localData
-      .filter(u => Date.now() - u.lastUpdated < DATA_EXPIRY)
-      .sort((a, b) => b.coins - a.coins);
-    
-    saveLocalLeaderboard(cleanedData);
-    
-    await syncToCloud(userData);
-    
-    return cleanedData;
+    return freshLeaderboard;
   } catch (error) {
     console.error('Sync failed:', error);
     return getLocalLeaderboard();
@@ -100,7 +79,7 @@ async function getLeaderboard() {
       console.warn('Cloud fetch skipped (network issue):', error.message);
     }
   }
-  
+
   return localData
     .filter(u => Date.now() - u.lastUpdated < DATA_EXPIRY)
     .sort((a, b) => b.coins - a.coins);
