@@ -239,25 +239,21 @@ async function injectGlobalRank() {
   const coffersTitle = document.querySelector('.home-section-title');
   if (!coffersTitle || !coffersTitle.textContent.includes('Your coffers')) return;
   
-  const leaderboardItems = document.querySelectorAll('.home-leader-item');
   let username = 'Anonymous';
   
-  leaderboardItems.forEach(item => {
-    const userDiv = item.querySelector('.home-user');
-    const rankSpan = item.querySelector('.home-rank');
-    if (userDiv && rankSpan) {
-      const possibleUsername = userDiv.textContent.trim();
-      if (possibleUsername && possibleUsername !== username) {
-        username = possibleUsername;
-      }
-    }
-  });
+  const usernameElement = document.querySelector('.user-name');
+  if (usernameElement) {
+    username = usernameElement.textContent.trim();
+  }
   
-  if (leaderboardItems.length > 0 && username === 'Anonymous') {
-    const firstUser = leaderboardItems[0].querySelector('.home-user');
-    if (firstUser) {
-      const parts = firstUser.textContent.trim().split('\n');
-      username = parts.length > 1 ? parts[1].trim() : parts[0].trim();
+  if (username === 'Anonymous' || username === 'Unnamed Knight') {
+    const profileLink = document.querySelector('a[href^="/profile/"]');
+    if (profileLink) {
+      const href = profileLink.getAttribute('href');
+      const usernameMatch = href.match(/\/profile\/([^\/]+)/);
+      if (usernameMatch && usernameMatch[1]) {
+        username = decodeURIComponent(usernameMatch[1]);
+      }
     }
   }
   

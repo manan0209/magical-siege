@@ -56,7 +56,7 @@ function saveLocalLeaderboard(data) {
 
 async function syncToCloud(userData) {
   try {
-    const WEBHOOK_URL = 'https://magical-siege-sync.free.beeceptor.com/sync';
+    const WEBHOOK_URL = 'https://magical-siege-backend.siegelb.workers.dev/sync';
     
     await fetch(WEBHOOK_URL, {
       method: 'POST',
@@ -78,7 +78,7 @@ async function getLeaderboard() {
   
   if (shouldSync) {
     try {
-      const WEBHOOK_URL = 'https://magical-siege-sync.free.beeceptor.com/leaderboard';
+      const WEBHOOK_URL = 'https://magical-siege-backend.siegelb.workers.dev/leaderboard';
       const response = await fetch(WEBHOOK_URL);
       
       if (response.ok) {
