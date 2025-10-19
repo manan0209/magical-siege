@@ -1,5 +1,6 @@
 import { DOMExtractor } from '../utils/dom-extractor.js';
 import { TimeUtils } from '../utils/time.js';
+import { syncUserData, getLeaderboard, getUserRank } from '../utils/leaderboard.js';
 
 export function injectKeepEnhancements() {
   console.log('Keep page enhancements loading...');
@@ -14,6 +15,7 @@ export function injectKeepEnhancements() {
     injectEnhancedStats();
     injectWeeklyInsights();
     injectQuickActions();
+    injectGlobalRank();
   });
 }
 
@@ -231,4 +233,80 @@ function injectQuickActions() {
   `;
   
   homeContainer.appendChild(actionsCard);
+}
+
+async function injectGlobalRank() {
+  const coffersTitle = document.querySelector('.home-section-title');
+  if (!coffersTitle || !coffersTitle.textContent.includes('Your coffers')) return;
+  
+  const leaderboardItems = document.querySelectorAll('.home-leader-item');
+  let username = 'Anonymous';
+  
+  leaderboardItems.forEach(item => {
+    const userDiv = item.querySelector('.home-user');
+    const rankSpan = item.querySelector('.home-rank');
+    if (userDiv && rankSpan) {
+      const possibleUsername = userDiv.textContent.trim();
+      if (possibleUsername && possibleUsername !== username) {
+        username = possibleUsername;
+      }
+    }
+  });
+  
+  if (leaderboardItems.length > 0 && username === 'Anonymous') {
+    const firstUser = leaderboardItems[0].querySelector('.home-user');
+    if (firstUser) {
+      const parts = firstUser.textContent.trim().split('\n');
+      username = parts.length > 1 ? parts[1].trim() : parts[0].trim();
+    }
+  }
+  
+  const coinsMatch = coffersTitle.textContent.match(/(\d+)/);
+  const coins = coinsMatch ? parseInt(coinsMatch[1]) : 0;
+  
+  const progressText = document.querySelector('.home-progress-top');
+  let hours = 0;
+  if (progressText) {
+    const hoursMatch = progressText.textContent.match(/(\d+)h/);
+    hours = hoursMatch ? parseInt(hoursMatch[1]) : 0;
+  }
+  
+  const rankBadge = document.createElement('div');
+  rankBadge.id = 'ms-global-rank';
+  rankBadge.style.cssText = `
+    display: inline-block;
+    margin-left: 1rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(109, 40, 217, 0.2));
+    border: 2px solid rgba(139, 92, 246, 0.4);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-family: 'IM Fell English', serif;
+    vertical-align: middle;
+  `;
+  rankBadge.innerHTML = `<span style="opacity: 0.7;">Syncing...</span>`;
+  
+  coffersTitle.appendChild(rankBadge);
+  
+  try {
+    const leaderboard = await syncUserData(username, coins, hours);
+    
+    if (leaderboard) {
+      const rank = getUserRank(username, leaderboard);
+      const totalUsers = leaderboard.length;
+      
+      if (rank) {
+        rankBadge.innerHTML = `
+          <span style="font-weight: 600;">Rank #${rank}</span>
+          <span style="opacity: 0.7; margin-left: 0.5rem;">of ${totalUsers}</span>
+        `;
+      } else {
+        rankBadge.innerHTML = `<span style="opacity: 0.7;">Rank unavailable</span>`;
+      }
+    } else {
+      rankBadge.innerHTML = `<span style="opacity: 0.7;">Sync failed</span>`;
+    }
+  } catch (error) {
+    rankBadge.innerHTML = `<span style="opacity: 0.7;">Sync error</span>`;
+  }
 }

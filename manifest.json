@@ -15,7 +15,8 @@
   ],
   "host_permissions": [
     "https://siege.hackclub.com/*",
-    "https://waka.hackclub.com/*"
+    "https://waka.hackclub.com/*",
+    "https://*.beeceptor.com/*"
   ],
   "background": {
     "service_worker": "background.js",

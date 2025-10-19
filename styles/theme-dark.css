@@ -389,3 +389,13 @@ body.ms-theme-dark .project-card * {
 body.ms-theme-dark .project-link * {
   color: #f5f5f4 !important;
 }
+
+body.ms-theme-dark #ms-global-rank {
+  background: linear-gradient(135deg, rgba(120, 84, 55, 0.3), rgba(120, 84, 55, 0.2)) !important;
+  border-color: rgba(120, 84, 55, 0.6) !important;
+  color: #f5f5f4 !important;
+}
+
+body.ms-theme-dark #ms-global-rank span {
+  color: #f5f5f4 !important;
+}

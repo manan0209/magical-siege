@@ -290,3 +290,14 @@ body.ms-theme-magical textarea::placeholder {
   color: rgba(30, 41, 59, 0.5) !important;
 }
 
+body.ms-theme-magical #ms-global-rank {
+  background: linear-gradient(135deg, rgba(252, 211, 77, 0.3), rgba(245, 158, 11, 0.2)) !important;
+  border-color: #FCD34D !important;
+  color: #1e293b !important;
+  box-shadow: 0 2px 8px rgba(252, 211, 77, 0.3) !important;
+}
+
+body.ms-theme-magical #ms-global-rank span {
+  color: #1e293b !important;
+}
+
