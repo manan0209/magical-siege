@@ -1,51 +1,34 @@
 const DEFAULTS = {
-  theme: 'default',
-  notificationsEnabled: true,
-  deadlineReminders: true,
-  progressUpdates: true,
-  votingAlerts: true,
-  showTopBar: true,
-  keyboardShortcuts: true,
-  autoSync: true,
-  syncInterval: 5
+  theme: 'default'
 };
 
 async function loadSettings() {
   const result = await chrome.storage.local.get('settings');
   const settings = { ...DEFAULTS, ...(result.settings || {}) };
   
-  document.getElementById('theme-select').value = settings.theme || 'default';
-  document.getElementById('show-topbar').checked = settings.showTopBar !== false;
-  document.getElementById('notifications-enabled').checked = settings.notificationsEnabled !== false;
-  document.getElementById('deadline-reminders').checked = settings.deadlineReminders !== false;
-  document.getElementById('voting-alerts').checked = settings.votingAlerts !== false;
-  document.getElementById('progress-updates').checked = settings.progressUpdates !== false;
-  document.getElementById('keyboard-shortcuts').checked = settings.keyboardShortcuts !== false;
-  document.getElementById('auto-sync').checked = settings.autoSync !== false;
-  document.getElementById('sync-interval').value = settings.syncInterval || 5;
+  const currentTheme = settings.theme || 'default';
+  document.querySelectorAll('.theme-card').forEach(card => {
+    if (card.dataset.theme === currentTheme) {
+      card.classList.add('active');
+    }
+  });
 }
 
-async function saveSettings() {
-  const settings = {
-    theme: document.getElementById('theme-select').value,
-    showTopBar: document.getElementById('show-topbar').checked,
-    notificationsEnabled: document.getElementById('notifications-enabled').checked,
-    deadlineReminders: document.getElementById('deadline-reminders').checked,
-    votingAlerts: document.getElementById('voting-alerts').checked,
-    progressUpdates: document.getElementById('progress-updates').checked,
-    keyboardShortcuts: document.getElementById('keyboard-shortcuts').checked,
-    autoSync: document.getElementById('auto-sync').checked,
-    syncInterval: parseInt(document.getElementById('sync-interval').value)
-  };
-  
+async function saveTheme(theme) {
+  const settings = { theme };
   await chrome.storage.local.set({ settings });
   
-  showSaveStatus('Settings saved');
+  showSaveStatus(`${theme.charAt(0).toUpperCase() + theme.slice(1)} theme activated`);
   
   const tabs = await chrome.tabs.query({ url: 'https://siege.hackclub.com/*' });
   for (const tab of tabs) {
     chrome.tabs.sendMessage(tab.id, { type: 'SETTINGS_UPDATED', settings }).catch(() => {});
   }
+  
+  document.querySelectorAll('.theme-card').forEach(card => {
+    card.classList.remove('active');
+  });
+  document.querySelector(`[data-theme="${theme}"]`).classList.add('active');
 }
 
 function showSaveStatus(message) {
@@ -58,28 +41,26 @@ function showSaveStatus(message) {
   }, 2000);
 }
 
-async function resetSettings() {
-  if (confirm('Are you sure you want to reset all settings to default?')) {
-    await chrome.storage.local.set({ settings: DEFAULTS });
-    await loadSettings();
-    showSaveStatus('Settings reset to default');
-  }
-}
-
 function openSiege() {
   chrome.tabs.create({ url: 'https://siege.hackclub.com/' });
+}
+
+function openLeaderboard() {
+  chrome.tabs.create({ url: 'https://siege.hackclub.com/keep' });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
   await loadSettings();
   
-  const inputs = document.querySelectorAll('input, select');
-  inputs.forEach(input => {
-    input.addEventListener('change', saveSettings);
+  document.querySelectorAll('.theme-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const theme = card.dataset.theme;
+      saveTheme(theme);
+    });
   });
   
-  document.getElementById('reset-settings').addEventListener('click', resetSettings);
   document.getElementById('open-siege').addEventListener('click', openSiege);
+  document.getElementById('open-leaderboard').addEventListener('click', openLeaderboard);
 });
 
 console.log('Magical Siege popup loaded');

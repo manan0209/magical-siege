@@ -3,98 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Magical Siege Settings</title>
+  <title>Magical Siege</title>
   <link rel="stylesheet" href="popup.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Jaini&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="popup-container">
     <div class="popup-header">
+      <div class="sparkle sparkle-1"></div>
+      <div class="sparkle sparkle-2"></div>
+      <div class="sparkle sparkle-3"></div>
       <h1 class="popup-title">Magical Siege</h1>
-      <p class="popup-subtitle">Enhance your Siege experience</p>
+      <p class="popup-subtitle">Make your Siege experience magical</p>
     </div>
 
-    <div class="settings-section">
-      <h2 class="section-title">Appearance</h2>
-      <div class="setting-item">
-        <label for="theme-select" class="setting-label">Theme</label>
-        <select id="theme-select" class="setting-select">
-          <option value="default">Default</option>
-          <option value="dark">Dark Mode</option>
-          <option value="light">Light Mode</option>
-        </select>
-      </div>
-      <div class="setting-item">
-        <label class="setting-label">
-          <input type="checkbox" id="show-topbar" class="setting-checkbox">
-          <span>Show Top Navigation Bar</span>
-        </label>
-      </div>
-    </div>
-
-    <div class="settings-section">
-      <h2 class="section-title">Notifications</h2>
-      <div class="setting-item">
-        <label class="setting-label">
-          <input type="checkbox" id="notifications-enabled" class="setting-checkbox">
-          <span>Enable Notifications</span>
-        </label>
-      </div>
-      <div class="setting-item">
-        <label class="setting-label">
-          <input type="checkbox" id="deadline-reminders" class="setting-checkbox">
-          <span>Deadline Reminders</span>
-        </label>
-      </div>
-      <div class="setting-item">
-        <label class="setting-label">
-          <input type="checkbox" id="voting-alerts" class="setting-checkbox">
-          <span>Voting Period Alerts</span>
-        </label>
-      </div>
-      <div class="setting-item">
-        <label class="setting-label">
-          <input type="checkbox" id="progress-updates" class="setting-checkbox">
-          <span>Progress Updates</span>
-        </label>
+    <div class="theme-selector">
+      <div class="theme-title">Choose Your Theme</div>
+      <div class="theme-grid">
+        <button class="theme-card" data-theme="default">
+          <div class="theme-preview theme-preview-default"></div>
+          <div class="theme-name">Default</div>
+        </button>
+        <button class="theme-card" data-theme="magical">
+          <div class="theme-preview theme-preview-magical"></div>
+          <div class="theme-name">Magical</div>
+          <div class="theme-badge">Orange Meeple</div>
+        </button>
+        <button class="theme-card" data-theme="dark">
+          <div class="theme-preview theme-preview-dark"></div>
+          <div class="theme-name">Dark Mode</div>
+        </button>
       </div>
     </div>
 
-    <div class="settings-section">
-      <h2 class="section-title">Features</h2>
-      <div class="setting-item">
-        <label class="setting-label">
-          <input type="checkbox" id="keyboard-shortcuts" class="setting-checkbox">
-          <span>Keyboard Shortcuts</span>
-        </label>
-      </div>
-      <div class="setting-item">
-        <label class="setting-label">
-          <input type="checkbox" id="auto-sync" class="setting-checkbox">
-          <span>Auto Sync Data</span>
-        </label>
-      </div>
-      <div class="setting-item">
-        <label for="sync-interval" class="setting-label">Sync Interval (minutes)</label>
-        <input type="number" id="sync-interval" class="setting-input" min="1" max="60" value="5">
-      </div>
-    </div>
-
-    <div class="settings-section">
-      <h2 class="section-title">About</h2>
-      <div class="about-content">
-        <p class="about-text">
-          <strong>Version:</strong> 1.0.0<br>
-          <strong>Created for:</strong> Hack Club Siege<br>
-          <strong>Week 6 Project</strong>
-        </p>
-        <div class="button-group">
-          <button id="reset-settings" class="button button-secondary">Reset Settings</button>
-          <button id="open-siege" class="button button-primary">Open Siege</button>
-        </div>
-      </div>
+    <div class="quick-actions">
+      <button id="open-siege" class="action-button action-primary">
+        <span class="button-icon">🏰</span>
+        <span>Open Siege</span>
+      </button>
+      <button id="open-leaderboard" class="action-button action-secondary">
+        <span class="button-icon">🏆</span>
+        <span>Global Rank</span>
+      </button>
     </div>
 
     <div class="popup-footer">
+      <div class="version-info">v1.0.1</div>
       <div id="save-status" class="save-status"></div>
     </div>
   </div>

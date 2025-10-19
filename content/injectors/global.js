@@ -10,6 +10,19 @@ export function injectGlobalEnhancements() {
   injectThemeIndicator();
   injectWeekCountdown();
   setupKeyboardShortcuts();
+  setupMessageListener();
+}
+
+function setupMessageListener() {
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'SETTINGS_UPDATED' && message.settings) {
+      if (message.settings.theme) {
+        Theme.setTheme(message.settings.theme).then(() => {
+          updateThemeIndicator();
+        });
+      }
+    }
+  });
 }
 
 async function initializeTheme() {

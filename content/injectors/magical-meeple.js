@@ -1,4 +1,7 @@
 export function injectMagicalMeeple() {
+
+    //lol olive haha, its free nowwww :hehe: pls dont kill me for this :hehe:
+
   checkThemeAndActivate();
   
   const observer = new MutationObserver((mutations) => {
@@ -143,7 +146,7 @@ function startMeepleReplacer() {
       
       avatar.style.position = 'relative';
       avatar.appendChild(badge);
-    });
+    });ufweoihjq
   }
   
   replaceMeepleImages();
@@ -164,6 +167,3 @@ function startMeepleReplacer() {
   
   setInterval(replaceMeepleImages, 3000);
 }
-
-
-
