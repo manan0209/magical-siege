@@ -58,15 +58,20 @@ async function syncToCloud(userData) {
   try {
     const WEBHOOK_URL = 'https://magical-siege-backend.siegelb.workers.dev/sync';
     
-    await fetch(WEBHOOK_URL, {
+    const response = await fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(userData)
+      body: JSON.stringify(userData),
+      mode: 'cors'
     });
+    
+    if (!response.ok) {
+      console.warn('Cloud sync response not OK:', response.status);
+    }
   } catch (error) {
-    console.error('Cloud sync failed:', error);
+    console.warn('Cloud sync skipped (network issue):', error.message);
   }
 }
 
@@ -79,7 +84,9 @@ async function getLeaderboard() {
   if (shouldSync) {
     try {
       const WEBHOOK_URL = 'https://magical-siege-backend.siegelb.workers.dev/leaderboard';
-      const response = await fetch(WEBHOOK_URL);
+      const response = await fetch(WEBHOOK_URL, {
+        mode: 'cors'
+      });
       
       if (response.ok) {
         const cloudData = await response.json();
@@ -90,7 +97,7 @@ async function getLeaderboard() {
         }
       }
     } catch (error) {
-      console.error('Failed to fetch from cloud:', error);
+      console.warn('Cloud fetch skipped (network issue):', error.message);
     }
   }
   

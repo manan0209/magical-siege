@@ -34,49 +34,26 @@ function checkThemeAndActivate() {
 }
 
 function activateMagicalMeeple() {
-  injectPageScript();
   startMeepleReplacer();
-}
-
-function injectPageScript() {
-  const script = document.createElement('script');
-  script.textContent = `
-    (function() {
-      const orangeMeepleUrl = '${chrome.runtime.getURL('assets/meeple-orange.png')}';
-      console.log('Magical Meeple: Injected page script with URL:', orangeMeepleUrl);
-      
-      function interceptMeepleDisplay() {
-        if (!window.MeepleDisplay) return false;
-        
-        const OriginalMeepleDisplay = window.MeepleDisplay;
-        window.MeepleDisplay = class extends OriginalMeepleDisplay {
-          constructor(userData, width, height) {
-            console.log('Magical Meeple: Intercepting MeepleDisplay', userData);
-            if (userData && userData.meeple) {
-              userData.meeple.imageSrc = orangeMeepleUrl;
-              userData.meeple.color = 'orange';
-            }
-            super(userData, width, height);
-          }
-        };
-        return true;
-      }
-      
-      if (!interceptMeepleDisplay()) {
-        const checkInterval = setInterval(() => {
-          if (interceptMeepleDisplay()) {
-            clearInterval(checkInterval);
-          }
-        }, 50);
-      }
-    })();
-  `;
-  (document.head || document.documentElement).appendChild(script);
-  script.remove();
 }
 
 function startMeepleReplacer() {
   const orangeMeepleUrl = chrome.runtime.getURL('assets/meeple-orange.png');
+  
+  window.addEventListener('load', () => {
+    if (window.MeepleDisplay) {
+      const OriginalMeepleDisplay = window.MeepleDisplay;
+      window.MeepleDisplay = function(userData, width, height) {
+        if (userData && userData.meeple) {
+          userData.meeple.imageSrc = orangeMeepleUrl;
+          userData.meeple.color = 'orange';
+        }
+        return new OriginalMeepleDisplay(userData, width, height);
+      };
+      Object.setPrototypeOf(window.MeepleDisplay, OriginalMeepleDisplay);
+      window.MeepleDisplay.prototype = OriginalMeepleDisplay.prototype;
+    }
+  });
   
   function replaceMeepleImages() {
     const allImages = document.querySelectorAll('img[src*="meeple"], img[alt*="meeple"]');
@@ -146,7 +123,7 @@ function startMeepleReplacer() {
       
       avatar.style.position = 'relative';
       avatar.appendChild(badge);
-    });ufweoihjq
+    });
   }
   
   replaceMeepleImages();
