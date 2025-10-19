@@ -39,6 +39,10 @@ export default defineConfig({
         copyFileSync('assets/icons/icon-16.png', 'dist/assets/icons/icon-16.png');
         copyFileSync('assets/icons/icon-48.png', 'dist/assets/icons/icon-48.png');
         copyFileSync('assets/icons/icon-128.png', 'dist/assets/icons/icon-128.png');
+        
+        if (existsSync('assets/meeple-orange.png')) {
+          copyFileSync('assets/meeple-orange.png', 'dist/assets/meeple-orange.png');
+        }
       }
     }
   ]

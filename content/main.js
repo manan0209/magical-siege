@@ -4,6 +4,7 @@ import { injectGreatHallEnhancements } from './injectors/great-hall.js';
 import { injectMarketEnhancements } from './injectors/market.js';
 import { injectCastleEnhancements } from './injectors/castle.js';
 import { injectGlobalEnhancements } from './injectors/global.js';
+import { injectMagicalMeeple } from './injectors/magical-meeple.js';
 
 const PAGES = {
   KEEP: '/keep',
@@ -37,6 +38,7 @@ class MagicalSiege {
     console.log(`Detected page: ${this.currentPage || 'Unknown'}`);
 
     injectGlobalEnhancements();
+    injectMagicalMeeple();
 
     if (!this.currentPage) {
       console.log('Page not recognized, but global features active');
