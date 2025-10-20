@@ -1,11 +1,30 @@
 # Magical Siege
 
-**Week 6 Siege Yayy**  
+This project is continued from week 6 to week 7
 
 This is a Chrome extension that transforms the Siege experience into a magical one, i have invested a lot of time in hit and trial, by trying out different ui upgrades and features, dug too deep into siege code for that :cryin: but good thing is that I have fairly good idea about siege web structure now, after multiple versions and trials, I have kinda accepted how keep and armory page have been upgraded as of now, I have also tried to make a magical theme for the website do try it out, I'll keep working on this one, to make it much more useful and upgrade siege into truly a magical experience :)
 
+what I improved in week 7 (signal theme):
+I improved themes (dont tell Olive but in magical theme you get orange meeple for free with this one :lol), added a coffers leaderboard, and a poke(signal) feature to poke others, sadly I was out this week so couldn't work much as I wanted to! Now that apis are finally out, I can't wait to use them in week 8, here are some snapshots!
+
+
+![free orange meeple](public/meeple.png)
+
 ---
 
+![rankings](public/rank.png)
+
+---
+
+![leaderboard](public/lb.png)
+
+---
+
+![signals](public/signals.png)
+
+---
+
+Old readme (upto week 6)
 ![Keep updated](public/keep.png)
 
 ---
@@ -44,7 +63,7 @@ I maybe able to give some shop items for free (Olive dont kill me for that :hehe
 
 ## Installation
 
-### Manual Installation (Development)
+### Manual Installation (Development mode in chrome)
 1. Download extension from gh releases and extract it
 4. Open Chrome and go to `chrome://extensions/`
 5. Enable "Developer mode"
