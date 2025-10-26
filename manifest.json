@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Magical Siege",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Make your siege magical, powerful, and beautiful",
   "icons": {
     "16": "assets/icons/icon-16.png",
