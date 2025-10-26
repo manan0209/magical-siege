@@ -1,6 +1,6 @@
 import { DOMExtractor } from '../utils/dom-extractor.js';
 import { TimeUtils } from '../utils/time.js';
-import { syncUserData, getLeaderboard, getUserRank } from '../utils/leaderboard.js';
+import { getLeaderboard, getUserRank, clearLeaderboardCache, syncUserData } from '../utils/leaderboard.js';
 import { SIGNAL_TYPES, sendSignal, canSendMoreSignals, getDailySentCount } from '../utils/signals.js';
 
 let currentUsername = 'Anonymous';
@@ -30,9 +30,7 @@ function setupUsernameMessageHandler() {
       sendResponse({ username: currentUsername });
     }
     if (request.type === 'CLEAR_LEADERBOARD_CACHE') {
-      localStorage.removeItem('ms_global_leaderboard');
-      localStorage.removeItem('ms_global_leaderboard_timestamp');
-      console.log('✅ Leaderboard cache cleared');
+      clearLeaderboardCache();
       sendResponse({ success: true });
     }
     return true;
@@ -239,11 +237,14 @@ function injectQuickActions() {
   actionsCard.innerHTML = `
     <div class="home-card-body">
       <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;">
-        <a href="/projects/new" class="submit-button" style="text-decoration: none; font-family: 'IM Fell English', serif;">
+        <a href="/armory/new" class="submit-button" style="text-decoration: none; font-family: 'IM Fell English', serif;">
           New Project
         </a>
-        <a href="/projects" class="submit-button" style="text-decoration: none; background: linear-gradient(135deg, #6D28D9 0%, #8B5CF6 100%); font-family: 'IM Fell English', serif;">
-          View Projects
+        <a href="/armory" class="submit-button" style="text-decoration: none; background: linear-gradient(135deg, #6D28D9 0%, #8B5CF6 100%); font-family: 'IM Fell English', serif;">
+          Your Projects
+        </a>
+        <a href="/armory/explore" class="submit-button" style="text-decoration: none; background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%); font-family: 'IM Fell English', serif;">
+          Explore Projects
         </a>
         <a href="/market" class="submit-button" style="text-decoration: none; background: linear-gradient(135deg, #785437 0%, #9A7B4F 100%); font-family: 'IM Fell English', serif;">
           Visit Market
@@ -289,6 +290,8 @@ async function injectGlobalRank() {
     hours = hoursMatch ? parseInt(hoursMatch[1]) : 0;
   }
   
+  syncUserData(username, coins, hours);
+  
   const rankBadge = document.createElement('div');
   rankBadge.id = 'ms-global-rank';
   rankBadge.style.cssText = `
@@ -307,7 +310,7 @@ async function injectGlobalRank() {
   coffersTitle.appendChild(rankBadge);
   
   try {
-    const leaderboard = await syncUserData(username, coins, hours);
+    const leaderboard = await getLeaderboard();
     
     if (leaderboard) {
       const rank = getUserRank(username, leaderboard);
@@ -322,12 +325,19 @@ async function injectGlobalRank() {
         rankBadge.style.cursor = 'pointer';
         rankBadge.addEventListener('click', () => showLeaderboardModal(leaderboard, username));
       } else {
-        rankBadge.innerHTML = `<span style="opacity: 0.7;">Rank unavailable</span>`;
+        // User not in leaderboard yet - they need to earn coins first
+        rankBadge.innerHTML = `
+          <span style="opacity: 0.7;">Not ranked yet</span>
+        `;
+        rankBadge.title = 'Complete this week to appear on the leaderboard!';
+        rankBadge.style.cursor = 'pointer';
+        rankBadge.addEventListener('click', () => showLeaderboardModal(leaderboard, username));
       }
     } else {
       rankBadge.innerHTML = `<span style="opacity: 0.7;">Sync failed</span>`;
     }
   } catch (error) {
+    console.error('injectGlobalRank: Error:', error);
     rankBadge.innerHTML = `<span style="opacity: 0.7;">Sync error</span>`;
   }
 }
@@ -565,7 +575,12 @@ function createLeaderboardRow(user, rank, currentUser) {
     color: #6b7280;
     margin-top: 0.25rem;
   `;
-  stats.innerHTML = `🪙 ${user.coins} coins`;
+  
+  const sourceBadge = user.source === 'local' 
+    ? '<span style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 0.5rem;">Extension</span>'
+    : '';
+  
+  stats.innerHTML = `🪙 ${user.coins} coins${sourceBadge}`;
   
   userInfo.appendChild(username);
   userInfo.appendChild(stats);
