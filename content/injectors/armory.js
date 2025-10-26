@@ -1,10 +1,8 @@
+import { API } from '../utils/api.js';
+
 export function injectArmoryEnhancements() {
-  console.log('Armory page enhancements loading...');
-  
   waitForProjectCards().then(() => {
-    console.log('Project cards detected, enhancing...');
-    enhanceProjectCards();
-    injectProjectSummaryCard();
+    enhanceProjectCardsWithAPI();
   });
 }
 
@@ -12,10 +10,8 @@ function waitForProjectCards() {
   return new Promise((resolve) => {
     const checkCards = () => {
       const projectCards = document.querySelectorAll('.project-card');
-      console.log('Checking for project cards...', projectCards.length);
       
       if (projectCards.length > 0) {
-        console.log('Found project cards:', projectCards.length);
         resolve();
       } else {
         setTimeout(checkCards, 200);
@@ -25,36 +21,232 @@ function waitForProjectCards() {
   });
 }
 
-function extractProjectHours(card) {
-  const timeElement = card.querySelector('.project-time');
-  if (timeElement) {
-    const text = timeElement.textContent;
-    const hourMatch = text.match(/(\d+)h\s*(\d+)m/);
-    if (hourMatch) {
-      const hours = parseInt(hourMatch[1]);
-      const minutes = parseInt(hourMatch[2]);
-      return hours + (minutes / 60);
-    }
-  }
-  
-  const text = card.textContent || '';
-  const patterns = [
-    /Time spent:\s*(\d+)h\s*(\d+)m/i,
-    /(\d+)h\s*(\d+)m/,
-    /(\d+)h/i
-  ];
-  
-  for (const pattern of patterns) {
-    const match = text.match(pattern);
-    if (match) {
-      if (match[2]) {
-        return parseInt(match[1]) + (parseInt(match[2]) / 60);
-      }
+function extractProjectId(card) {
+  const cardId = card.getAttribute('id');
+  if (cardId) {
+    const match = cardId.match(/project_(\d+)/);
+    if (match && match[1]) {
       return parseInt(match[1]);
     }
   }
   
+  const overlayLink = card.querySelector('a.project-card-overlay');
+  if (overlayLink) {
+    const href = overlayLink.getAttribute('href');
+    
+    const armoryMatch = href.match(/\/armory\/(\d+)/);
+    if (armoryMatch && armoryMatch[1]) {
+      return parseInt(armoryMatch[1]);
+    }
+    
+    const projectsMatch = href.match(/\/projects\/(\d+)/);
+    if (projectsMatch && projectsMatch[1]) {
+      return parseInt(projectsMatch[1]);
+    }
+  }
+  
+  return null;
+}
+
+function extractWeekFromCard(card) {
+  const weekBadge = card.querySelector('.project-badge');
+  if (weekBadge) {
+    const text = weekBadge.textContent.trim();
+    const match = text.match(/week\s+(\d+)/i);
+    if (match && match[1]) {
+      return parseInt(match[1]);
+    }
+  }
   return 0;
+}
+
+async function enhanceProjectCardsWithAPI() {
+  const projectCards = document.querySelectorAll('.project-card');
+  
+  const projectData = [];
+  const cardProjectMap = new Map();
+  
+  for (const card of projectCards) {
+    const projectId = extractProjectId(card);
+    const weekFromDOM = extractWeekFromCard(card);
+    
+    if (!projectId) continue;
+    
+    try {
+      const data = await API.getProject(projectId);
+      
+      if (data && data.id) {
+        data.week_from_dom = weekFromDOM;
+        projectData.push(data);
+        cardProjectMap.set(projectId, { card, data });
+      }
+    } catch (error) {
+      console.error(`Failed to fetch project ${projectId}:`, error);
+    }
+  }
+  
+  if (projectData.length > 0) {
+    sortCardsByWeek(cardProjectMap);
+    
+    for (const [projectId, { card, data }] of cardProjectMap) {
+      await enhanceSingleCard(card, data);
+    }
+    
+    injectProjectSummaryCard(projectData);
+  }
+}
+
+function sortCardsByWeek(cardProjectMap) {
+  const projectsGrid = document.querySelector('.projects-grid');
+  if (!projectsGrid) return;
+  
+  const sortedEntries = Array.from(cardProjectMap.entries()).sort((a, b) => {
+    const weekA = a[1].data.week_from_dom || 0;
+    const weekB = b[1].data.week_from_dom || 0;
+    return weekB - weekA;
+  });
+  
+  sortedEntries.forEach(([projectId, { card }]) => {
+    projectsGrid.appendChild(card);
+  });
+}
+
+async function enhanceSingleCard(card, project) {
+  if (card.querySelector('.ms-enhanced')) {
+    return;
+  }
+  
+  card.style.display = 'flex';
+  card.style.flexDirection = 'column';
+  
+  const hours = project.hours || 0;
+  const coinValue = project.coin_value;
+  const status = project.status || 'unknown';
+  const avgScore = project.average_score;
+  const isPaidOut = status === 'finished' && coinValue > 0;
+  
+  const enhancementContainer = document.createElement('div');
+  enhancementContainer.className = 'ms-enhanced';
+  enhancementContainer.style.cssText = `
+    margin-top: auto;
+    padding-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  `;
+  
+  if (hours > 0) {
+    const hoursDisplay = document.createElement('div');
+    hoursDisplay.style.cssText = `
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.75rem;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(37, 99, 235, 0.15));
+      border: 2px solid rgba(59, 130, 246, 0.3);
+      border-radius: 8px;
+      font-family: 'IM Fell English', serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #1e40af;
+    `;
+    
+    hoursDisplay.innerHTML = `
+      <span style="font-family: 'Jaini', serif; font-size: 1.1rem;">${hours.toFixed(1)}h</span>
+      <span>logged</span>
+    `;
+    
+    enhancementContainer.appendChild(hoursDisplay);
+  }
+  
+  if (isPaidOut) {
+    const coinsDisplay = document.createElement('div');
+    coinsDisplay.style.cssText = `
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.75rem;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.15));
+      border: 2px solid rgba(245, 158, 11, 0.3);
+      border-radius: 8px;
+      font-family: 'IM Fell English', serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #92400e;
+    `;
+    
+    coinsDisplay.innerHTML = `
+      <span style="font-family: 'Jaini', serif; font-size: 1.1rem;">${coinValue}</span>
+      <span>coins earned</span>
+    `;
+    
+    enhancementContainer.appendChild(coinsDisplay);
+    
+    if (avgScore) {
+      const scoreDisplay = document.createElement('div');
+      scoreDisplay.style.cssText = `
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 0.75rem;
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(109, 40, 217, 0.15));
+        border: 2px solid rgba(139, 92, 246, 0.3);
+        border-radius: 8px;
+        font-family: 'IM Fell English', serif;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #6D28D9;
+      `;
+      
+      const stars = '⭐'.repeat(Math.round(avgScore));
+      scoreDisplay.innerHTML = `
+        <span style="font-family: 'Jaini', serif; font-size: 1.1rem;">${avgScore.toFixed(1)}</span>
+        <span>${stars}</span>
+      `;
+      
+      enhancementContainer.appendChild(scoreDisplay);
+    }
+  } else if (hours > 0) {
+    const predicted = predictCoins(hours);
+    const coinsDisplay = document.createElement('div');
+    coinsDisplay.style.cssText = `
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.75rem;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.15));
+      border: 2px solid rgba(245, 158, 11, 0.3);
+      border-radius: 8px;
+      font-family: 'IM Fell English', serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #92400e;
+    `;
+    
+    coinsDisplay.innerHTML = `
+      <span style="font-family: 'Jaini', serif; font-size: 1.1rem;">~${predicted}</span>
+      <span>coins expected</span>
+    `;
+    
+    enhancementContainer.appendChild(coinsDisplay);
+  }
+  
+  const projectFooter = card.querySelector('.project-footer');
+  if (projectFooter) {
+    projectFooter.parentNode.insertBefore(enhancementContainer, projectFooter);
+  } else {
+    card.appendChild(enhancementContainer);
+  }
+  
+  card.style.transition = 'transform 0.2s ease, box-shadow 0.2s ease';
+  card.addEventListener('mouseenter', () => {
+    card.style.transform = 'translateY(-2px)';
+    card.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'translateY(0)';
+    card.style.boxShadow = '';
+  });
 }
 
 function predictCoins(hours) {
@@ -74,95 +266,53 @@ function predictCoins(hours) {
   return Math.round(baseCoins * TOTAL_MULTIPLIER);
 }
 
-function enhanceProjectCards() {
-  const projectCards = document.querySelectorAll('.project-card');
-  console.log('Enhancing project cards:', projectCards.length);
+function injectProjectSummaryCard(projects) {
+  const existingSummary = document.querySelector('.ms-summary-card');
+  if (existingSummary) {
+    existingSummary.remove();
+  }
   
-  let enhancedCount = 0;
-  
-  projectCards.forEach(card => {
-    if (card.querySelector('.ms-coin-prediction')) {
-      return;
-    }
-    
-    const hours = extractProjectHours(card);
-    console.log('Extracted hours:', hours, 'from card');
-    
-    if (hours > 0) {
-      const predictedCoins = predictCoins(hours);
-      
-      const predictionBadge = document.createElement('div');
-      predictionBadge.className = 'ms-coin-prediction';
-      predictionBadge.style.cssText = `
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 0.75rem;
-        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-        border: 2px solid rgba(64, 43, 32, 0.75);
-        border-radius: 8px;
-        margin-top: 0.75rem;
-        font-family: 'IM Fell English', serif;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #3b2a1a;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      `;
-      
-      predictionBadge.innerHTML = `
-        <span style="font-family: 'Jaini', serif; font-size: 1.25rem;">${predictedCoins}</span>
-        <span>coins expected</span>
-      `;
-      
-      const projectFooter = card.querySelector('.project-footer');
-      if (projectFooter) {
-        projectFooter.parentNode.insertBefore(predictionBadge, projectFooter);
-      } else {
-        card.appendChild(predictionBadge);
-      }
-      
-      enhancedCount++;
-      
-      card.style.transition = 'transform 0.2s ease, box-shadow 0.2s ease';
-      card.addEventListener('mouseenter', () => {
-        card.style.transform = 'translateY(-2px)';
-        card.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-      });
-      card.addEventListener('mouseleave', () => {
-        card.style.transform = 'translateY(0)';
-        card.style.boxShadow = '';
-      });
-    }
-  });
-  
-  console.log('Enhanced', enhancedCount, 'project cards');
-}
-
-function injectProjectSummaryCard() {
-  const projectCards = document.querySelectorAll('.project-card');
-  
-  let totalProjects = 0;
+  let totalProjects = projects.length;
   let totalHours = 0;
-  let totalPredictedCoins = 0;
+  let totalCoins = 0;
+  let avgScoreSum = 0;
+  let scoredProjects = 0;
+  let latestWeek = 0;
   
-  projectCards.forEach(card => {
-    const hours = extractProjectHours(card);
+  projects.forEach(project => {
+    const hours = project.hours || 0;
+    const coinValue = parseFloat(project.coin_value) || 0;
+    const status = project.status || 'unknown';
+    const avgScore = project.average_score;
+    const weekNumber = project.week_from_dom || 0;
+    const isPaidOut = status === 'finished' && coinValue > 0;
+    
+    if (weekNumber > latestWeek) {
+      latestWeek = weekNumber;
+    }
+    
     if (hours > 0) {
-      totalProjects++;
       totalHours += hours;
-      totalPredictedCoins += predictCoins(hours);
+    }
+    
+    if (isPaidOut && coinValue > 0) {
+      totalCoins += parseFloat(coinValue);
+    } else if (hours > 0) {
+      totalCoins += predictCoins(hours);
+    }
+    
+    if (avgScore && isPaidOut) {
+      avgScoreSum += avgScore;
+      scoredProjects++;
     }
   });
-  
-  console.log('Summary:', totalProjects, 'projects,', totalHours.toFixed(1), 'hours,', totalPredictedCoins, 'coins');
   
   if (totalProjects === 0) {
-    console.log('No projects found for summary');
     return;
   }
   
-  const avgHoursPerProject = (totalHours / totalProjects).toFixed(1);
-  const avgCoinsPerProject = Math.round(totalPredictedCoins / totalProjects);
+  const weeksLeft = Math.max(0, 14 - latestWeek);
+  const overallAvgScore = scoredProjects > 0 ? (avgScoreSum / scoredProjects).toFixed(1) : null;
   
   const summaryCard = document.createElement('div');
   summaryCard.className = 'home-card ms-summary-card';
@@ -194,34 +344,47 @@ function injectProjectSummaryCard() {
         
         <div style="text-align: center; padding: 0.75rem; background: rgba(245, 158, 11, 0.1); border: 2px solid rgba(245, 158, 11, 0.3); border-radius: 8px;">
           <div style="font-size: 0.875rem; opacity: 0.7; font-family: 'IM Fell English', serif; margin-bottom: 0.25rem;">
-            Expected Coins
+            Total Coins
           </div>
           <div style="font-size: 2rem; font-weight: 700; color: #d97706; font-family: 'Jaini', serif;">
-            ${totalPredictedCoins}
+            ${totalCoins}
           </div>
         </div>
         
         <div style="text-align: center; padding: 0.75rem; background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 8px;">
           <div style="font-size: 0.875rem; opacity: 0.7; font-family: 'IM Fell English', serif; margin-bottom: 0.25rem;">
-            Avg per Project
+            Weeks Left
           </div>
-          <div style="font-size: 1.25rem; font-weight: 700; color: #16a34a; font-family: 'Jaini', serif;">
-            ${avgHoursPerProject}h / ${avgCoinsPerProject}c
+          <div style="font-size: 2rem; font-weight: 700; color: #16a34a; font-family: 'Jaini', serif;">
+            ${weeksLeft}
+          </div>
+          <div style="font-size: 0.75rem; opacity: 0.6; font-family: 'IM Fell English', serif; margin-top: 0.25rem;">
+            14 - ${latestWeek}
           </div>
         </div>
+        
+        ${overallAvgScore ? `
+          <div style="text-align: center; padding: 0.75rem; background: rgba(168, 85, 247, 0.1); border: 2px solid rgba(168, 85, 247, 0.3); border-radius: 8px;">
+            <div style="font-size: 0.875rem; opacity: 0.7; font-family: 'IM Fell English', serif; margin-bottom: 0.25rem;">
+              Avg Score
+            </div>
+            <div style="font-size: 2rem; font-weight: 700; color: #7c3aed; font-family: 'Jaini', serif;">
+              ${overallAvgScore} ${'⭐'.repeat(Math.round(parseFloat(overallAvgScore)))}
+            </div>
+          </div>
+        ` : ''}
       </div>
       
       <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(59, 42, 26, 0.05); border-radius: 8px; text-align: center;">
         <div style="font-size: 0.875rem; font-family: 'IM Fell English', serif; color: #3b2a1a; line-height: 1.4;">
-          Prediction based on 6x multiplier (2x reviewer bonus + 3x stars avg)
+          Expected coins based on 6x multiplier (2x reviewer bonus + 3x stars avg)
         </div>
       </div>
     </div>
   `;
   
-  const firstProjectCard = document.querySelector('.project-card');
-  if (firstProjectCard && firstProjectCard.parentNode) {
-    console.log('Inserting summary card before first project');
-    firstProjectCard.parentNode.insertBefore(summaryCard, firstProjectCard);
+  const projectsGrid = document.querySelector('.projects-grid');
+  if (projectsGrid && projectsGrid.parentNode) {
+    projectsGrid.parentNode.insertBefore(summaryCard, projectsGrid);
   }
 }
