@@ -6,7 +6,7 @@ This project is an update!
 week 8 update:
 I have fixed the issues created duw to olive rewriting some code in og website, made armory upgrades, fixed the broken structure, and most importantly now lb uses api to fetch top 50, and then counts you (if you are not in top 50), also added search in explore page, and most amazing update in this version that i personally love is falling projects, they turned out to be so cool, you can clickable as well, hope you all like this update (prolly a final one!)
 
-tysm for the support rino (only user apart from me lol!)
+tysm for the support rino (only user apart from me lol!) click below for demo vid
 
 video demo:
 [![Watch the video](https://img.youtube.com/vi/gvmhH4fzpwc/0.jpg)](https://www.youtube.com/watch?v=gvmhH4fzpwc)
