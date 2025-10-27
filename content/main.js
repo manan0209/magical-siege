@@ -5,6 +5,7 @@ import { injectMarketEnhancements } from './injectors/market.js';
 import { injectCastleEnhancements } from './injectors/castle.js';
 import { injectGlobalEnhancements } from './injectors/global.js';
 import { injectMagicalMeeple } from './injectors/magical-meeple.js';
+import { injectFallTheme } from './injectors/fall-theme.js';
 
 const PAGES = {
   KEEP: '/keep',
@@ -70,6 +71,7 @@ class MagicalSiege {
 
   async enhanceKeep() {
     injectKeepEnhancements();
+    injectFallTheme();
   }
 
   async enhanceArmory() {
