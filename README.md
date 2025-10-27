@@ -9,8 +9,7 @@ I have fixed the issues created duw to olive rewriting some code in og website, 
 tysm for the support rino (only user apart from me lol!)
 
 video demo:
-[![Watch the video](https://github.com/manan0209/magical-siege/blob/master/public/keep.png)]
-(https://www.youtube.com/watch?v=gvmhH4fzpwc)
+[![Watch the video](https://img.youtube.com/vi/gvmhH4fzpwc/0.jpg)](https://www.youtube.com/watch?v=gvmhH4fzpwc)
 
 
 
