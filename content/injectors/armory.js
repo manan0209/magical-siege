@@ -2,6 +2,7 @@ import { API } from '../utils/api.js';
 
 export function injectArmoryEnhancements() {
   waitForProjectCards().then(() => {
+    injectSearchBar();
     enhanceProjectCardsWithAPI();
   });
 }
@@ -58,6 +59,142 @@ function extractWeekFromCard(card) {
     }
   }
   return 0;
+}
+
+function injectSearchBar() {
+  const projectsGrid = document.querySelector('.projects-grid');
+  if (!projectsGrid || document.querySelector('.ms-search-bar')) return;
+
+  const searchContainer = document.createElement('div');
+  searchContainer.className = 'ms-search-bar';
+  searchContainer.style.cssText = `
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  `;
+
+  searchContainer.innerHTML = `
+    <input 
+      type="text" 
+      placeholder="Search projects by name, description..." 
+      class="ms-search-input"
+      style="
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid rgba(59, 42, 26, 0.2);
+        border-radius: 8px;
+        font-family: 'IM Fell English', serif;
+        font-size: 1rem;
+        background: white;
+        transition: border-color 0.2s;
+      "
+    />
+    <button 
+      class="ms-clear-search"
+      style="
+        padding: 0.75rem 1.25rem;
+        border: 2px solid rgba(59, 42, 26, 0.2);
+        border-radius: 8px;
+        font-family: 'IM Fell English', serif;
+        font-size: 0.875rem;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: none;
+      "
+    >
+      Clear
+    </button>
+  `;
+
+  projectsGrid.parentNode.insertBefore(searchContainer, projectsGrid);
+
+  const searchInput = searchContainer.querySelector('.ms-search-input');
+  const clearButton = searchContainer.querySelector('.ms-clear-search');
+
+  searchInput.addEventListener('focus', () => {
+    searchInput.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+  });
+
+  searchInput.addEventListener('blur', () => {
+    searchInput.style.borderColor = 'rgba(59, 42, 26, 0.2)';
+  });
+
+  let searchTimeout;
+  searchInput.addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      filterProjects(e.target.value);
+      clearButton.style.display = e.target.value ? 'block' : 'none';
+    }, 300);
+  });
+
+  clearButton.addEventListener('click', () => {
+    searchInput.value = '';
+    filterProjects('');
+    clearButton.style.display = 'none';
+    searchInput.focus();
+  });
+
+  clearButton.addEventListener('mouseenter', () => {
+    clearButton.style.background = 'rgba(239, 68, 68, 0.1)';
+    clearButton.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+    clearButton.style.color = '#dc2626';
+  });
+
+  clearButton.addEventListener('mouseleave', () => {
+    clearButton.style.background = 'white';
+    clearButton.style.borderColor = 'rgba(59, 42, 26, 0.2)';
+    clearButton.style.color = 'inherit';
+  });
+}
+
+function filterProjects(query) {
+  const projectCards = document.querySelectorAll('.project-card');
+  const lowerQuery = query.toLowerCase().trim();
+
+  if (!lowerQuery) {
+    projectCards.forEach(card => {
+      card.style.display = '';
+    });
+    return;
+  }
+
+  let visibleCount = 0;
+
+  projectCards.forEach(card => {
+    const title = card.querySelector('.project-title')?.textContent.toLowerCase() || '';
+    const description = card.querySelector('.project-description')?.textContent.toLowerCase() || '';
+    const author = card.querySelector('.project-header')?.textContent.toLowerCase() || '';
+
+    if (title.includes(lowerQuery) || description.includes(lowerQuery) || author.includes(lowerQuery)) {
+      card.style.display = '';
+      visibleCount++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  const existingMessage = document.querySelector('.ms-no-results');
+  if (existingMessage) {
+    existingMessage.remove();
+  }
+
+  if (visibleCount === 0) {
+    const projectsGrid = document.querySelector('.projects-grid');
+    const noResults = document.createElement('div');
+    noResults.className = 'ms-no-results';
+    noResults.style.cssText = `
+      text-align: center;
+      padding: 2rem;
+      color: #6b7280;
+      font-family: 'IM Fell English', serif;
+      font-size: 1.125rem;
+    `;
+    noResults.textContent = `No projects found for "${query}"`;
+    projectsGrid.after(noResults);
+  }
 }
 
 async function enhanceProjectCardsWithAPI() {
