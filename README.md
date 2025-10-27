@@ -1,6 +1,17 @@
 # Magical Siege
 
-This project is continued from week 6 to week 7
+This project is an update!
+
+
+week 8 update:
+I have fixed the issues created duw to olive rewriting some code in og website, made armory upgrades, fixed the broken structure, and most importantly now lb uses api to fetch top 50, and then counts you (if you are not in top 50), also added search in explore page, and most amazing update in this version that i personally love is falling projects, they turned out to be so cool, you can clickable as well, hope you all like this update (prolly a final one!)
+
+tysm for the support rino (only user apart from me lol!)
+
+video demo:
+
+![demo](public/recmgsg.mp4)
+
 
 This is a Chrome extension that transforms the Siege experience into a magical one, i have invested a lot of time in hit and trial, by trying out different ui upgrades and features, dug too deep into siege code for that :cryin: but good thing is that I have fairly good idea about siege web structure now, after multiple versions and trials, I have kinda accepted how keep and armory page have been upgraded as of now, I have also tried to make a magical theme for the website do try it out, I'll keep working on this one, to make it much more useful and upgrade siege into truly a magical experience :)
 
