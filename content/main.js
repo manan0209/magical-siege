@@ -12,7 +12,6 @@ const PAGES = {
   ARMORY: '/armory',
   GREAT_HALL: '/great-hall',
   MARKET: '/market',
-  CASTLE: '/castle',
   CHAMBERS: '/chambers'
 };
 

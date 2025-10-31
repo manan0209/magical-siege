@@ -40,15 +40,31 @@ async function getLeaderboard() {
   }
 }
 
+
+//merge fix hopefully, idk why it broke
 function mergeLeaderboards(apiUsers, localUsers) {
-  const apiUsernames = new Set(
-    apiUsers.flatMap(u => [u.username, u.display_name, u.name].filter(Boolean))
-  );
+  const normalizeUsername = (name) => {
+    if (!name) return '';
+    return name.toLowerCase().trim();
+  };
+
+  const apiUsernamesSet = new Set();
+  apiUsers.forEach(u => {
+    if (u.username) apiUsernamesSet.add(normalizeUsername(u.username));
+    if (u.display_name) apiUsernamesSet.add(normalizeUsername(u.display_name));
+    if (u.name) apiUsernamesSet.add(normalizeUsername(u.name));
+  });
 
   const localOnlyUsers = localUsers
-    .filter(u => !apiUsernames.has(u.username))
+    .filter(u => {
+      const normalizedUsername = normalizeUsername(u.username);
+      return normalizedUsername && !apiUsernamesSet.has(normalizedUsername);
+    })
     .map(u => ({
-      ...u,
+      username: u.username,
+      coins: u.coins || 0,
+      hours: u.hours || 0,
+      lastSync: u.lastSync,
       source: 'local',
       position: null
     }));
@@ -139,15 +155,21 @@ function syncUserData(username, coins, hours = 0) {
 }
 
 function getUserRank(username, leaderboard) {
-  if (!leaderboard || !Array.isArray(leaderboard)) {
+  if (!leaderboard || !Array.isArray(leaderboard) || !username) {
     return null;
   }
   
-  const user = leaderboard.find(u => 
-    u.username === username || 
-    u.display_name === username ||
-    u.name === username
-  );
+  const normalizedSearch = username.toLowerCase().trim();
+  
+  const user = leaderboard.find(u => {
+    const uUsername = u.username ? u.username.toLowerCase().trim() : '';
+    const uDisplayName = u.display_name ? u.display_name.toLowerCase().trim() : '';
+    const uName = u.name ? u.name.toLowerCase().trim() : '';
+    
+    return uUsername === normalizedSearch || 
+           uDisplayName === normalizedSearch || 
+           uName === normalizedSearch;
+  });
   
   return user ? user.position : null;
 }
