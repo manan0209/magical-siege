@@ -3,8 +3,6 @@ import { Theme } from '../utils/theme.js';
 import { TimeUtils } from '../utils/time.js';
 
 export function injectGlobalEnhancements() {
-  console.log('Global enhancements loaded');
-  
   initializeTheme();
   injectFloatingActionButton();
   injectThemeIndicator();

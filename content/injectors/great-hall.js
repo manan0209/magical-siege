@@ -2,11 +2,16 @@ import { DOMExtractor } from '../utils/dom-extractor.js';
 import { DOMInjector } from '../utils/dom-injector.js';
 import { TimeUtils } from '../utils/time.js';
 
+let isInjected = false;
+
 export function injectGreatHallEnhancements() {
-  console.log('Great Hall is awesome now, my liege!');
-  
+  if (isInjected && document.getElementById('ms-voting-banner')) {
+    return;
+  }
+
   injectVotingTimerBanner();
   enhanceProjectCards();
+  isInjected = true;
 }
 
 function injectVotingTimerBanner() {

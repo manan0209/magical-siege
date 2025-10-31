@@ -17,8 +17,35 @@ const PAGES = {
 
 class MagicalSiege {
   constructor() {
-    this.currentPage = this.detectPage();
+    this.currentPage = null;
+    this.lastPath = '';
+    this.globalEnhancementsInjected = false;
+    this.setupNavigationListener();
     this.init();
+  }
+
+  setupNavigationListener() {
+    window.addEventListener('popstate', () => {
+      this.handleNavigation();
+    });
+
+    let lastUrl = window.location.href;
+    new MutationObserver(() => {
+      const currentUrl = window.location.href;
+      if (currentUrl !== lastUrl) {
+        lastUrl = currentUrl;
+        this.handleNavigation();
+      }
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
+  handleNavigation() {
+    const newPath = window.location.pathname;
+    if (newPath !== this.lastPath) {
+      this.lastPath = newPath;
+      this.currentPage = this.detectPage();
+      this.reinitPageEnhancements();
+    }
   }
 
   detectPage() {
@@ -34,18 +61,22 @@ class MagicalSiege {
   }
 
   async init() {
-    console.log(`Magical Siege initializing on: ${window.location.pathname}`);
-    console.log(`Detected page: ${this.currentPage || 'Unknown'}`);
+    this.lastPath = window.location.pathname;
+    this.currentPage = this.detectPage();
 
-    injectGlobalEnhancements();
-    injectMagicalMeeple();
-
-    if (!this.currentPage) {
-      console.log('Page not recognized, but global features active');
-      return;
+    if (!this.globalEnhancementsInjected) {
+      injectGlobalEnhancements();
+      injectMagicalMeeple();
+      this.globalEnhancementsInjected = true;
     }
 
-    console.log(`Magical Siege active on: ${this.currentPage}`);
+    await this.reinitPageEnhancements();
+  }
+
+  async reinitPageEnhancements() {
+    if (!this.currentPage) {
+      return;
+    }
 
     switch (this.currentPage) {
       case 'KEEP':
@@ -63,8 +94,6 @@ class MagicalSiege {
       case 'CASTLE':
         await this.enhanceCastle();
         break;
-      default:
-        console.log('Page detected but no enhancements yet');
     }
   }
 

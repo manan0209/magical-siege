@@ -4,16 +4,21 @@ import { getLeaderboard, getUserRank, clearLeaderboardCache, syncUserData } from
 import { SIGNAL_TYPES, sendSignal, canSendMoreSignals, getDailySentCount } from '../utils/signals.js';
 
 let currentUsername = 'Anonymous';
+let isInjected = false;
 
 export function injectKeepEnhancements() {
-  console.log('Keep page enhancements loading...');
-  
   const homeContainer = document.querySelector('.home-container');
   if (!homeContainer) {
-    console.log('Home container not found');
     return;
   }
-  
+
+  if (isInjected) {
+    const existingStats = document.querySelector('.ms-enhanced-stats');
+    if (existingStats) {
+      return;
+    }
+  }
+
   setupUsernameMessageHandler();
   
   waitForProgressData().then(() => {
@@ -21,6 +26,7 @@ export function injectKeepEnhancements() {
     injectWeeklyInsights();
     injectQuickActions();
     injectGlobalRank();
+    isInjected = true;
   });
 }
 
@@ -116,13 +122,15 @@ function extractTodaysCoding() {
 function injectEnhancedStats() {
   const homeContainer = document.querySelector('.home-container');
   if (!homeContainer) return;
+
+  if (document.querySelector('.ms-enhanced-stats')) return;
   
   const progress = extractActualProgress();
   const todayHours = extractTodaysCoding();
   const dailyTargetHours = 2; 
   
   const statsCard = document.createElement('div');
-  statsCard.className = 'home-card';
+  statsCard.className = 'home-card ms-enhanced-stats';
   statsCard.style.cssText = 'margin-top: 1rem;';
   
   const hoursNeeded = 10 - progress.hours;
@@ -187,10 +195,12 @@ function injectEnhancedStats() {
 function injectWeeklyInsights() {
   const homeContainer = document.querySelector('.home-container');
   if (!homeContainer) return;
+
+  if (document.querySelector('.ms-weekly-insights')) return;
   
   const progress = extractActualProgress();
   const insightsCard = document.createElement('div');
-  insightsCard.className = 'home-card';
+  insightsCard.className = 'home-card ms-weekly-insights';
   insightsCard.style.cssText = 'margin-top: 1rem;';
   
   let insight = '';
@@ -229,9 +239,11 @@ function injectWeeklyInsights() {
 function injectQuickActions() {
   const homeContainer = document.querySelector('.home-container');
   if (!homeContainer) return;
+
+  if (document.querySelector('.ms-quick-actions')) return;
   
   const actionsCard = document.createElement('div');
-  actionsCard.className = 'home-card';
+  actionsCard.className = 'home-card ms-quick-actions';
   actionsCard.style.cssText = 'margin-top: 1rem;';
   
   actionsCard.innerHTML = `
@@ -259,6 +271,11 @@ function injectQuickActions() {
 async function injectGlobalRank() {
   const coffersTitle = document.querySelector('.home-section-title');
   if (!coffersTitle || !coffersTitle.textContent.includes('Your coffers')) return;
+
+  const existingBadge = document.getElementById('ms-global-rank');
+  if (existingBadge) {
+    existingBadge.remove();
+  }
   
   let username = 'Anonymous';
   
