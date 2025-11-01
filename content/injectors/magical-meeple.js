@@ -26,10 +26,7 @@ function checkThemeAndActivate() {
                         document.body.getAttribute('data-ms-theme') === 'magical';
   
   if (isMagicalTheme) {
-    console.log('Magical Meeple: Magical theme detected, activating orange meeple');
     activateMagicalMeeple();
-  } else {
-    console.log('Magical Meeple: Not magical theme, skipping');
   }
 }
 
@@ -61,7 +58,6 @@ function startMeepleReplacer() {
     allImages.forEach(img => {
       if (img.src.includes('meeple-orange')) return;
       
-      console.log('Magical Meeple: Replacing meeple image', img.src);
       img.src = orangeMeepleUrl;
       img.style.filter = 'drop-shadow(0 0 8px rgba(251, 146, 60, 0.6))';
       img.dataset.magicalReplaced = 'true';
@@ -80,7 +76,6 @@ function startMeepleReplacer() {
         
         if (parent.dataset.magicalReplaced) return;
         
-        console.log('Magical Meeple: Replacing canvas meeple', parent);
         const img = document.createElement('img');
         img.src = orangeMeepleUrl;
         img.style.cssText = `

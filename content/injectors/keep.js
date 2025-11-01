@@ -4,7 +4,6 @@ import { getLeaderboard, getUserRank, clearLeaderboardCache, syncUserData } from
 import { SIGNAL_TYPES, sendSignal, canSendMoreSignals, getDailySentCount } from '../utils/signals.js';
 
 let currentUsername = 'Anonymous';
-let isInjected = false;
 
 export function injectKeepEnhancements() {
   const homeContainer = document.querySelector('.home-container');
@@ -12,11 +11,8 @@ export function injectKeepEnhancements() {
     return;
   }
 
-  if (isInjected) {
-    const existingStats = document.querySelector('.ms-enhanced-stats');
-    if (existingStats) {
-      return;
-    }
+  if (document.querySelector('.ms-enhanced-stats')) {
+    return;
   }
 
   setupUsernameMessageHandler();
@@ -26,7 +22,6 @@ export function injectKeepEnhancements() {
     injectWeeklyInsights();
     injectQuickActions();
     injectGlobalRank();
-    isInjected = true;
   });
 }
 
@@ -63,28 +58,20 @@ function extractActualProgress() {
   
   const text = progressText.textContent;
   
-  
   if (text.includes("you've been pillaging")) {
     const pillageMatch = text.match(/(\d+)h\s*(\d+)m/);
     
     let pillageTime = '0h 0m';
+    let pillageHours = 0;
+    let pillageMinutes = 0;
+    
     if (pillageMatch) {
-      pillageTime = `${pillageMatch[1]}h ${pillageMatch[2]}m`;
+      pillageHours = parseInt(pillageMatch[1]) || 0;
+      pillageMinutes = parseInt(pillageMatch[2]) || 0;
+      pillageTime = `${pillageHours}h ${pillageMinutes}m`;
     }
     
-    
-    const progressBar = document.querySelector('.home-progress-bar');
-    let totalHours = 10; 
-    
-    if (progressBar) {
-      const barWidth = progressBar.style.width;
-      if (barWidth) {
-        const percent = parseFloat(barWidth);
-        if (!isNaN(percent) && percent > 0) {
-          totalHours = (percent / 100) * 10;
-        }
-      }
-    }
+    const totalHours = 10 + pillageHours + (pillageMinutes / 60);
     
     return {
       hours: totalHours,
@@ -93,7 +80,6 @@ function extractActualProgress() {
       pillageTime
     };
   }
-  
   
   const percentMatch = text.match(/(\d+\.?\d*)%/);
   if (percentMatch) {

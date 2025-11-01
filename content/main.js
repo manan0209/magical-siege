@@ -17,35 +17,8 @@ const PAGES = {
 
 class MagicalSiege {
   constructor() {
-    this.currentPage = null;
-    this.lastPath = '';
-    this.globalEnhancementsInjected = false;
-    this.setupNavigationListener();
+    this.currentPage = this.detectPage();
     this.init();
-  }
-
-  setupNavigationListener() {
-    window.addEventListener('popstate', () => {
-      this.handleNavigation();
-    });
-
-    let lastUrl = window.location.href;
-    new MutationObserver(() => {
-      const currentUrl = window.location.href;
-      if (currentUrl !== lastUrl) {
-        lastUrl = currentUrl;
-        this.handleNavigation();
-      }
-    }).observe(document.body, { childList: true, subtree: true });
-  }
-
-  handleNavigation() {
-    const newPath = window.location.pathname;
-    if (newPath !== this.lastPath) {
-      this.lastPath = newPath;
-      this.currentPage = this.detectPage();
-      this.reinitPageEnhancements();
-    }
   }
 
   detectPage() {
@@ -61,19 +34,9 @@ class MagicalSiege {
   }
 
   async init() {
-    this.lastPath = window.location.pathname;
-    this.currentPage = this.detectPage();
+    injectGlobalEnhancements();
+    injectMagicalMeeple();
 
-    if (!this.globalEnhancementsInjected) {
-      injectGlobalEnhancements();
-      injectMagicalMeeple();
-      this.globalEnhancementsInjected = true;
-    }
-
-    await this.reinitPageEnhancements();
-  }
-
-  async reinitPageEnhancements() {
     if (!this.currentPage) {
       return;
     }
@@ -119,11 +82,56 @@ class MagicalSiege {
   }
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => new MagicalSiege());
-} else {
-  new MagicalSiege();
+let magicalSiegeInstance = null;
+
+function initializeMagicalSiege() {
+  try {
+    if (magicalSiegeInstance) {
+      magicalSiegeInstance = null;
+    }
+    
+    magicalSiegeInstance = new MagicalSiege();
+  } catch (error) {
+    console.error('[Magical Siege] Error during initialization:', error);
+  }
 }
+
+function waitForDOM(callback, maxAttempts = 50) {
+  let attempts = 0;
+  
+  const check = () => {
+    attempts++;
+    
+    if (document.body && document.querySelector('main')) {
+      callback();
+    } else if (attempts < maxAttempts) {
+      requestAnimationFrame(check);
+    } else {
+      callback();
+    }
+  };
+  
+  check();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => waitForDOM(initializeMagicalSiege));
+} else {
+  waitForDOM(initializeMagicalSiege);
+}
+
+document.addEventListener('turbo:load', () => {
+  waitForDOM(initializeMagicalSiege);
+});
+
+document.addEventListener('turbo:render', () => {
+});
+
+document.addEventListener('turbo:before-cache', () => {
+  if (magicalSiegeInstance) {
+    magicalSiegeInstance = null;
+  }
+});
 
 document.addEventListener('click', (e) => {
   const theme = document.body.className.match(/ms-theme-(\w+)/)?.[1];

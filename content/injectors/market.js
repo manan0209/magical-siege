@@ -3,8 +3,6 @@ import { DOMInjector } from '../utils/dom-injector.js';
 import { Cache } from '../utils/storage.js';
 
 export function injectMarketEnhancements() {
-  console.log('Market enhancements done, my liege!');
-  
   injectPurchaseAdvisor();
   injectSmartRecommendations();
 }
@@ -301,7 +299,6 @@ function showOptimizationModal(userData, items, weeksRemaining) {
 }
 
 function showAlternativePaths(userData, items, weeksRemaining) {
-  console.log('Alternative paths feature coming soon');
 }
 
 function generateWeekByWeekPlan(startingCoins, items, weeksRemaining) {

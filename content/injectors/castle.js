@@ -3,8 +3,6 @@ import { DOMInjector } from '../utils/dom-injector.js';
 import { Storage, Cache } from '../utils/storage.js';
 
 export function injectCastleEnhancements() {
-  console.log('Castle enhancements loaded');
-  
   injectCodingPatternsAnalysis();
   injectProgressPredictions();
   injectHistoricalDataExplorer();

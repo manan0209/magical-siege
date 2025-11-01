@@ -1,16 +1,13 @@
 import { API } from '../utils/api.js';
 
-let isInjected = false;
-
 export function injectArmoryEnhancements() {
-  if (isInjected && document.querySelector('.ms-search-bar')) {
+  if (document.querySelector('.ms-search-bar')) {
     return;
   }
 
   waitForProjectCards().then(() => {
     injectSearchBar();
     enhanceProjectCardsWithAPI();
-    isInjected = true;
   });
 }
 
