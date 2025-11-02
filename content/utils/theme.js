@@ -51,8 +51,13 @@ export const Theme = {
     
     if (themeName === 'magical') {
       this.applyMagicalCursor();
+      this.removeFlashlightEffect();
+    } else if (themeName === 'dark') {
+      this.removeMagicalCursor();
+      this.applyFlashlightEffect();
     } else {
       this.removeMagicalCursor();
+      this.removeFlashlightEffect();
     }
     
     return true;
@@ -84,6 +89,50 @@ export const Theme = {
     const style = document.getElementById('ms-magical-cursor');
     if (style) {
       style.remove();
+    }
+  },
+
+  applyFlashlightEffect() {
+    const existingOverlay = document.getElementById('ms-flashlight-overlay');
+    if (existingOverlay) {
+      return;
+    }
+
+    const overlay = document.createElement('div');
+    overlay.id = 'ms-flashlight-overlay';
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle 150px at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+                  transparent 0%, 
+                  transparent 100px,
+                  rgba(0, 0, 0, 0.4) 150px,
+                  rgba(0, 0, 0, 0.95) 300px);
+      pointer-events: none;
+      z-index: 9999;
+      transition: background 0.1s ease;
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    const updateFlashlight = (e) => {
+      const x = (e.clientX / window.innerWidth) * 100;
+      const y = (e.clientY / window.innerHeight) * 100;
+      overlay.style.setProperty('--mouse-x', `${x}%`);
+      overlay.style.setProperty('--mouse-y', `${y}%`);
+    };
+    
+    document.addEventListener('mousemove', updateFlashlight);
+    overlay.dataset.hasListener = 'true';
+  },
+
+  removeFlashlightEffect() {
+    const overlay = document.getElementById('ms-flashlight-overlay');
+    if (overlay) {
+      overlay.remove();
     }
   },
 
