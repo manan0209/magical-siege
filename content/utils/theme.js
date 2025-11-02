@@ -52,12 +52,15 @@ export const Theme = {
     if (themeName === 'magical') {
       this.applyMagicalCursor();
       this.removeFlashlightEffect();
+      this.removeDarkCursor();
     } else if (themeName === 'dark') {
       this.removeMagicalCursor();
       this.applyFlashlightEffect();
+      this.applyDarkCursor();
     } else {
       this.removeMagicalCursor();
       this.removeFlashlightEffect();
+      this.removeDarkCursor();
     }
     
     return true;
@@ -87,6 +90,41 @@ export const Theme = {
   
   removeMagicalCursor() {
     const style = document.getElementById('ms-magical-cursor');
+    if (style) {
+      style.remove();
+    }
+  },
+
+  applyDarkCursor() {
+    let style = document.getElementById('ms-dark-cursor');
+    
+    if (!style) {
+      style = document.createElement('style');
+      style.id = 'ms-dark-cursor';
+      document.head.appendChild(style);
+    }
+    
+    const cursorUrl = chrome.runtime.getURL('handcursor.cur');
+    const pointerUrl = chrome.runtime.getURL('Handpointer.cur');
+    
+    style.textContent = `
+      body.ms-theme-dark * {
+        cursor: url('${cursorUrl}') 12 12, auto !important;
+      }
+      
+      body.ms-theme-dark button,
+      body.ms-theme-dark a,
+      body.ms-theme-dark .submit-button,
+      body.ms-theme-dark [role="button"],
+      body.ms-theme-dark input[type="submit"],
+      body.ms-theme-dark input[type="button"] {
+        cursor: url('${pointerUrl}') 12 12, pointer !important;
+      }
+    `;
+  },
+  
+  removeDarkCursor() {
+    const style = document.getElementById('ms-dark-cursor');
     if (style) {
       style.remove();
     }
