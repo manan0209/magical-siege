@@ -106,7 +106,6 @@ async function loadSignals() {
   if (username === 'Anonymous') {
     document.getElementById('signals-list').innerHTML = `
       <div class="signals-empty">
-        <div class="signals-empty-icon">📡</div>
         <div>Visit siege.hackclub.com/keep to sync your username</div>
       </div>
     `;
@@ -135,7 +134,6 @@ async function loadSignals() {
     console.warn('Failed to load signals:', error);
     document.getElementById('signals-list').innerHTML = `
       <div class="signals-empty">
-        <div class="signals-empty-icon">⚠️</div>
         <div>Failed to load signals</div>
       </div>
     `;
@@ -148,10 +146,9 @@ function displaySignals(signals) {
   if (signals.length === 0) {
     list.innerHTML = `
       <div class="signals-empty">
-        <div class="signals-empty-icon">📭</div>
-        <div>No signals yet</div>
+        <div>No pokes yet</div>
         <div style="margin-top: 0.5rem; font-size: 0.85rem;">
-          Open the leaderboard to send signals to fellow siegers!
+          Open the leaderboard to poke fellow siegers!
         </div>
       </div>
     `;
@@ -159,18 +156,12 @@ function displaySignals(signals) {
   }
   
   list.innerHTML = signals.map(signal => {
-    const signalType = SIGNAL_TYPES[signal.type] || { 
-      label: 'Signal',
-      icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle></svg>'
-    };
     const timestamp = formatTimestamp(signal.timestamp);
     
     return `
       <div class="signal-item ${!signal.read ? 'unread' : ''}">
-        <div class="signal-from">From: ${signal.from}</div>
         <div class="signal-message">
-          <span class="signal-icon">${signalType.icon}</span>
-          <span>${signalType.description}</span>
+          <span>${signal.from} poked you</span>
         </div>
         <div class="signal-time">${timestamp}</div>
       </div>

@@ -435,7 +435,7 @@ function showLeaderboardModal(leaderboard, currentUser) {
   `;
   
   const title = document.createElement('h2');
-  title.textContent = '🪙 Coffers Leaderboard';
+  title.textContent = 'Coffers Leaderboard';
   title.style.cssText = `
     margin: 0;
     font-family: 'Jaini', serif;
@@ -543,9 +543,9 @@ function showLeaderboardModal(leaderboard, currentUser) {
     color: #6D28D9;
   `;
   signalInfo.innerHTML = `
-    <strong>Signals remaining today:</strong> ${remaining}/5
+    <strong>Pokes remaining today:</strong> ${remaining}/5
     <br>
-    <span style="opacity: 0.8; font-size: 0.8rem;">Send signals to motivate fellow siegers!</span>
+    <span style="opacity: 0.8; font-size: 0.8rem;">Poke fellow siegers to motivate them!</span>
   `;
   
   const list = document.createElement('div');
@@ -622,7 +622,7 @@ function createLeaderboardRow(user, rank, currentUser) {
     ? '<span style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 0.5rem;">Extension</span>'
     : '';
   
-  stats.innerHTML = `🪙 ${user.coins} coins${sourceBadge}`;
+  stats.innerHTML = `${user.coins} coins${sourceBadge}`;
   
   userInfo.appendChild(username);
   userInfo.appendChild(stats);
@@ -634,66 +634,61 @@ function createLeaderboardRow(user, rank, currentUser) {
   `;
   
   if (user.username !== currentUser) {
-    Object.values(SIGNAL_TYPES).forEach(signalType => {
-      const btn = document.createElement('button');
-      btn.innerHTML = signalType.icon;
-      btn.title = signalType.description;
-      btn.style.cssText = `
-        width: 36px;
-        height: 36px;
-        border: 2px solid rgba(139, 92, 246, 0.3);
-        background: white;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: rgba(139, 92, 246, 0.8);
-      `;
-      
-      btn.addEventListener('mouseenter', () => {
-        btn.style.background = 'rgba(139, 92, 246, 0.1)';
-        btn.style.borderColor = 'rgba(139, 92, 246, 0.6)';
-        btn.style.transform = 'scale(1.1)';
-        btn.style.color = 'rgba(139, 92, 246, 1)';
-      });
-      
-      btn.addEventListener('mouseleave', () => {
-        btn.style.background = 'white';
-        btn.style.borderColor = 'rgba(139, 92, 246, 0.3)';
-        btn.style.transform = 'scale(1)';
-        btn.style.color = 'rgba(139, 92, 246, 0.8)';
-      });
-      
-      btn.addEventListener('click', async () => {
-        if (!canSendMoreSignals()) {
-          showToast('Daily signal limit reached (5/day)', 'error');
-          return;
-        }
-        
-        btn.disabled = true;
-        btn.style.opacity = '0.5';
-        
-        try {
-          await sendSignal(currentUser, user.username, signalType.id);
-          showToast(`${signalType.label} sent to ${user.username}!`, 'success');
-          
-          const modal = document.getElementById('ms-leaderboard-modal');
-          if (modal) {
-            const leaderboard = await getLeaderboard();
-            modal.remove();
-            showLeaderboardModal(leaderboard, currentUser);
-          }
-        } catch (error) {
-          showToast(error.message, 'error');
-          btn.disabled = false;
-          btn.style.opacity = '1';
-        }
-      });
-      
-      actions.appendChild(btn);
+    const pokeBtn = document.createElement('button');
+    pokeBtn.textContent = 'Poke';
+    pokeBtn.style.cssText = `
+      padding: 0.5rem 1rem;
+      border: 2px solid rgba(139, 92, 246, 0.3);
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: rgba(139, 92, 246, 0.8);
+      font-weight: 600;
+      font-size: 0.875rem;
+    `;
+    
+    pokeBtn.addEventListener('mouseenter', () => {
+      pokeBtn.style.background = 'rgba(139, 92, 246, 0.1)';
+      pokeBtn.style.borderColor = 'rgba(139, 92, 246, 0.6)';
+      pokeBtn.style.transform = 'scale(1.05)';
+      pokeBtn.style.color = 'rgba(139, 92, 246, 1)';
     });
+    
+    pokeBtn.addEventListener('mouseleave', () => {
+      pokeBtn.style.background = 'white';
+      pokeBtn.style.borderColor = 'rgba(139, 92, 246, 0.3)';
+      pokeBtn.style.transform = 'scale(1)';
+      pokeBtn.style.color = 'rgba(139, 92, 246, 0.8)';
+    });
+    
+    pokeBtn.addEventListener('click', async () => {
+      if (!canSendMoreSignals()) {
+        showToast('Daily signal limit reached (5/day)', 'error');
+        return;
+      }
+      
+      pokeBtn.disabled = true;
+      pokeBtn.style.opacity = '0.5';
+      
+      try {
+        await sendSignal(currentUser, user.username, 'poke');
+        showToast(`Poked ${user.username}!`, 'success');
+        
+        const modal = document.getElementById('ms-leaderboard-modal');
+        if (modal) {
+          const leaderboard = await getLeaderboard();
+          modal.remove();
+          showLeaderboardModal(leaderboard, currentUser);
+        }
+      } catch (error) {
+        showToast(error.message, 'error');
+        pokeBtn.disabled = false;
+        pokeBtn.style.opacity = '1';
+      }
+    });
+    
+    actions.appendChild(pokeBtn);
   }
   
   row.appendChild(rankBadge);
