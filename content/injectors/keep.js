@@ -41,12 +41,26 @@ function setupUsernameMessageHandler() {
 function waitForProgressData() {
   return new Promise((resolve) => {
     const checkProgress = () => {
+      const progressSection = document.querySelector('.home-progress-standalone');
       const progressText = document.querySelector('.home-progress-top');
-      if (progressText) {
-        resolve();
-      } else {
-        setTimeout(checkProgress, 100);
+      const progressBottom = document.querySelector('.home-progress-bottom');
+      
+      if (progressSection && progressText && progressBottom) {
+        const topText = progressText.textContent.trim();
+        const bottomText = progressBottom.textContent.trim();
+        
+        const isLoaded = progressSection.getAttribute('data-stats-loaded') === 'true';
+        const hasRealData = !bottomText.includes('Loading') && 
+                           !topText.includes('0% of the way') &&
+                           (topText.includes('%') || topText.includes('pillaging'));
+        
+        if (isLoaded || hasRealData) {
+          setTimeout(resolve, 200);
+          return;
+        }
       }
+      
+      setTimeout(checkProgress, 100);
     };
     checkProgress();
   });
@@ -54,11 +68,13 @@ function waitForProgressData() {
 
 function extractActualProgress() {
   const progressText = document.querySelector('.home-progress-top');
-  if (!progressText) return { hours: 0, percent: 0, pillaging: false, pillageTime: '0h 0m' };
+  if (!progressText) {
+    return { hours: 0, percent: 0, pillaging: false, pillageTime: '0h 0m' };
+  }
   
-  const text = progressText.textContent;
+  const text = progressText.textContent.trim();
   
-  if (text.includes("you've been pillaging")) {
+  if (text.includes("you've been pillaging") || text.includes("you've been pillaging")) {
     const pillageMatch = text.match(/(\d+)h\s*(\d+)m/);
     
     let pillageTime = '0h 0m';
@@ -88,18 +104,38 @@ function extractActualProgress() {
     return { hours, percent, pillaging: false, pillageTime: null };
   }
   
+  if (text.toLowerCase().includes('siege has failed') || text.toLowerCase().includes('banned')) {
+    return { hours: 0, percent: 0, pillaging: false, pillageTime: null };
+  }
+  
   return { hours: 0, percent: 0, pillaging: false, pillageTime: null };
 }
 
 function extractTodaysCoding() {
   const todayText = document.querySelector('.home-progress-bottom');
-  if (!todayText) return 0;
+  if (!todayText) {
+    return 0;
+  }
   
-  const text = todayText.textContent;
+  const text = todayText.textContent.trim();
+  
   const match = text.match(/today you coded (\d+)h\s*(\d+)m/);
-  
   if (match) {
     return parseInt(match[1]) + parseInt(match[2]) / 60;
+  }
+  
+  const onlyHours = text.match(/today you coded (\d+)h/);
+  if (onlyHours) {
+    return parseInt(onlyHours[1]);
+  }
+  
+  const onlyMinutes = text.match(/today you coded (\d+)m/);
+  if (onlyMinutes) {
+    return parseInt(onlyMinutes[1]) / 60;
+  }
+  
+  if (text.includes("haven't coded yet today") || text.includes("Create a project") || text.includes("Add a Hackatime")) {
+    return 0;
   }
   
   return 0;
