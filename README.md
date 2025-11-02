@@ -2,6 +2,14 @@
 
 This project is an update!
 
+week 9 update:
+Olive rewrote the code and my extension broke, i had to spend so much time figuring how to fix it, going blind as i dont have access to updated code yet, so i used popstate to handle turbo fires, kinda rebuilt the extension then moved on to fix some pending broken things, and finally (even i cant believe this turned out to be so good) the dark theme is now spooky as hell, i would suggest you to follow the dot!! 
+
+![spooky glimpse](public/recdemospok.mp4)
+
+(also i am proud of myself i didnt buy any merc this week nor begged for coins lol! :)_
+
+It's 2 am now cupcakes signin off... Happy Halloween!
 
 week 8 update:
 I have fixed the issues created duw to olive rewriting some code in og website, made armory upgrades, fixed the broken structure, and most importantly now lb uses api to fetch top 50, and then counts you (if you are not in top 50), also added search in explore page, and most amazing update in this version that i personally love is falling projects, they turned out to be so cool, you can clickable as well, hope you all like this update (prolly a final one!)
