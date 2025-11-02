@@ -9,9 +9,34 @@ let isActive = false;
 export function injectFallTheme() {
   if (window.location.pathname !== '/keep') return;
   
+  const theme = document.body.getAttribute('data-ms-theme') || 'default';
+  if (theme === 'dark') return;
+  
   setTimeout(() => {
     loadAndStartFalling();
   }, 1500);
+  
+  setupThemeListener();
+}
+
+function setupThemeListener() {
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'data-ms-theme') {
+        const theme = document.body.getAttribute('data-ms-theme') || 'default';
+        if (theme === 'dark') {
+          stopFallingProjects();
+        } else if (!isActive) {
+          loadAndStartFalling();
+        }
+      }
+    });
+  });
+  
+  observer.observe(document.body, {
+    attributes: true,
+    attributeFilter: ['data-ms-theme']
+  });
 }
 
 async function loadAndStartFalling() {
@@ -208,6 +233,18 @@ function startFallingProjects() {
       createCard();
     }
   }, 5000);
+}
+
+function stopFallingProjects() {
+  if (fallingInterval) {
+    clearInterval(fallingInterval);
+    fallingInterval = null;
+  }
+  
+  const existingCards = document.querySelectorAll('.ms-falling-card');
+  existingCards.forEach(card => card.remove());
+  
+  isActive = false;
 }
 
 function createCard() {
