@@ -5,10 +5,10 @@ This project is an update!
 week 9 update:
 Olive rewrote the code and my extension broke, i had to spend so much time figuring how to fix it, going blind as i dont have access to updated code yet, so i used popstate to handle turbo fires, kinda rebuilt the extension then moved on to fix some pending broken things, and finally (even i cant believe this turned out to be so good) the dark theme is now spooky as hell, i would suggest you to follow the dot!! 
 
-![spooky glimpse](public/shortestgif.gif)
+![spooky glimpse](demo-assets/shortestgif.gif)
 
 if you want full demo
-![spooky glimpse](download this public/recdemospok.mp4)
+![spooky glimpse](download this demo-assets/recdemspok.mp4)
 (also i am proud of myself i didnt buy any merc this week nor begged for coins lol! :)_
 
 It's 2 am now cupcakes signin off... Happy Halloween!
@@ -30,24 +30,24 @@ what I improved in week 7 (signal theme):
 I improved themes (dont tell Olive but in magical theme you get orange meeple for free with this one :lol), added a coffers leaderboard, and a poke(signal) feature to poke others, sadly I was out this week so couldn't work much as I wanted to! Now that apis are finally out, I can't wait to use them in week 8, here are some snapshots!
 
 
-![free orange meeple](public/meeple.png)
+![free orange meeple](demo-assets/meeple.png)
 
 ---
 
-![rankings](public/rank.png)
+![rankings](demo-assets/rank.png)
 
 ---
 
-![leaderboard](public/lb.png)
+![leaderboard](demo-assets/lb.png)
 
 ---
 
-![signals](public/signals.png)
+![signals](demo-assets/signals.png)
 
 ---
 
 Old readme (upto week 6)
-![Keep updated](public/keep.png)
+![Keep updated](demo-assets/keep.png)
 
 ---
 
@@ -65,7 +65,7 @@ I have tried to improved the stats in keep page, so that you have better experie
 ### Armory upgrades
 Armory page is upgraded now with predicted coins, and project stats that will help you, It's still work in progress, i am working on more features
 
-![Armory updated](public/armory.png)
+![Armory updated](demo-assets/armory.png)
 
 ### Keyboard shortcuts
 yeah i added some keyboard shortcut as well, idk how they are better, but it seemed cool to me :)
