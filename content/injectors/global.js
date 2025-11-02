@@ -11,12 +11,15 @@ export function injectGlobalEnhancements() {
   setupMessageListener();
 }
 
+//if you are here, jk i am on track this week, i might not even buy merc this week and already have like 102 coins with me I am rich and happy :yayyy:
+
 function setupMessageListener() {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'SETTINGS_UPDATED' && message.settings) {
       if (message.settings.theme) {
         Theme.setTheme(message.settings.theme).then(() => {
           updateThemeIndicator();
+          updateWeekCountdown();
         });
       }
     }
@@ -29,6 +32,10 @@ async function initializeTheme() {
 }
 
 function injectThemeIndicator() {
+  if (document.getElementById('ms-theme-indicator')) {
+    return;
+  }
+  
   const indicator = document.createElement('div');
   indicator.id = 'ms-theme-indicator';
   indicator.style.cssText = `
@@ -43,24 +50,27 @@ function injectThemeIndicator() {
     font-family: 'IM Fell English', serif;
     font-size: 0.875rem;
     color: #3b2a1a;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     cursor: pointer;
     transition: all 0.2s ease;
+    outline: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    overflow: hidden;
+    white-space: nowrap;
   `;
   
   indicator.addEventListener('click', async () => {
     const newTheme = await Theme.cycleTheme();
     updateThemeIndicator();
-    const themeNames = { default: 'Default', magical: 'Magical', dark: 'Dark Mode' };
-    showNotification(`Theme: ${themeNames[newTheme]}`);
+    updateWeekCountdown();
   });
   
   indicator.addEventListener('mouseover', () => {
-    indicator.style.transform = 'scale(1.05)';
+    indicator.style.opacity = '0.85';
   });
   
   indicator.addEventListener('mouseout', () => {
-    indicator.style.transform = 'scale(1)';
+    indicator.style.opacity = '1';
   });
   
   document.body.appendChild(indicator);
@@ -75,7 +85,7 @@ async function updateThemeIndicator() {
   const themeNames = {
     default: 'Default',
     magical: 'Magical',
-    dark: 'Dark Mode'
+    dark: 'Dark'
   };
   
   indicator.textContent = `Theme: ${themeNames[theme]}`;
@@ -96,6 +106,10 @@ async function updateThemeIndicator() {
 }
 
 function injectWeekCountdown() {
+  if (document.getElementById('ms-week-countdown')) {
+    return;
+  }
+  
   const countdown = document.createElement('div');
   countdown.id = 'ms-week-countdown';
   countdown.style.cssText = `
@@ -139,8 +153,7 @@ function updateWeekCountdown() {
   
   if (timeRemaining.total <= 0) {
     countdownElement.textContent = 'Week Ended!';
-    countdownContainer.style.borderColor = '#ef4444';
-    countdownElement.style.color = '#ef4444';
+    applyCountdownTheme(countdownContainer, countdownElement, 'ended');
     return;
   }
   
@@ -157,33 +170,39 @@ function updateWeekCountdown() {
   
   countdownElement.textContent = parts.join(' ');
   
+  let urgency = 'normal';
   if (timeRemaining.days === 0 && timeRemaining.hours < 6) {
-    countdownContainer.style.borderColor = '#ef4444';
-    countdownElement.style.color = '#ef4444';
+    urgency = 'critical';
   } else if (timeRemaining.days === 0 && timeRemaining.hours < 24) {
-    countdownContainer.style.borderColor = '#f59e0b';
-    countdownElement.style.color = '#f59e0b';
-  } else {
-    countdownContainer.style.borderColor = 'rgba(64,43,32,0.75)';
-    countdownElement.style.color = '#3b2a1a';
+    urgency = 'warning';
   }
   
-  const theme = document.body.getAttribute('data-ms-theme');
+  applyCountdownTheme(countdownContainer, countdownElement, urgency);
+}
+
+function applyCountdownTheme(container, element, urgency) {
+  const theme = document.body.getAttribute('data-ms-theme') || 'default';
+  
   if (theme === 'dark') {
-    countdownContainer.style.background = '#2a2a2a';
-    if (timeRemaining.days === 0 && timeRemaining.hours >= 6) {
-      countdownElement.style.color = '#e8dcc8';
-    }
+    container.style.background = '#2a2a2a';
+    container.style.borderColor = urgency === 'critical' ? '#ef4444' : urgency === 'warning' ? '#f59e0b' : 'rgba(245, 245, 244, 0.2)';
+    element.style.color = urgency === 'critical' ? '#ef4444' : urgency === 'warning' ? '#f59e0b' : '#e8dcc8';
   } else if (theme === 'magical') {
-    countdownContainer.style.background = 'rgba(139, 92, 246, 0.1)';
-    countdownContainer.style.borderColor = '#8B5CF6';
-    if (timeRemaining.days === 0 && timeRemaining.hours >= 6) {
-      countdownElement.style.color = '#6D28D9';
-    }
+    container.style.background = 'rgba(139, 92, 246, 0.1)';
+    container.style.borderColor = urgency === 'critical' ? '#ef4444' : urgency === 'warning' ? '#f59e0b' : '#8B5CF6';
+    element.style.color = urgency === 'critical' ? '#ef4444' : urgency === 'warning' ? '#f59e0b' : '#6D28D9';
+  } else {
+    container.style.background = 'rgba(255,255,255,0.95)';
+    container.style.borderColor = urgency === 'critical' ? '#ef4444' : urgency === 'warning' ? '#f59e0b' : 'rgba(64,43,32,0.75)';
+    element.style.color = urgency === 'critical' ? '#ef4444' : urgency === 'warning' ? '#f59e0b' : '#3b2a1a';
   }
 }
 
 async function injectFloatingActionButton() {
+  if (document.getElementById('ms-fab')) {
+    return;
+  }
+  
   const settings = await Settings.getAll();
   
   const fab = document.createElement('div');
@@ -230,8 +249,7 @@ async function injectFloatingActionButton() {
   document.getElementById('ms-theme-toggle')?.addEventListener('click', async () => {
     const newTheme = await Theme.cycleTheme();
     updateThemeIndicator();
-    const themeNames = { default: 'Default', magical: 'Magical', dark: 'Dark Mode' };
-    showNotification(`Theme: ${themeNames[newTheme]}`);
+    updateWeekCountdown();
     menuOpen = false;
     fabMenu.style.display = 'none';
   });
@@ -354,8 +372,7 @@ function setupKeyboardShortcuts() {
         e.preventDefault();
         const newTheme = await Theme.cycleTheme();
         updateThemeIndicator();
-        const themeNames = { default: 'Default', magical: 'Magical', dark: 'Dark Mode' };
-        showNotification(`Theme: ${themeNames[newTheme]}`);
+        updateWeekCountdown();
         break;
       case 'r':
         e.preventDefault();
