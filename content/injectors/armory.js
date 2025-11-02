@@ -499,21 +499,7 @@ function injectProjectSummaryCard(projects) {
           <div style="font-size: 2rem; font-weight: 700; color: #16a34a; font-family: 'Jaini', serif;">
             ${weeksLeft}
           </div>
-          <div style="font-size: 0.75rem; opacity: 0.6; font-family: 'IM Fell English', serif; margin-top: 0.25rem;">
-            14 - ${latestWeek}
-          </div>
         </div>
-        
-        ${overallAvgScore ? `
-          <div style="text-align: center; padding: 0.75rem; background: rgba(168, 85, 247, 0.1); border: 2px solid rgba(168, 85, 247, 0.3); border-radius: 8px;">
-            <div style="font-size: 0.875rem; opacity: 0.7; font-family: 'IM Fell English', serif; margin-bottom: 0.25rem;">
-              Avg Score
-            </div>
-            <div style="font-size: 2rem; font-weight: 700; color: #7c3aed; font-family: 'Jaini', serif;">
-              ${overallAvgScore} ${'⭐'.repeat(Math.round(parseFloat(overallAvgScore)))}
-            </div>
-          </div>
-        ` : ''}
       </div>
       
       <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(59, 42, 26, 0.05); border-radius: 8px; text-align: center;">

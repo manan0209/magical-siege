@@ -84,7 +84,19 @@ class MagicalSiege {
 
 let magicalSiegeInstance = null;
 
+function isExtensionValid() {
+  try {
+    return chrome?.runtime?.id !== undefined;
+  } catch {
+    return false;
+  }
+}
+
 function initializeMagicalSiege() {
+  if (!isExtensionValid()) {
+    return;
+  }
+  
   try {
     if (magicalSiegeInstance) {
       magicalSiegeInstance = null;
@@ -92,7 +104,9 @@ function initializeMagicalSiege() {
     
     magicalSiegeInstance = new MagicalSiege();
   } catch (error) {
-    console.error('[Magical Siege] Error during initialization:', error);
+    if (!error.message?.includes('Extension context invalidated')) {
+      console.error('[Magical Siege] Error during initialization:', error);
+    }
   }
 }
 
