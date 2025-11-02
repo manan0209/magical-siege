@@ -5,10 +5,10 @@ This project is an update!
 week 9 update:
 Olive rewrote the code and my extension broke, i had to spend so much time figuring how to fix it, going blind as i dont have access to updated code yet, so i used popstate to handle turbo fires, kinda rebuilt the extension then moved on to fix some pending broken things, and finally (even i cant believe this turned out to be so good) the dark theme is now spooky as hell, i would suggest you to follow the dot!! 
 
-![spooky glimpse](public/shortdemo.mp4)
+![spooky glimpse](public/shortest.mp4)
 
 if you want full demo
-![spooky glimpse](public/recdemospok.mp4)
+![spooky glimpse](download this public/recdemospok.mp4)
 (also i am proud of myself i didnt buy any merc this week nor begged for coins lol! :)_
 
 It's 2 am now cupcakes signin off... Happy Halloween!
