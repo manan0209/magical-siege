@@ -283,6 +283,9 @@ function injectQuickActions() {
         <a href="/market" class="submit-button" style="text-decoration: none; background: linear-gradient(135deg, #785437 0%, #9A7B4F 100%); font-family: 'IM Fell English', serif;">
           Visit Market
         </a>
+        <a href="/catacombs" class="submit-button" style="text-decoration: none; background: linear-gradient(135deg, #4c1d95 0%, #6b21a8 100%); color: #e9d5ff; font-family: 'IM Fell English', serif;">
+          Secret..
+        </a>
       </div>
     </div>
   `;
