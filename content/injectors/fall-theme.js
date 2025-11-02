@@ -9,14 +9,14 @@ let isActive = false;
 export function injectFallTheme() {
   if (window.location.pathname !== '/keep') return;
   
-  const theme = document.body.getAttribute('data-ms-theme') || 'default';
-  if (theme === 'dark') return;
+  setupThemeListener();
   
   setTimeout(() => {
-    loadAndStartFalling();
+    const theme = document.body.getAttribute('data-ms-theme') || 'default';
+    if (theme !== 'dark') {
+      loadAndStartFalling();
+    }
   }, 1500);
-  
-  setupThemeListener();
 }
 
 function setupThemeListener() {

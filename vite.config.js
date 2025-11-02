@@ -50,6 +50,15 @@ export default defineConfig({
         if (existsSync('public/Handpointer.cur')) {
           copyFileSync('public/Handpointer.cur', 'dist/Handpointer.cur');
         }
+        if (existsSync('public/door.png')) {
+          copyFileSync('public/door.png', 'dist/door.png');
+        }
+        if (existsSync('public/Scary Door Creak Sound Effect.mp3')) {
+          copyFileSync('public/Scary Door Creak Sound Effect.mp3', 'dist/door-creak.mp3');
+        }
+        if (existsSync('public/follow-red-dot.mp4')) {
+          copyFileSync('public/follow-red-dot.mp4', 'dist/follow-red-dot.mp4');
+        }
       }
     }
   ]

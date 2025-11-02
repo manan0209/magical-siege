@@ -6,6 +6,7 @@ import { injectCastleEnhancements } from './injectors/castle.js';
 import { injectGlobalEnhancements } from './injectors/global.js';
 import { injectMagicalMeeple } from './injectors/magical-meeple.js';
 import { injectFallTheme } from './injectors/fall-theme.js';
+import { injectSpookyDoor } from './injectors/spooky-door.js';
 
 const PAGES = {
   KEEP: '/keep',
@@ -36,6 +37,7 @@ class MagicalSiege {
   async init() {
     injectGlobalEnhancements();
     injectMagicalMeeple();
+    injectSpookyDoor();
 
     if (!this.currentPage) {
       return;
