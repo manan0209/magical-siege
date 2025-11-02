@@ -1,3 +1,7 @@
+let meepleObserver = null;
+let replacementIntervals = [];
+let currentlyActive = false;
+
 export function injectMagicalMeeple() {
 
     //lol olive haha, its free nowwww :hehe: pls dont kill me for this :hehe:
@@ -25,57 +29,60 @@ function checkThemeAndActivate() {
   const isMagicalTheme = document.body.classList.contains('ms-theme-magical') ||
                         document.body.getAttribute('data-ms-theme') === 'magical';
   
-  if (isMagicalTheme) {
+  if (isMagicalTheme && !currentlyActive) {
     activateMagicalMeeple();
+  } else if (!isMagicalTheme && currentlyActive) {
+    deactivateMagicalMeeple();
   }
 }
 
+function deactivateMagicalMeeple() {
+  currentlyActive = false;
+  
+  if (meepleObserver) {
+    meepleObserver.disconnect();
+    meepleObserver = null;
+  }
+  
+  replacementIntervals.forEach(interval => clearInterval(interval));
+  replacementIntervals = [];
+}
+
 function activateMagicalMeeple() {
+  if (currentlyActive) return;
+  currentlyActive = true;
+  
   startMeepleReplacer();
 }
 
 function startMeepleReplacer() {
   const orangeMeepleUrl = chrome.runtime.getURL('assets/meeple-orange.png');
   
-  window.addEventListener('load', () => {
-    if (window.MeepleDisplay) {
-      const OriginalMeepleDisplay = window.MeepleDisplay;
-      window.MeepleDisplay = function(userData, width, height) {
-        if (userData && userData.meeple) {
-          userData.meeple.imageSrc = orangeMeepleUrl;
-          userData.meeple.color = 'orange';
-        }
-        return new OriginalMeepleDisplay(userData, width, height);
-      };
-      Object.setPrototypeOf(window.MeepleDisplay, OriginalMeepleDisplay);
-      window.MeepleDisplay.prototype = OriginalMeepleDisplay.prototype;
+  function replaceUserMeepleOnly() {
+    const navbarMeeple = document.querySelector('#navbar-meeple-container img[src*="meeple"]');
+    if (navbarMeeple && !navbarMeeple.src.includes('meeple-orange')) {
+      navbarMeeple.src = orangeMeepleUrl;
+      navbarMeeple.style.filter = 'drop-shadow(0 0 8px rgba(251, 146, 60, 0.6))';
+      navbarMeeple.dataset.magicalReplaced = 'true';
     }
-  });
-  
-  function replaceMeepleImages() {
-    const allImages = document.querySelectorAll('img[src*="meeple"], img[alt*="meeple"]');
     
-    allImages.forEach(img => {
-      if (img.src.includes('meeple-orange')) return;
-      
-      img.src = orangeMeepleUrl;
-      img.style.filter = 'drop-shadow(0 0 8px rgba(251, 146, 60, 0.6))';
-      img.dataset.magicalReplaced = 'true';
-    });
+    const homeMeepleContainers = [
+      document.querySelector('#home-meeple-container'),
+      document.querySelector('#home-meeple-container-2')
+    ];
     
-    const allCanvases = document.querySelectorAll('canvas');
-    allCanvases.forEach(canvas => {
-      const parent = canvas.parentElement;
-      if (!parent) return;
+    homeMeepleContainers.forEach(container => {
+      if (!container) return;
       
-      const parentId = parent.id || '';
-      const parentClass = parent.className || '';
+      const meepleImg = container.querySelector('img[src*="meeple"]');
+      if (meepleImg && !meepleImg.src.includes('meeple-orange')) {
+        meepleImg.src = orangeMeepleUrl;
+        meepleImg.style.filter = 'drop-shadow(0 0 8px rgba(251, 146, 60, 0.6))';
+        meepleImg.dataset.magicalReplaced = 'true';
+      }
       
-      if (parentId.includes('meeple') || parentClass.includes('meeple') || 
-          parent.querySelector('[id*="meeple"]') || parent.querySelector('[class*="meeple"]')) {
-        
-        if (parent.dataset.magicalReplaced) return;
-        
+      const canvas = container.querySelector('canvas');
+      if (canvas && !container.dataset.magicalReplaced) {
         const img = document.createElement('img');
         img.src = orangeMeepleUrl;
         img.style.cssText = `
@@ -85,57 +92,31 @@ function startMeepleReplacer() {
           filter: drop-shadow(0 0 8px rgba(251, 146, 60, 0.6));
         `;
         canvas.replaceWith(img);
-        parent.dataset.magicalReplaced = 'true';
+        container.dataset.magicalReplaced = 'true';
       }
     });
-    
-    addMagicalBadges();
   }
   
-  function addMagicalBadges() {
-    const avatars = document.querySelectorAll('.meeple-avatar, .navbar .meeple-avatar');
-    avatars.forEach(avatar => {
-      if (avatar.querySelector('.magical-badge')) return;
-      
-      const badge = document.createElement('div');
-      badge.className = 'magical-badge';
-      badge.style.cssText = `
-        position: absolute;
-        bottom: -8px;
-        right: -8px;
-        background: linear-gradient(135deg, #FB923C, #F97316);
-        color: white;
-        font-size: 0.65rem;
-        padding: 0.15rem 0.4rem;
-        border-radius: 4px;
-        font-weight: 700;
-        border: 2px solid #FCD34D;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        font-family: 'IM Fell English', serif;
-        z-index: 10;
-      `;
-      badge.textContent = 'MAGICAL';
-      
-      avatar.style.position = 'relative';
-      avatar.appendChild(badge);
-    });
-  }
+  replaceUserMeepleOnly();
+  setTimeout(replaceUserMeepleOnly, 500);
+  setTimeout(replaceUserMeepleOnly, 1000);
   
-  replaceMeepleImages();
-  setTimeout(replaceMeepleImages, 500);
-  setTimeout(replaceMeepleImages, 1000);
-  setTimeout(replaceMeepleImages, 2000);
-  
-  const observer = new MutationObserver(() => {
-    replaceMeepleImages();
+  meepleObserver = new MutationObserver(() => {
+    if (currentlyActive) {
+      replaceUserMeepleOnly();
+    }
   });
   
-  observer.observe(document.body, {
+  meepleObserver.observe(document.body, {
     childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['src']
+    subtree: true
   });
   
-  setInterval(replaceMeepleImages, 3000);
+  const interval = setInterval(() => {
+    if (currentlyActive) {
+      replaceUserMeepleOnly();
+    }
+  }, 3000);
+  
+  replacementIntervals.push(interval);
 }
