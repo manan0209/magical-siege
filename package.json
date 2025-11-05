@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite build --watch --mode development",
     "build": "vite build",
+    "build:firefox": "npm run build && cp -r dist dist-firefox && cp manifest.firefox.json dist-firefox/manifest.json && find dist-firefox -name '.DS_Store' -type f -delete",
+    "build:all": "./build-all.sh",
     "preview": "vite preview"
   },
   "keywords": [
