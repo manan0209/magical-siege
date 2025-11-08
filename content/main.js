@@ -7,6 +7,7 @@ import { injectGlobalEnhancements } from './injectors/global.js';
 import { injectMagicalMeeple } from './injectors/magical-meeple.js';
 import { injectFallTheme } from './injectors/fall-theme.js';
 import { injectSpookyDoor } from './injectors/spooky-door.js';
+import { injectTreasuryGrid } from './injectors/treasury-grid.js';
 
 const PAGES = {
   KEEP: '/keep',
@@ -38,6 +39,7 @@ class MagicalSiege {
     injectGlobalEnhancements();
     injectMagicalMeeple();
     injectSpookyDoor();
+    injectTreasuryGrid();
 
     if (!this.currentPage) {
       return;
