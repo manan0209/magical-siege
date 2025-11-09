@@ -2,6 +2,21 @@ let isActive = false;
 let treasuryData = [];
 let listenerAdded = false;
 
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes treasury-process {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); opacity: 0.7; }
+    100% { transform: scale(1); }
+  }
+  
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+`;
+document.head.appendChild(style);
+
 export function injectTreasuryGrid() {
   if (listenerAdded) return;
   
@@ -34,6 +49,11 @@ function deactivateTreasuryGrid() {
   if (overlay) {
     overlay.remove();
   }
+  
+  const progressBar = document.getElementById('treasury-progress');
+  if (progressBar) {
+    progressBar.remove();
+  }
 }
 
 function createTreasuryOverlay() {
@@ -46,7 +66,7 @@ function createTreasuryOverlay() {
     width: 100vw;
     height: 100vh;
     background: linear-gradient(135deg, #1a1410 0%, #2d1f1a 100%);
-    z-index: 99999;
+    z-index: 99998;
     overflow: hidden;
     font-family: 'IM Fell English', serif;
   `;
@@ -112,9 +132,15 @@ async function fetchTreasuryData() {
     const data = await response.json();
     
     if (data && data.projects) {
-      treasuryData = data.projects
+      const baseProjects = data.projects
         .filter(p => p.status === 'finished' && p.coin_value > 0)
         .slice(0, 100);
+      
+      const repeatCount = Math.ceil(500 / baseProjects.length);
+      treasuryData = [];
+      for (let i = 0; i < repeatCount; i++) {
+        treasuryData.push(...baseProjects);
+      }
       
       renderTreasuryGrid(treasuryData);
     }
@@ -243,6 +269,8 @@ function updateFooterStats() {
     return sum + parseInt(cell.dataset.coins || 0);
   }, 0);
   
+  const hasSelection = selectedCells.length > 0;
+  
   footer.innerHTML = `
     <div style="display: flex; gap: 4rem; align-items: center;">
       <div style="display: flex; flex-direction: column; gap: 0.25rem;">
@@ -277,6 +305,20 @@ function updateFooterStats() {
     </div>
     
     <div style="display: flex; gap: 1rem;">
+      ${hasSelection ? `
+      <button id="process-btn" style="
+        font-family: 'IM Fell English', serif;
+        padding: 0.85rem 2rem;
+        background: rgba(212, 165, 116, 0.15);
+        border: 1px solid rgba(212, 165, 116, 0.6);
+        color: #d4a574;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.15s;
+        letter-spacing: 0.1rem;
+        text-transform: uppercase;
+      ">Process Treasury</button>
+      ` : ''}
       <button id="clear-selection-btn" style="
         font-family: 'IM Fell English', serif;
         padding: 0.85rem 2rem;
@@ -308,6 +350,148 @@ function updateFooterStats() {
     
     clearBtn.addEventListener('click', clearAllSelections);
   }
+  
+  const processBtn = document.getElementById('process-btn');
+  console.log('Process button found:', processBtn);
+  if (processBtn) {
+    processBtn.addEventListener('mouseenter', () => {
+      processBtn.style.background = 'rgba(212, 165, 116, 0.25)';
+    });
+    
+    processBtn.addEventListener('mouseleave', () => {
+      processBtn.style.background = 'rgba(212, 165, 116, 0.15)';
+    });
+    
+    processBtn.addEventListener('click', (e) => {
+      console.log('Process button clicked!');
+      e.preventDefault();
+      e.stopPropagation();
+      processTreasury();
+    });
+    console.log('Process button listener attached');
+  }
+}
+
+function processTreasury() {
+  console.log('processTreasury called');
+  const selectedCells = document.querySelectorAll('.treasury-cell.selected');
+  console.log('Selected cells:', selectedCells.length);
+  if (selectedCells.length === 0) return;
+  
+  const existingProgress = document.getElementById('treasury-progress');
+  if (existingProgress) {
+    existingProgress.remove();
+  }
+  
+  const progressBar = document.createElement('div');
+  progressBar.id = 'treasury-progress';
+  progressBar.style.cssText = `
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 12px !important;
+    background: #d4a574 !important;
+    z-index: 2147483647 !important;
+    pointer-events: none !important;
+  `;
+  
+  const progressFill = document.createElement('div');
+  progressFill.style.cssText = `
+    height: 100% !important;
+    width: 0% !important;
+    background: #f4d5a4 !important;
+    transition: width 0.3s ease !important;
+  `;
+  
+  progressBar.appendChild(progressFill);
+  document.body.appendChild(progressBar);
+  console.log('Progress bar added to body');
+  
+  const totalCells = selectedCells.length;
+  let processedCount = 0;
+  
+  console.log('Starting processing interval');
+  
+  const processInterval = setInterval(() => {
+    if (processedCount < totalCells) {
+      const cell = selectedCells[processedCount];
+      console.log('Processing cell', processedCount);
+      
+      cell.style.animation = 'treasury-process 0.5s ease';
+      
+      setTimeout(() => {
+        cell.style.opacity = '0.3';
+        cell.style.pointerEvents = 'none';
+      }, 500);
+      
+      processedCount++;
+      const progress = (processedCount / totalCells) * 100;
+      progressFill.style.width = `${progress}%`;
+      console.log('Progress:', progress + '%');
+    } else {
+      clearInterval(processInterval);
+      console.log('Processing complete');
+      
+      setTimeout(() => {
+        showCompletionMessage(totalCells);
+        progressBar.remove();
+      }, 500);
+    }
+  }, 150);
+}
+
+function showCompletionMessage(count) {
+  const overlay = document.getElementById('treasury-overlay');
+  if (!overlay) return;
+  
+  const message = document.createElement('div');
+  message.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background: rgba(13, 10, 8, 0.95);
+    border: 2px solid rgba(212, 165, 116, 0.8);
+    padding: 3rem 4rem;
+    z-index: 10002;
+    text-align: center;
+    opacity: 0;
+    transition: all 0.5s ease;
+  `;
+  
+  message.innerHTML = `
+    <div style="
+      font-family: 'Jaini', serif;
+      color: #d4a574;
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    ">${count}</div>
+    <div style="
+      font-family: 'IM Fell English', serif;
+      color: rgba(212, 165, 116, 0.7);
+      font-size: 1rem;
+      letter-spacing: 0.15rem;
+      text-transform: uppercase;
+    ">Projects Processed</div>
+  `;
+  
+  overlay.appendChild(message);
+  
+  setTimeout(() => {
+    message.style.opacity = '1';
+    message.style.transform = 'translate(-50%, -50%) scale(1)';
+  }, 50);
+  
+  setTimeout(() => {
+    message.style.opacity = '0';
+    message.style.transform = 'translate(-50%, -50%) scale(0.8)';
+    
+    setTimeout(() => {
+      message.remove();
+      clearAllSelections();
+    }, 2000);
+  }, 2000);
 }
 
 function clearAllSelections() {
