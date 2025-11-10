@@ -1,6 +1,10 @@
 let isActive = false;
 let treasuryData = [];
 let listenerAdded = false;
+let focusedCellIndex = 0;
+let gridColumns = 0;
+
+// I have been hella alot busy this week I am giving mocks back to back :sob: so please bear with me
 
 const style = document.createElement('style');
 style.textContent = `
@@ -34,11 +38,16 @@ function setupTreasuryTrigger() {
     if (e.key === 'Escape' && isActive) {
       deactivateTreasuryGrid();
     }
+    
+    if (isActive) {
+      handleKeyboardNavigation(e);
+    }
   });
 }
 
 function activateTreasuryGrid() {
   isActive = true;
+  focusedCellIndex = 0;
   createTreasuryOverlay();
   fetchTreasuryData();
 }
@@ -134,9 +143,9 @@ async function fetchTreasuryData() {
     if (data && data.projects) {
       const baseProjects = data.projects
         .filter(p => p.status === 'finished' && p.coin_value > 0)
-        .slice(0, 100);
+        .slice(0, 1000);
       
-      const repeatCount = Math.ceil(500 / baseProjects.length);
+      const repeatCount = Math.ceil(20000 / baseProjects.length);
       treasuryData = [];
       for (let i = 0; i < repeatCount; i++) {
         treasuryData.push(...baseProjects);
@@ -175,6 +184,13 @@ function renderTreasuryGrid(data) {
   gridArea.innerHTML = '';
   gridArea.appendChild(grid);
   updateFooterStats();
+  
+  setTimeout(() => {
+    const cells = document.querySelectorAll('.treasury-cell');
+    if (cells.length > 0) {
+      updateFocusedCell(cells);
+    }
+  }, 100);
 }
 
 function createTreasuryCell(project, index) {
@@ -352,7 +368,6 @@ function updateFooterStats() {
   }
   
   const processBtn = document.getElementById('process-btn');
-  console.log('Process button found:', processBtn);
   if (processBtn) {
     processBtn.addEventListener('mouseenter', () => {
       processBtn.style.background = 'rgba(212, 165, 116, 0.25)';
@@ -363,19 +378,15 @@ function updateFooterStats() {
     });
     
     processBtn.addEventListener('click', (e) => {
-      console.log('Process button clicked!');
       e.preventDefault();
       e.stopPropagation();
       processTreasury();
     });
-    console.log('Process button listener attached');
   }
 }
 
 function processTreasury() {
-  console.log('processTreasury called');
   const selectedCells = document.querySelectorAll('.treasury-cell.selected');
-  console.log('Selected cells:', selectedCells.length);
   if (selectedCells.length === 0) return;
   
   const existingProgress = document.getElementById('treasury-progress');
@@ -406,17 +417,13 @@ function processTreasury() {
   
   progressBar.appendChild(progressFill);
   document.body.appendChild(progressBar);
-  console.log('Progress bar added to body');
   
   const totalCells = selectedCells.length;
   let processedCount = 0;
   
-  console.log('Starting processing interval');
-  
   const processInterval = setInterval(() => {
     if (processedCount < totalCells) {
       const cell = selectedCells[processedCount];
-      console.log('Processing cell', processedCount);
       
       cell.style.animation = 'treasury-process 0.5s ease';
       
@@ -428,10 +435,8 @@ function processTreasury() {
       processedCount++;
       const progress = (processedCount / totalCells) * 100;
       progressFill.style.width = `${progress}%`;
-      console.log('Progress:', progress + '%');
     } else {
       clearInterval(processInterval);
-      console.log('Processing complete');
       
       setTimeout(() => {
         showCompletionMessage(totalCells);
@@ -503,4 +508,55 @@ function clearAllSelections() {
   });
   
   updateFooterStats();
+}
+
+function handleKeyboardNavigation(e) {
+  const cells = document.querySelectorAll('.treasury-cell');
+  if (cells.length === 0) return;
+  
+  const gridContainer = cells[0].parentElement;
+  if (!gridContainer) return;
+  
+  const gridStyle = window.getComputedStyle(gridContainer);
+  const gridTemplateColumns = gridStyle.gridTemplateColumns.split(' ');
+  gridColumns = gridTemplateColumns.length;
+  
+  let handled = false;
+  
+  if (e.key === 'ArrowRight') {
+    focusedCellIndex = Math.min(focusedCellIndex + 1, cells.length - 1);
+    handled = true;
+  } else if (e.key === 'ArrowLeft') {
+    focusedCellIndex = Math.max(focusedCellIndex - 1, 0);
+    handled = true;
+  } else if (e.key === 'ArrowDown') {
+    focusedCellIndex = Math.min(focusedCellIndex + gridColumns, cells.length - 1);
+    handled = true;
+  } else if (e.key === 'ArrowUp') {
+    focusedCellIndex = Math.max(focusedCellIndex - gridColumns, 0);
+    handled = true;
+  } else if (e.key === ' ' || e.key === 'Enter') {
+    const focusedCell = cells[focusedCellIndex];
+    if (focusedCell) {
+      focusedCell.click();
+    }
+    handled = true;
+  }
+  
+  if (handled) {
+    e.preventDefault();
+    updateFocusedCell(cells);
+  }
+}
+
+function updateFocusedCell(cells) {
+  cells.forEach((cell, index) => {
+    if (index === focusedCellIndex) {
+      cell.style.outline = '3px solid #d4a574';
+      cell.style.outlineOffset = '-3px';
+      cell.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+      cell.style.outline = 'none';
+    }
+  });
 }
