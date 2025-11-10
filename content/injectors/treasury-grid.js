@@ -18,6 +18,11 @@ style.textContent = `
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
   }
+  
+  @keyframes modalFadeIn {
+    0% { transform: scale(0.95); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
 `;
 document.head.appendChild(style);
 
@@ -259,6 +264,10 @@ function setupCellInteractions(cell) {
   
   cell.addEventListener('click', () => {
     toggleCellSelection(cell);
+  });
+  
+  cell.addEventListener('dblclick', () => {
+    showProjectDetail(cell);
   });
 }
 
@@ -559,4 +568,113 @@ function updateFocusedCell(cells) {
       cell.style.outline = 'none';
     }
   });
+}
+
+function showProjectDetail(cell) {
+  const coins = cell.dataset.coins;
+  const projectName = cell.dataset.projectName;
+  const index = cell.dataset.index;
+  
+  const existingModal = document.getElementById('treasury-detail-modal');
+  if (existingModal) {
+    existingModal.remove();
+  }
+  
+  const modal = document.createElement('div');
+  modal.id = 'treasury-detail-modal';
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  `;
+  
+  const content = document.createElement('div');
+  content.style.cssText = `
+    background: linear-gradient(135deg, #1a1410 0%, #2d1f1a 100%);
+    border: 2px solid rgba(212, 165, 116, 0.4);
+    padding: 3rem;
+    min-width: 400px;
+    max-width: 600px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    animation: modalFadeIn 0.3s ease;
+  `;
+  
+  content.innerHTML = `
+    <div style="
+      font-family: 'IM Fell English', serif;
+      color: rgba(212, 165, 116, 0.5);
+      font-size: 0.75rem;
+      letter-spacing: 0.2rem;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    ">Project #${parseInt(index) + 1}</div>
+    
+    <div style="
+      font-family: 'Jaini', serif;
+      color: #d4a574;
+      font-size: 3.5rem;
+      margin-bottom: 2rem;
+      line-height: 1;
+    ">${coins}</div>
+    
+    <div style="
+      font-family: 'IM Fell English', serif;
+      color: rgba(212, 165, 116, 0.5);
+      font-size: 0.75rem;
+      letter-spacing: 0.15rem;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    ">Project Name</div>
+    
+    <div style="
+      font-family: 'IM Fell English', serif;
+      color: #d4a574;
+      font-size: 1.25rem;
+      margin-bottom: 3rem;
+      line-height: 1.4;
+    ">${projectName}</div>
+    
+    <div style="
+      font-family: 'IM Fell English', serif;
+      color: rgba(212, 165, 116, 0.4);
+      font-size: 0.85rem;
+      text-align: center;
+      letter-spacing: 0.1rem;
+    ">Press ESC or click anywhere to close</div>
+  `;
+  
+  modal.appendChild(content);
+  document.body.appendChild(modal);
+  
+  const closeModal = () => {
+    modal.style.opacity = '0';
+    setTimeout(() => modal.remove(), 200);
+  };
+  
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+  
+  document.addEventListener('keydown', function escHandler(e) {
+    if (e.key === 'Escape') {
+      closeModal();
+      document.removeEventListener('keydown', escHandler);
+    }
+  });
+  
+  modal.style.opacity = '0';
+  setTimeout(() => {
+    modal.style.transition = 'opacity 0.2s ease';
+    modal.style.opacity = '1';
+  }, 10);
 }
