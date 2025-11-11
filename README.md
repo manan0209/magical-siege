@@ -2,6 +2,11 @@
 
 This project is an update!
 
+week 10 update :
+I had many awesome ideas and plans for this week, but unfortunately I was very busy giving mocks back to back :sob: so couldnt really implement all of the features i planned, but still i consider it has turned out to be great, give it a try, and always remember since you are a treasurer now that work is mysterious and improtant!!
+
+![treasury glimpse](demo-assets/treasurygif.gif)
+
 week 9 update:
 Olive rewrote the code and my extension broke, i had to spend so much time figuring how to fix it, going blind as i dont have access to updated code yet, so i used popstate to handle turbo fires, kinda rebuilt the extension then moved on to fix some pending broken things, and finally (even i cant believe this turned out to be so good) the dark theme is now spooky as hell, i would suggest you to follow the dot!! 
 
