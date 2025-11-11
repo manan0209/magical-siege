@@ -3,6 +3,32 @@ let treasuryData = [];
 let listenerAdded = false;
 let focusedCellIndex = 0;
 let gridColumns = 0;
+let audioContext = null;
+
+function initAudio() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+
+function playTone(frequency, duration, volume = 0.1) {
+  if (!audioContext) initAudio();
+  
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+  
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+  
+  oscillator.frequency.value = frequency;
+  oscillator.type = 'sine';
+  
+  gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+  
+  oscillator.start(audioContext.currentTime);
+  oscillator.stop(audioContext.currentTime + duration);
+}
 
 // I have been hella alot busy this week I am giving mocks back to back :sob: so please bear with me
 
@@ -53,12 +79,16 @@ function setupTreasuryTrigger() {
 function activateTreasuryGrid() {
   isActive = true;
   focusedCellIndex = 0;
+  playTone(400, 0.1, 0.05);
+  setTimeout(() => playTone(600, 0.15, 0.05), 50);
   createTreasuryOverlay();
   fetchTreasuryData();
 }
 
 function deactivateTreasuryGrid() {
   isActive = false;
+  playTone(600, 0.1, 0.05);
+  setTimeout(() => playTone(400, 0.15, 0.05), 50);
   const overlay = document.getElementById('ms-treasury-grid');
   if (overlay) {
     overlay.remove();
@@ -102,12 +132,20 @@ function createTreasuryOverlay() {
           letter-spacing: 0.3rem;
           text-transform: uppercase;
         ">Siege Treasury</div>
-        <div style="
-          font-family: 'IM Fell English', serif;
-          color: rgba(212, 165, 116, 0.6);
-          font-size: 0.9rem;
-          letter-spacing: 0.1rem;
-        ">Press ESC to exit</div>
+        <div style="display: flex; gap: 2rem; align-items: center;">
+          <div style="
+            font-family: 'IM Fell English', serif;
+            color: rgba(212, 165, 116, 0.4);
+            font-size: 0.75rem;
+            letter-spacing: 0.08rem;
+          ">Arrow keys to navigate • Space to select • Double-click for details</div>
+          <div style="
+            font-family: 'IM Fell English', serif;
+            color: rgba(212, 165, 116, 0.6);
+            font-size: 0.9rem;
+            letter-spacing: 0.1rem;
+          ">ESC to exit</div>
+        </div>
       </div>
       
       <div id="treasury-main" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 2.5rem;">
@@ -276,10 +314,12 @@ function toggleCellSelection(cell) {
     cell.classList.remove('selected');
     cell.style.background = '#0d0a08';
     cell.style.boxShadow = 'none';
+    playTone(300, 0.05, 0.03);
   } else {
     cell.classList.add('selected');
     cell.style.background = 'rgba(120, 84, 55, 0.3)';
     cell.style.boxShadow = 'inset 0 0 0 2px rgba(212, 165, 116, 0.6)';
+    playTone(500, 0.05, 0.03);
   }
   
   updateFooterStats();
@@ -435,6 +475,7 @@ function processTreasury() {
       const cell = selectedCells[processedCount];
       
       cell.style.animation = 'treasury-process 0.5s ease';
+      playTone(350 + (processedCount % 5) * 50, 0.08, 0.02);
       
       setTimeout(() => {
         cell.style.opacity = '0.3';
@@ -446,6 +487,8 @@ function processTreasury() {
       progressFill.style.width = `${progress}%`;
     } else {
       clearInterval(processInterval);
+      playTone(700, 0.2, 0.04);
+      setTimeout(() => playTone(900, 0.3, 0.04), 100);
       
       setTimeout(() => {
         showCompletionMessage(totalCells);
@@ -534,15 +577,19 @@ function handleKeyboardNavigation(e) {
   
   if (e.key === 'ArrowRight') {
     focusedCellIndex = Math.min(focusedCellIndex + 1, cells.length - 1);
+    playTone(450, 0.03, 0.02);
     handled = true;
   } else if (e.key === 'ArrowLeft') {
     focusedCellIndex = Math.max(focusedCellIndex - 1, 0);
+    playTone(450, 0.03, 0.02);
     handled = true;
   } else if (e.key === 'ArrowDown') {
     focusedCellIndex = Math.min(focusedCellIndex + gridColumns, cells.length - 1);
+    playTone(420, 0.03, 0.02);
     handled = true;
   } else if (e.key === 'ArrowUp') {
     focusedCellIndex = Math.max(focusedCellIndex - gridColumns, 0);
+    playTone(480, 0.03, 0.02);
     handled = true;
   } else if (e.key === ' ' || e.key === 'Enter') {
     const focusedCell = cells[focusedCellIndex];
@@ -574,6 +621,9 @@ function showProjectDetail(cell) {
   const coins = cell.dataset.coins;
   const projectName = cell.dataset.projectName;
   const index = cell.dataset.index;
+  
+  playTone(550, 0.1, 0.03);
+  setTimeout(() => playTone(750, 0.15, 0.03), 50);
   
   const existingModal = document.getElementById('treasury-detail-modal');
   if (existingModal) {
