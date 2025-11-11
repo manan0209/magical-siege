@@ -10,6 +10,7 @@ export function injectFallTheme() {
   if (window.location.pathname !== '/keep') return;
   
   setupThemeListener();
+  setupTreasuryListener();
   
   setTimeout(() => {
     const theme = document.body.getAttribute('data-ms-theme') || 'default';
@@ -17,6 +18,19 @@ export function injectFallTheme() {
       loadAndStartFalling();
     }
   }, 1500);
+}
+
+function setupTreasuryListener() {
+  document.addEventListener('ms-stop-falling', () => {
+    stopFallingProjects();
+  });
+  
+  document.addEventListener('ms-restart-falling', () => {
+    const theme = document.body.getAttribute('data-ms-theme') || 'default';
+    if (theme !== 'dark' && !isActive) {
+      loadAndStartFalling();
+    }
+  });
 }
 
 function setupThemeListener() {

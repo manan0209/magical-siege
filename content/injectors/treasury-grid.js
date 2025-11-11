@@ -4,6 +4,8 @@ let listenerAdded = false;
 let focusedCellIndex = 0;
 let gridColumns = 0;
 let audioContext = null;
+let dataPreloaded = false;
+let isFirstTime = true;
 
 function initAudio() {
   if (!audioContext) {
@@ -57,6 +59,7 @@ export function injectTreasuryGrid() {
   
   setupTreasuryTrigger();
   listenerAdded = true;
+  preloadTreasuryData();
 }
 
 function setupTreasuryTrigger() {
@@ -76,13 +79,50 @@ function setupTreasuryTrigger() {
   });
 }
 
+async function preloadTreasuryData() {
+  if (dataPreloaded) return;
+  
+  try {
+    const response = await fetch('https://siege.hackclub.com/api/public-beta/projects');
+    const data = await response.json();
+    
+    if (data && data.projects) {
+      const baseProjects = data.projects
+        .filter(p => p.status === 'finished' && p.coin_value > 0)
+        .slice(0, 100);
+      
+      const repeatCount = Math.ceil(2000 / baseProjects.length);
+      treasuryData = [];
+      for (let i = 0; i < repeatCount; i++) {
+        treasuryData.push(...baseProjects);
+      }
+      
+      dataPreloaded = true;
+    }
+  } catch (error) {
+    console.error('Failed to preload treasury data:', error);
+  }
+}
+
 function activateTreasuryGrid() {
   isActive = true;
   focusedCellIndex = 0;
   playTone(400, 0.1, 0.05);
   setTimeout(() => playTone(600, 0.15, 0.05), 50);
-  createTreasuryOverlay();
-  fetchTreasuryData();
+  
+  stopFallingProjects();
+  
+  if (isFirstTime) {
+    showWelcomeScreen();
+    isFirstTime = false;
+  } else {
+    createTreasuryOverlay();
+    if (dataPreloaded) {
+      renderTreasuryGrid(treasuryData);
+    } else {
+      fetchTreasuryData();
+    }
+  }
 }
 
 function deactivateTreasuryGrid() {
@@ -98,6 +138,8 @@ function deactivateTreasuryGrid() {
   if (progressBar) {
     progressBar.remove();
   }
+  
+  restartFallingProjects();
 }
 
 function createTreasuryOverlay() {
@@ -179,6 +221,11 @@ async function fetchTreasuryData() {
   const gridArea = document.getElementById('treasury-grid-area');
   if (!gridArea) return;
   
+  if (dataPreloaded && treasuryData.length > 0) {
+    renderTreasuryGrid(treasuryData);
+    return;
+  }
+  
   try {
     const response = await fetch('https://siege.hackclub.com/api/public-beta/projects');
     const data = await response.json();
@@ -186,14 +233,15 @@ async function fetchTreasuryData() {
     if (data && data.projects) {
       const baseProjects = data.projects
         .filter(p => p.status === 'finished' && p.coin_value > 0)
-        .slice(0, 1000);
+        .slice(0, 100);
       
-      const repeatCount = Math.ceil(20000 / baseProjects.length);
+      const repeatCount = Math.ceil(2000 / baseProjects.length);
       treasuryData = [];
       for (let i = 0; i < repeatCount; i++) {
         treasuryData.push(...baseProjects);
       }
       
+      dataPreloaded = true;
       renderTreasuryGrid(treasuryData);
     }
   } catch (error) {
@@ -727,4 +775,147 @@ function showProjectDetail(cell) {
     modal.style.transition = 'opacity 0.2s ease';
     modal.style.opacity = '1';
   }, 10);
+}
+
+function showWelcomeScreen() {
+  const welcome = document.createElement('div');
+  welcome.id = 'treasury-welcome';
+  welcome.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #1a1410 0%, #2d1f1a 100%);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  `;
+  
+  const content = document.createElement('div');
+  content.style.cssText = `
+    background: linear-gradient(135deg, #1a1410 0%, #2d1f1a 100%);
+    border: 3px solid rgba(212, 165, 116, 0.6);
+    padding: 4rem;
+    max-width: 700px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    animation: modalFadeIn 0.5s ease;
+  `;
+  
+  content.innerHTML = `
+    <div style="
+      font-family: 'Jaini', serif;
+      color: #d4a574;
+      font-size: 4rem;
+      margin-bottom: 2rem;
+      line-height: 1;
+      text-shadow: 0 2px 10px rgba(212, 165, 116, 0.3);
+    ">Congratulations</div>
+    
+    <div style="
+      font-family: 'IM Fell English', serif;
+      color: rgba(212, 165, 116, 0.9);
+      font-size: 1.5rem;
+      margin-bottom: 3rem;
+      letter-spacing: 0.05rem;
+      line-height: 1.6;
+    ">You are a Treasurer now</div>
+    
+    <div style="
+      font-family: 'IM Fell English', serif;
+      color: rgba(212, 165, 116, 0.7);
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      line-height: 1.8;
+      max-width: 550px;
+      margin-left: auto;
+      margin-right: auto;
+    ">
+      Remember, the work is important and mysterious.<br>
+      Select cells and refine the grid.<br>
+      Your contributions shape the treasury.
+    </div>
+    
+    <div style="
+      font-family: 'IM Fell English', serif;
+      color: rgba(212, 165, 116, 0.5);
+      font-size: 0.9rem;
+      margin-top: 3rem;
+      margin-bottom: 2rem;
+      letter-spacing: 0.1rem;
+    ">Click to select • Double-click for details<br>Arrow keys to navigate • Space to select</div>
+    
+    <button id="welcome-begin" style="
+      font-family: 'IM Fell English', serif;
+      padding: 1rem 3rem;
+      background: rgba(212, 165, 116, 0.2);
+      border: 2px solid rgba(212, 165, 116, 0.6);
+      color: #d4a574;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.15rem;
+      text-transform: uppercase;
+      margin-top: 1rem;
+    ">Begin Your Work</button>
+  `;
+  
+  welcome.appendChild(content);
+  document.body.appendChild(welcome);
+  
+  const beginBtn = document.getElementById('welcome-begin');
+  beginBtn.addEventListener('mouseenter', () => {
+    beginBtn.style.background = 'rgba(212, 165, 116, 0.3)';
+    beginBtn.style.borderColor = 'rgba(212, 165, 116, 0.8)';
+  });
+  
+  beginBtn.addEventListener('mouseleave', () => {
+    beginBtn.style.background = 'rgba(212, 165, 116, 0.2)';
+    beginBtn.style.borderColor = 'rgba(212, 165, 116, 0.6)';
+  });
+  
+  beginBtn.addEventListener('click', () => {
+    playTone(500, 0.1, 0.04);
+    setTimeout(() => playTone(700, 0.15, 0.04), 80);
+    welcome.style.opacity = '0';
+    welcome.style.transition = 'opacity 0.3s ease';
+    setTimeout(() => {
+      welcome.remove();
+      createTreasuryOverlay();
+      if (dataPreloaded) {
+        renderTreasuryGrid(treasuryData);
+      } else {
+        fetchTreasuryData();
+      }
+    }, 300);
+  });
+  
+  welcome.style.opacity = '0';
+  setTimeout(() => {
+    welcome.style.transition = 'opacity 0.5s ease';
+    welcome.style.opacity = '1';
+  }, 10);
+}
+
+function stopFallingProjects() {
+  const fallingCards = document.querySelectorAll('.ms-falling-card');
+  fallingCards.forEach(card => {
+    card.style.display = 'none';
+  });
+  
+  const event = new CustomEvent('ms-stop-falling');
+  document.dispatchEvent(event);
+}
+
+function restartFallingProjects() {
+  const fallingCards = document.querySelectorAll('.ms-falling-card');
+  fallingCards.forEach(card => {
+    card.style.display = '';
+  });
+  
+  const event = new CustomEvent('ms-restart-falling');
+  document.dispatchEvent(event);
 }

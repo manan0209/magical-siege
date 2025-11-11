@@ -6,6 +6,7 @@ export function injectGlobalEnhancements() {
   initializeTheme();
   injectFloatingActionButton();
   injectThemeIndicator();
+  injectTreasuryButton();
   injectWeekCountdown();
   setupKeyboardShortcuts();
   setupMessageListener();
@@ -19,6 +20,7 @@ function setupMessageListener() {
       if (message.settings.theme) {
         Theme.setTheme(message.settings.theme).then(() => {
           updateThemeIndicator();
+          updateTreasuryButton();
           updateWeekCountdown();
         });
       }
@@ -62,6 +64,7 @@ function injectThemeIndicator() {
   indicator.addEventListener('click', async () => {
     const newTheme = await Theme.cycleTheme();
     updateThemeIndicator();
+    updateTreasuryButton();
     updateWeekCountdown();
   });
   
@@ -102,6 +105,96 @@ async function updateThemeIndicator() {
     indicator.style.background = 'rgba(255,255,255,0.95)';
     indicator.style.color = '#3b2a1a';
     indicator.style.borderColor = 'rgba(64,43,32,0.75)';
+  }
+}
+
+function injectTreasuryButton() {
+  if (document.getElementById('ms-treasury-button')) {
+    return;
+  }
+  
+  const treasuryBtn = document.createElement('div');
+  treasuryBtn.id = 'ms-treasury-button';
+  treasuryBtn.style.cssText = `
+    position: fixed;
+    top: 4rem;
+    right: 1rem;
+    z-index: 9998;
+    background: rgba(255,255,255,0.95);
+    border: 2px solid #d4a574;
+    border-radius: 12px;
+    padding: 0.5rem 1rem;
+    font-family: 'IM Fell English', serif;
+    font-size: 0.875rem;
+    color: #3b2a1a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    overflow: hidden;
+    white-space: nowrap;
+    box-shadow: 0 0 12px rgba(212, 165, 116, 0.6), 0 0 24px rgba(212, 165, 116, 0.3);
+    animation: treasuryGlow 2s ease-in-out infinite;
+  `;
+  
+  treasuryBtn.textContent = 'Treasury';
+  
+  treasuryBtn.addEventListener('click', () => {
+    const event = new KeyboardEvent('keydown', {
+      key: 'g',
+      shiftKey: true,
+      bubbles: true
+    });
+    document.dispatchEvent(event);
+  });
+  
+  treasuryBtn.addEventListener('mouseover', () => {
+    treasuryBtn.style.opacity = '0.85';
+  });
+  
+  treasuryBtn.addEventListener('mouseout', () => {
+    treasuryBtn.style.opacity = '1';
+  });
+  
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes treasuryGlow {
+      0%, 100% {
+        box-shadow: 0 0 12px rgba(212, 165, 116, 0.6), 0 0 24px rgba(212, 165, 116, 0.3);
+      }
+      50% {
+        box-shadow: 0 0 20px rgba(212, 165, 116, 0.8), 0 0 40px rgba(212, 165, 116, 0.4);
+      }
+    }
+  `;
+  document.head.appendChild(style);
+  
+  document.body.appendChild(treasuryBtn);
+  updateTreasuryButton();
+}
+
+async function updateTreasuryButton() {
+  const treasuryBtn = document.getElementById('ms-treasury-button');
+  if (!treasuryBtn) return;
+  
+  const theme = await Theme.getCurrentTheme();
+  
+  if (theme === 'dark') {
+    treasuryBtn.style.background = '#2a2a2a';
+    treasuryBtn.style.color = '#f5f5f4';
+    treasuryBtn.style.borderColor = '#d4a574';
+    treasuryBtn.style.boxShadow = '0 0 12px rgba(212, 165, 116, 0.6), 0 0 24px rgba(212, 165, 116, 0.3)';
+  } else if (theme === 'magical') {
+    treasuryBtn.style.background = 'rgba(139, 92, 246, 0.1)';
+    treasuryBtn.style.color = '#6D28D9';
+    treasuryBtn.style.borderColor = '#d4a574';
+    treasuryBtn.style.boxShadow = '0 0 12px rgba(212, 165, 116, 0.6), 0 0 24px rgba(212, 165, 116, 0.3)';
+  } else {
+    treasuryBtn.style.background = 'rgba(255,255,255,0.95)';
+    treasuryBtn.style.color = '#3b2a1a';
+    treasuryBtn.style.borderColor = '#d4a574';
+    treasuryBtn.style.boxShadow = '0 0 12px rgba(212, 165, 116, 0.6), 0 0 24px rgba(212, 165, 116, 0.3)';
   }
 }
 
@@ -249,6 +342,7 @@ async function injectFloatingActionButton() {
   document.getElementById('ms-theme-toggle')?.addEventListener('click', async () => {
     const newTheme = await Theme.cycleTheme();
     updateThemeIndicator();
+    updateTreasuryButton();
     updateWeekCountdown();
     menuOpen = false;
     fabMenu.style.display = 'none';
@@ -327,6 +421,9 @@ function showShortcutsModal() {
         <div style="display: flex; justify-content: space-between; padding: 0.5rem; border-bottom: 1px dashed rgba(64,43,32,0.3);">
           <span><strong>R</strong></span><span>Refresh Data</span>
         </div>
+        <div style="display: flex; justify-content: space-between; padding: 0.5rem; border-bottom: 1px dashed rgba(64,43,32,0.3);">
+          <span><strong>Shift+G</strong></span><span>Open Treasury</span>
+        </div>
         <div style="display: flex; justify-content: space-between; padding: 0.5rem;">
           <span><strong>?</strong></span><span>Show this help</span>
         </div>
@@ -372,6 +469,7 @@ function setupKeyboardShortcuts() {
         e.preventDefault();
         const newTheme = await Theme.cycleTheme();
         updateThemeIndicator();
+        updateTreasuryButton();
         updateWeekCountdown();
         break;
       case 'r':
