@@ -147,6 +147,24 @@ body {
   background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
 }
 
+.theme-preview-space {
+  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-preview-space::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(1px 1px at 20px 30px, white, transparent),
+    radial-gradient(1px 1px at 60px 70px, white, transparent),
+    radial-gradient(0.5px 0.5px at 50px 50px, white, transparent);
+  background-size: 80px 80px;
+  opacity: 0.8;
+}
+
 .theme-name {
   font-size: 0.75rem;
   color: #f5f5f4;

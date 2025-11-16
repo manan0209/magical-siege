@@ -31,6 +31,7 @@ export default defineConfig({
         copyFileSync('styles/theme-default.css', 'dist/styles/theme-default.css');
         copyFileSync('styles/theme-magical.css', 'dist/styles/theme-magical.css');
         copyFileSync('styles/theme-dark.css', 'dist/styles/theme-dark.css');
+        copyFileSync('styles/theme-space.css', 'dist/styles/theme-space.css');
         copyFileSync('styles/animations.css', 'dist/styles/animations.css');
         
         if (!existsSync('dist/assets/icons')) {

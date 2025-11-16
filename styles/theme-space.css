@@ -1,0 +1,455 @@
+body.ms-theme-space {
+  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%) !important;
+  color: #e0e6ed !important;
+  overflow-x: hidden;
+  position: relative;
+}
+
+body.ms-theme-space::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, white, transparent),
+    radial-gradient(2px 2px at 60px 70px, white, transparent),
+    radial-gradient(1px 1px at 50px 50px, white, transparent),
+    radial-gradient(1px 1px at 130px 80px, white, transparent),
+    radial-gradient(2px 2px at 90px 10px, white, transparent);
+  background-size: 200px 200px;
+  background-repeat: repeat;
+  animation: twinkle 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+body.ms-theme-space .home-container,
+body.ms-theme-space .projects-container,
+body.ms-theme-space .market-container,
+body.ms-theme-space .great-hall-container,
+body.ms-theme-space .castle-container {
+  background: transparent !important;
+  position: relative;
+  z-index: 1;
+}
+
+body.ms-theme-space .home-card,
+body.ms-theme-space .project-card {
+  background: rgba(15, 23, 42, 0.85) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 2px solid rgba(0, 217, 255, 0.3) !important;
+  box-shadow: 0 4px 16px rgba(0, 217, 255, 0.2), 0 0 40px rgba(0, 217, 255, 0.1) !important;
+}
+
+body.ms-theme-space .home-card-body,
+body.ms-theme-space .project-card-body {
+  background: transparent !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .home-card h2,
+body.ms-theme-space .home-card h3,
+body.ms-theme-space .home-card p,
+body.ms-theme-space .home-card span,
+body.ms-theme-space .home-card div:not(.submit-button) {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .home-title,
+body.ms-theme-space .home-progress-top,
+body.ms-theme-space .home-progress-bottom,
+body.ms-theme-space .home-card-title {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .home-section-title {
+  color: #00d9ff !important;
+  text-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
+}
+
+body.ms-theme-space .home-section-title::after {
+  opacity: 0.4 !important;
+  filter: brightness(1.2) hue-rotate(180deg);
+}
+
+body.ms-theme-space .submit-button {
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.2), rgba(139, 92, 246, 0.2)) !important;
+  border: 2px solid rgba(0, 217, 255, 0.5) !important;
+  color: #00d9ff !important;
+  text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+}
+
+body.ms-theme-space .submit-button::after {
+  border-color: rgba(0, 217, 255, 0.3) !important;
+}
+
+body.ms-theme-space .submit-button:hover {
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.3), rgba(139, 92, 246, 0.3)) !important;
+  border-color: rgba(0, 217, 255, 0.8) !important;
+  box-shadow: 0 4px 16px rgba(0, 217, 255, 0.4), 0 0 30px rgba(0, 217, 255, 0.3) !important;
+}
+
+body.ms-theme-space .home-checkbox {
+  border-color: rgba(0, 217, 255, 0.5) !important;
+  background: transparent !important;
+}
+
+body.ms-theme-space .home-checkbox:checked {
+  background: rgba(0, 217, 255, 0.3) !important;
+}
+
+body.ms-theme-space .home-checkbox:checked::after {
+  border-color: #00d9ff !important;
+}
+
+body.ms-theme-space .home-wave-path.future {
+  stroke: rgba(0, 217, 255, 0.3) !important;
+}
+
+body.ms-theme-space .home-wave-path.completed {
+  stroke: rgba(0, 217, 255, 0.9) !important;
+}
+
+body.ms-theme-space .home-wave-marker {
+  fill: #00d9ff !important;
+  stroke: rgba(224, 230, 237, 0.4) !important;
+  filter: drop-shadow(0 0 8px rgba(0, 217, 255, 0.8));
+}
+
+body.ms-theme-space nav,
+body.ms-theme-space .nav {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.2) !important;
+  border-right: 1px solid rgba(0, 217, 255, 0.2) !important;
+}
+
+body.ms-theme-space .castle-nav,
+body.ms-theme-space .home-nav,
+body.ms-theme-space aside,
+body.ms-theme-space [class*="nav"],
+body.ms-theme-space [class*="sidebar"] {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border-color: rgba(0, 217, 255, 0.2) !important;
+}
+
+body.ms-theme-space .castle-nav *,
+body.ms-theme-space .home-nav *,
+body.ms-theme-space aside *,
+body.ms-theme-space nav * {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .castle-nav a,
+body.ms-theme-space .home-nav a,
+body.ms-theme-space aside a,
+body.ms-theme-space nav a {
+  color: #00d9ff !important;
+}
+
+body.ms-theme-space .castle-nav a:hover,
+body.ms-theme-space .home-nav a:hover,
+body.ms-theme-space aside a:hover,
+body.ms-theme-space nav a:hover {
+  color: #4aeaff !important;
+  background: rgba(0, 217, 255, 0.1) !important;
+}
+
+body.ms-theme-space .castle-nav a.active,
+body.ms-theme-space .home-nav a.active,
+body.ms-theme-space aside a.active,
+body.ms-theme-space nav a.active {
+  background: rgba(0, 217, 255, 0.2) !important;
+  color: #4aeaff !important;
+}
+
+body.ms-theme-space a:not(.submit-button) {
+  color: #00d9ff !important;
+}
+
+body.ms-theme-space a:not(.submit-button):hover {
+  color: #4aeaff !important;
+}
+
+body.ms-theme-space input,
+body.ms-theme-space textarea,
+body.ms-theme-space select {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(0, 217, 255, 0.3) !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space input::placeholder,
+body.ms-theme-space textarea::placeholder {
+  color: rgba(224, 230, 237, 0.5) !important;
+}
+
+body.ms-theme-space input:focus,
+body.ms-theme-space textarea:focus,
+body.ms-theme-space select:focus {
+  border-color: #00d9ff !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.2) !important;
+}
+
+body.ms-theme-space .home-leader-item {
+  border-bottom: 1px solid rgba(0, 217, 255, 0.2) !important;
+}
+
+body.ms-theme-space .home-leader-item:hover {
+  background: rgba(0, 217, 255, 0.1) !important;
+}
+
+body.ms-theme-space .home-rank {
+  background: rgba(0, 217, 255, 0.3) !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .home-user,
+body.ms-theme-space .home-amount {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .home-link-dotted {
+  color: #e0e6ed !important;
+  text-decoration-color: rgba(0, 217, 255, 0.6) !important;
+}
+
+body.ms-theme-space .home-link-disabled {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .home-muted {
+  opacity: 0.5 !important;
+}
+
+body.ms-theme-space .project-card-title,
+body.ms-theme-space .project-card-description,
+body.ms-theme-space .project-time,
+body.ms-theme-space .project-tag {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .project-link {
+  border-color: rgba(0, 217, 255, 0.5) !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .project-link:hover {
+  background: rgba(0, 217, 255, 0.2) !important;
+}
+
+body.ms-theme-space #ms-fab-button {
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.8), rgba(139, 92, 246, 0.8)) !important;
+  box-shadow: 0 4px 20px rgba(0, 217, 255, 0.4) !important;
+  color: #ffffff !important;
+}
+
+body.ms-theme-space .home-two-col::after {
+  background: repeating-linear-gradient(to bottom, rgba(0, 217, 255, 0.4) 0 6px, transparent 6px 12px) !important;
+}
+
+body.ms-theme-space .home-collapse-title {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .home-row-sm,
+body.ms-theme-space .home-checkrow {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .home-info {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .home-button {
+  background: rgba(0, 217, 255, 0.2) !important;
+  border: 2px solid rgba(0, 217, 255, 0.5) !important;
+  color: #00d9ff !important;
+}
+
+body.ms-theme-space .home-button:hover {
+  background: rgba(0, 217, 255, 0.3) !important;
+}
+
+body.ms-theme-space .coin-icon {
+  filter: brightness(1.2) hue-rotate(180deg);
+}
+
+body.ms-theme-space .home-collapse {
+  background: transparent !important;
+}
+
+body.ms-theme-space .home-list {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .home-row {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space label {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .home-checkrow-help {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .home-header {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .home-center {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .home-full {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .home-collapse-content {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .home-thisweek-title {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .project-header {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .project-title {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .project-description {
+  color: rgba(224, 230, 237, 0.85) !important;
+}
+
+body.ms-theme-space .project-updated {
+  color: rgba(224, 230, 237, 0.7) !important;
+}
+
+body.ms-theme-space .project-tags {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .ms-coin-prediction {
+  background: rgba(0, 217, 255, 0.2) !important;
+  border-color: rgba(0, 217, 255, 0.5) !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .ms-stats-container {
+  background: rgba(15, 23, 42, 0.85) !important;
+  border: 2px solid rgba(0, 217, 255, 0.3) !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .ms-stat-card {
+  background: rgba(10, 15, 30, 0.6) !important;
+  border: 1px solid rgba(0, 217, 255, 0.3) !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .ms-stat-label {
+  color: rgba(224, 230, 237, 0.7) !important;
+}
+
+body.ms-theme-space .ms-stat-value {
+  color: #00d9ff !important;
+}
+
+body.ms-theme-space #ms-fab-menu {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border: 2px solid rgba(0, 217, 255, 0.3) !important;
+  box-shadow: 0 4px 20px rgba(0, 217, 255, 0.3) !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space #ms-fab-menu button {
+  background: transparent !important;
+  color: #e0e6ed !important;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.2) !important;
+}
+
+body.ms-theme-space #ms-fab-menu button:hover {
+  background: rgba(0, 217, 255, 0.2) !important;
+}
+
+body.ms-theme-space #ms-week-countdown {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border: 2px solid rgba(0, 217, 255, 0.3) !important;
+  color: #e0e6ed !important;
+  box-shadow: 0 4px 16px rgba(0, 217, 255, 0.3) !important;
+}
+
+body.ms-theme-space #ms-week-countdown > div {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space #ms-countdown-time {
+  color: #00d9ff !important;
+}
+
+body.ms-theme-space * {
+  scrollbar-color: rgba(0, 217, 255, 0.5) rgba(15, 23, 42, 0.3);
+}
+
+body.ms-theme-space ::-webkit-scrollbar {
+  background: rgba(15, 23, 42, 0.3);
+}
+
+body.ms-theme-space ::-webkit-scrollbar-thumb {
+  background: rgba(0, 217, 255, 0.5);
+  border-radius: 4px;
+}
+
+body.ms-theme-space ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 217, 255, 0.7);
+}
+
+body.ms-theme-space .home-leader-item .home-user {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .home-card * {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .project-card * {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .project-link * {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space #ms-global-rank {
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.2), rgba(139, 92, 246, 0.2)) !important;
+  border: 2px solid rgba(0, 217, 255, 0.3) !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space #ms-global-rank span {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space #ms-theme-indicator {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border: 2px solid rgba(0, 217, 255, 0.4) !important;
+  color: #00d9ff !important;
+}
+
+body.ms-theme-space #ms-treasury-button {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border: 2px solid rgba(0, 217, 255, 0.4) !important;
+  color: #00d9ff !important;
+  box-shadow: 0 0 12px rgba(0, 217, 255, 0.4), 0 0 24px rgba(0, 217, 255, 0.2) !important;
+}

@@ -24,6 +24,16 @@ export const Theme = {
         '--ms-dark-border': 'rgba(232, 220, 200, 0.15)',
         '--ms-dark-accent': '#785437'
       }
+    },
+    space: {
+      name: 'Space',
+      vars: {
+        '--ms-space-bg': '#090a0f',
+        '--ms-space-card': 'rgba(15, 23, 42, 0.85)',
+        '--ms-space-text': '#e0e6ed',
+        '--ms-space-border': 'rgba(0, 217, 255, 0.3)',
+        '--ms-space-accent': '#00d9ff'
+      }
     }
   },
 
@@ -39,7 +49,7 @@ export const Theme = {
 
     const theme = this.THEMES[themeName];
     
-    document.body.classList.remove('ms-theme-default', 'ms-theme-magical', 'ms-theme-dark');
+    document.body.classList.remove('ms-theme-default', 'ms-theme-magical', 'ms-theme-dark', 'ms-theme-space');
     document.body.classList.add(`ms-theme-${themeName}`);
     
     Object.entries(theme.vars).forEach(([key, value]) => {
@@ -53,14 +63,22 @@ export const Theme = {
       this.applyMagicalCursor();
       this.removeFlashlightEffect();
       this.removeDarkCursor();
+      this.removeSpaceCursor();
     } else if (themeName === 'dark') {
       this.removeMagicalCursor();
       this.applyFlashlightEffect();
       this.applyDarkCursor();
+      this.removeSpaceCursor();
+    } else if (themeName === 'space') {
+      this.removeMagicalCursor();
+      this.removeFlashlightEffect();
+      this.removeDarkCursor();
+      this.applySpaceCursor();
     } else {
       this.removeMagicalCursor();
       this.removeFlashlightEffect();
       this.removeDarkCursor();
+      this.removeSpaceCursor();
     }
     
     return true;
@@ -130,6 +148,44 @@ export const Theme = {
     }
   },
 
+  applySpaceCursor() {
+    let style = document.getElementById('ms-space-cursor');
+    
+    if (!style) {
+      style = document.createElement('style');
+      style.id = 'ms-space-cursor';
+      document.head.appendChild(style);
+    }
+    
+    const cursorSvg = encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+        <path d="M16 4 L18 12 L26 10 L18 16 L20 24 L16 18 L12 24 L14 16 L6 10 L14 12 Z" fill="#00d9ff" stroke="#0099cc" stroke-width="1"/>
+      </svg>
+    `);
+    
+    style.textContent = `
+      body.ms-theme-space * {
+        cursor: url('data:image/svg+xml;charset=utf-8,${cursorSvg}') 16 16, auto !important;
+      }
+      
+      body.ms-theme-space button,
+      body.ms-theme-space a,
+      body.ms-theme-space .submit-button,
+      body.ms-theme-space [role="button"],
+      body.ms-theme-space input[type="submit"],
+      body.ms-theme-space input[type="button"] {
+        cursor: url('data:image/svg+xml;charset=utf-8,${cursorSvg}') 16 16, pointer !important;
+      }
+    `;
+  },
+  
+  removeSpaceCursor() {
+    const style = document.getElementById('ms-space-cursor');
+    if (style) {
+      style.remove();
+    }
+  },
+
   applyFlashlightEffect() {
     const existingOverlay = document.getElementById('ms-flashlight-overlay');
     if (existingOverlay) {
@@ -181,7 +237,7 @@ export const Theme = {
 
   async cycleTheme() {
     const current = await this.getCurrentTheme();
-    const themes = ['default', 'magical', 'dark'];
+    const themes = ['default', 'magical', 'dark', 'space'];
     const currentIndex = themes.indexOf(current);
     const nextIndex = (currentIndex + 1) % themes.length;
     const nextTheme = themes[nextIndex];
