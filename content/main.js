@@ -153,35 +153,74 @@ document.addEventListener('turbo:before-cache', () => {
 
 document.addEventListener('click', (e) => {
   const theme = document.body.className.match(/ms-theme-(\w+)/)?.[1];
-  if (theme !== 'magical') return;
+  
+  if (theme === 'magical') {
+    const x = e.clientX;
+    const y = e.clientY;
 
-  const x = e.clientX;
-  const y = e.clientY;
+    const ripple = document.createElement('div');
+    ripple.className = 'magical-ripple';
+    ripple.style.left = `${x - 10}px`;
+    ripple.style.top = `${y - 10}px`;
+    document.body.appendChild(ripple);
 
-  const ripple = document.createElement('div');
-  ripple.className = 'magical-ripple';
-  ripple.style.left = `${x - 10}px`;
-  ripple.style.top = `${y - 10}px`;
-  document.body.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
 
-  setTimeout(() => ripple.remove(), 600);
+    for (let i = 0; i < 6; i++) {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'magical-sparkle';
+      
+      const angle = (Math.PI * 2 * i) / 6;
+      const distance = 40 + Math.random() * 40;
+      const sparkleX = Math.cos(angle) * distance;
+      const sparkleY = Math.sin(angle) * distance;
+      
+      sparkle.style.left = `${x}px`;
+      sparkle.style.top = `${y}px`;
+      sparkle.style.setProperty('--sparkle-x', `${sparkleX}px`);
+      sparkle.style.setProperty('--sparkle-y', `${sparkleY}px`);
+      
+      document.body.appendChild(sparkle);
+      
+      setTimeout(() => sparkle.remove(), 800);
+    }
+  } else if (theme === 'space') {
+    const x = e.clientX;
+    const y = e.clientY;
 
-  for (let i = 0; i < 6; i++) {
-    const sparkle = document.createElement('div');
-    sparkle.className = 'magical-sparkle';
-    
-    const angle = (Math.PI * 2 * i) / 6;
-    const distance = 40 + Math.random() * 40;
-    const sparkleX = Math.cos(angle) * distance;
-    const sparkleY = Math.sin(angle) * distance;
-    
-    sparkle.style.left = `${x}px`;
-    sparkle.style.top = `${y}px`;
-    sparkle.style.setProperty('--sparkle-x', `${sparkleX}px`);
-    sparkle.style.setProperty('--sparkle-y', `${sparkleY}px`);
-    
-    document.body.appendChild(sparkle);
-    
-    setTimeout(() => sparkle.remove(), 800);
+    const laser = document.createElement('div');
+    laser.className = 'space-laser';
+    laser.style.left = `${x}px`;
+    laser.style.top = `${y}px`;
+    document.body.appendChild(laser);
+
+    setTimeout(() => laser.remove(), 300);
+
+    const impact = document.createElement('div');
+    impact.className = 'space-laser-impact';
+    impact.style.left = `${x}px`;
+    impact.style.top = `${y}px`;
+    document.body.appendChild(impact);
+
+    setTimeout(() => impact.remove(), 500);
+
+    for (let i = 0; i < 8; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'space-particle';
+      
+      const angle = (Math.PI * 2 * i) / 8;
+      const distance = 30 + Math.random() * 20;
+      const particleX = Math.cos(angle) * distance;
+      const particleY = Math.sin(angle) * distance;
+      
+      particle.style.left = `${x}px`;
+      particle.style.top = `${y}px`;
+      particle.style.setProperty('--particle-x', `${particleX}px`);
+      particle.style.setProperty('--particle-y', `${particleY}px`);
+      
+      document.body.appendChild(particle);
+      
+      setTimeout(() => particle.remove(), 600);
+    }
   }
 });

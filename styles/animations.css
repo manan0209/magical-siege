@@ -78,3 +78,85 @@
 .ms-pulse {
   animation: pulse 2s infinite;
 }
+
+.space-laser {
+  position: fixed;
+  width: 4px;
+  height: 100vh;
+  background: linear-gradient(to bottom, 
+    transparent 0%, 
+    #00d9ff 50%, 
+    transparent 100%);
+  pointer-events: none;
+  z-index: 10000;
+  transform: translateX(-2px);
+  animation: laserShoot 0.3s ease-out;
+  box-shadow: 0 0 10px #00d9ff, 0 0 20px #00d9ff;
+}
+
+@keyframes laserShoot {
+  0% {
+    opacity: 0;
+    height: 0;
+    top: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    height: 100vh;
+  }
+}
+
+.space-laser-impact {
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #00d9ff 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-15px, -15px);
+  animation: impactPulse 0.5s ease-out;
+  box-shadow: 0 0 20px #00d9ff, 0 0 40px #00d9ff;
+}
+
+@keyframes impactPulse {
+  0% {
+    transform: translate(-15px, -15px) scale(0.5);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-15px, -15px) scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-15px, -15px) scale(2);
+    opacity: 0;
+  }
+}
+
+.space-particle {
+  position: fixed;
+  width: 4px;
+  height: 4px;
+  background: #00d9ff;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  animation: particleExplosion 0.6s ease-out;
+  box-shadow: 0 0 4px #00d9ff;
+}
+
+@keyframes particleExplosion {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--particle-x), var(--particle-y)) scale(0);
+    opacity: 0;
+  }
+}
+
