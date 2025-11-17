@@ -2,6 +2,12 @@
 
 This project is an update!
 
+week 11 update :
+
+What i did this week -> Couldnt do as much as i had hoped (I had mocks lined up this week and i am gonna be cooked in following three weeks as well :cryin) I made space theme for this week, which surprisingly I made better than the bluprint i had thought of, it took some time but definitely worth it, also i managed to integrate a small space shooter inspired cursor game, where you can shoot falling projects with your gun ship (cursor!) :cupcakes!!
+
+![space glimpse](https://github.com/manan0209/magical-siege/blob/master/demo-assets/space.gif)
+
 week 10 update :
 
 What i did -> is that i made a treasury managing grid which is inspired by refineing work in severence, once you click treasury button, you become treasurer and you have to process siege treasury by processing coins in the grid!
