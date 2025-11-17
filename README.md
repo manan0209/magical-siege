@@ -4,7 +4,11 @@ This project is an update!
 
 week 11 update :
 
-What i did this week -> Couldnt do as much as i had hoped (I had mocks lined up this week and i am gonna be cooked in following three weeks as well :cryin) I made space theme for this week, which surprisingly I made better than the bluprint i had thought of, it took some time but definitely worth it, also i managed to integrate a small space shooter inspired cursor game, where you can shoot falling projects with your gun ship (cursor!) :cupcakes!!
+LORE > [Couldnt do as much as i had hoped (I had mocks lined up this week and i am gonna be cooked in following three weeks as well :cryin)] 
+
+What i did this week -> I made space theme with starry sky (yup its so calmin that i stare at siege website now!!) for this week, which surprisingly I made better than the bluprint i had thought of, it took some time but definitely worth it, also i managed to integrate a small space shooter inspired cursor game, where you can shoot falling projects with your gun ship (cursor!) :cupcakes!!
+
+I know this is grainy and low quality gif, but to show gif here i had to compress it, if want to see it in real, you can install the extension or if you are lazy, go tto demo-assets and watch space.mp4 video there!!
 
 ![space glimpse](https://github.com/manan0209/magical-siege/blob/master/demo-assets/space.gif)
 
