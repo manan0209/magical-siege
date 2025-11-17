@@ -196,31 +196,90 @@ document.addEventListener('click', (e) => {
 
     setTimeout(() => laser.remove(), 300);
 
-    const impact = document.createElement('div');
-    impact.className = 'space-laser-impact';
-    impact.style.left = `${x}px`;
-    impact.style.top = `${y}px`;
-    document.body.appendChild(impact);
+    const hitCard = checkCollisionWithFallingProjects(x, y);
+    
+    if (hitCard) {
+      destroyFallingCard(hitCard, x, y);
+    } else {
+      const impact = document.createElement('div');
+      impact.className = 'space-laser-impact';
+      impact.style.left = `${x}px`;
+      impact.style.top = `${y}px`;
+      document.body.appendChild(impact);
 
-    setTimeout(() => impact.remove(), 500);
+      setTimeout(() => impact.remove(), 500);
 
-    for (let i = 0; i < 8; i++) {
-      const particle = document.createElement('div');
-      particle.className = 'space-particle';
-      
-      const angle = (Math.PI * 2 * i) / 8;
-      const distance = 30 + Math.random() * 20;
-      const particleX = Math.cos(angle) * distance;
-      const particleY = Math.sin(angle) * distance;
-      
-      particle.style.left = `${x}px`;
-      particle.style.top = `${y}px`;
-      particle.style.setProperty('--particle-x', `${particleX}px`);
-      particle.style.setProperty('--particle-y', `${particleY}px`);
-      
-      document.body.appendChild(particle);
-      
-      setTimeout(() => particle.remove(), 600);
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'space-particle';
+        
+        const angle = (Math.PI * 2 * i) / 8;
+        const distance = 30 + Math.random() * 20;
+        const particleX = Math.cos(angle) * distance;
+        const particleY = Math.sin(angle) * distance;
+        
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        particle.style.setProperty('--particle-x', `${particleX}px`);
+        particle.style.setProperty('--particle-y', `${particleY}px`);
+        
+        document.body.appendChild(particle);
+        
+        setTimeout(() => particle.remove(), 600);
+      }
     }
   }
 });
+
+function checkCollisionWithFallingProjects(x, y) {
+  const fallingCards = document.querySelectorAll('.ms-falling-card');
+  
+  for (const card of fallingCards) {
+    const rect = card.getBoundingClientRect();
+    
+    if (x >= rect.left && x <= rect.right) {
+      return card;
+    }
+  }
+  
+  return null;
+}
+
+function destroyFallingCard(card, x, y) {
+  const rect = card.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  
+  card.style.transition = 'all 0.3s ease-out';
+  card.style.transform = 'scale(0) rotate(180deg)';
+  card.style.opacity = '0';
+  
+  const explosion = document.createElement('div');
+  explosion.className = 'space-explosion';
+  explosion.style.left = `${centerX}px`;
+  explosion.style.top = `${centerY}px`;
+  document.body.appendChild(explosion);
+  
+  setTimeout(() => explosion.remove(), 600);
+  
+  for (let i = 0; i < 16; i++) {
+    const fragment = document.createElement('div');
+    fragment.className = 'space-fragment';
+    
+    const angle = (Math.PI * 2 * i) / 16;
+    const distance = 60 + Math.random() * 40;
+    const fragmentX = Math.cos(angle) * distance;
+    const fragmentY = Math.sin(angle) * distance;
+    
+    fragment.style.left = `${centerX}px`;
+    fragment.style.top = `${centerY}px`;
+    fragment.style.setProperty('--fragment-x', `${fragmentX}px`);
+    fragment.style.setProperty('--fragment-y', `${fragmentY}px`);
+    
+    document.body.appendChild(fragment);
+    
+    setTimeout(() => fragment.remove(), 800);
+  }
+  
+  setTimeout(() => card.remove(), 300);
+}

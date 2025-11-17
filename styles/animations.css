@@ -160,3 +160,54 @@
   }
 }
 
+
+.space-explosion {
+  position: fixed;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #00d9ff 0%, #0099cc 30%, transparent 70%);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-40px, -40px);
+  animation: explosionBlast 0.6s ease-out;
+  box-shadow: 0 0 40px #00d9ff, 0 0 80px #00d9ff, 0 0 120px rgba(0, 217, 255, 0.5);
+}
+
+@keyframes explosionBlast {
+  0% {
+    transform: translate(-40px, -40px) scale(0.3);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-40px, -40px) scale(1.5);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-40px, -40px) scale(3);
+    opacity: 0;
+  }
+}
+
+.space-fragment {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  background: linear-gradient(135deg, #00d9ff, #0099cc);
+  pointer-events: none;
+  z-index: 9999;
+  animation: fragmentExplosion 0.8s ease-out;
+  box-shadow: 0 0 6px #00d9ff;
+}
+
+@keyframes fragmentExplosion {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--fragment-x), var(--fragment-y)) scale(0) rotate(720deg);
+    opacity: 0;
+  }
+}
+

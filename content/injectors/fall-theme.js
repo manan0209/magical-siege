@@ -108,11 +108,21 @@ function injectStyles() {
       transition: transform 0.2s, box-shadow 0.2s;
     }
     
+    body.ms-theme-space .ms-falling-card {
+      background: rgba(15, 18, 35, 0.9);
+      border: 2px solid #00d9ff;
+      box-shadow: 0 8px 24px rgba(0, 217, 255, 0.3), 0 0 20px rgba(0, 217, 255, 0.2);
+    }
+    
     .ms-falling-card:hover {
       animation-play-state: paused;
       box-shadow: 0 12px 36px rgba(120, 84, 55, 0.7);
       z-index: 9999999;
       filter: brightness(1.1);
+    }
+    
+    body.ms-theme-space .ms-falling-card:hover {
+      box-shadow: 0 12px 36px rgba(0, 217, 255, 0.6), 0 0 30px rgba(0, 217, 255, 0.4);
     }
     
     .ms-falling-card-name {
@@ -130,6 +140,11 @@ function injectStyles() {
       text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
     }
     
+    body.ms-theme-space .ms-falling-card-name {
+      color: #00d9ff;
+      text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+    }
+    
     .ms-falling-card-coins {
       font-family: 'Jaini', serif;
       font-size: 1.2rem;
@@ -137,6 +152,11 @@ function injectStyles() {
       color: #785437;
       text-align: center;
       text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+    }
+    
+    body.ms-theme-space .ms-falling-card-coins {
+      color: #00d9ff;
+      text-shadow: 0 0 10px rgba(0, 217, 255, 0.6);
     }
     
     .ms-project-modal {
