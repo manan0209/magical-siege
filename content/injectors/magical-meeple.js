@@ -1,10 +1,9 @@
 let meepleObserver = null;
 let replacementIntervals = [];
-let currentlyActive = false;
+let currentTheme = null;
 
 export function injectMagicalMeeple() {
-
-    //lol olive haha, its free nowwww :hehe: pls dont kill me for this :hehe:
+  //lol olive haha, its free nowwww :hehe: pls dont kill me for this :hehe:
 
   checkThemeAndActivate();
   
@@ -25,20 +24,34 @@ export function injectMagicalMeeple() {
   });
 }
 
-function checkThemeAndActivate() {
-  const isMagicalTheme = document.body.classList.contains('ms-theme-magical') ||
-                        document.body.getAttribute('data-ms-theme') === 'magical';
+// I'll add a free cosmetic each remaining week now!! you get free hat this week :hehe: :p
+function getCurrentTheme() {
+  const dataTheme = document.body.getAttribute('data-ms-theme');
+  if (dataTheme) return dataTheme;
   
-  if (isMagicalTheme && !currentlyActive) {
-    activateMagicalMeeple();
-  } else if (!isMagicalTheme && currentlyActive) {
+  if (document.body.classList.contains('ms-theme-magical')) return 'magical';
+  if (document.body.classList.contains('ms-theme-dark')) return 'dark';
+  if (document.body.classList.contains('ms-theme-space')) return 'space';
+  
+  return 'default';
+}
+
+function checkThemeAndActivate() {
+  const newTheme = getCurrentTheme();
+  
+  if (newTheme !== currentTheme) {
     deactivateMagicalMeeple();
+    currentTheme = newTheme;
+    
+    if (newTheme === 'magical') {
+      activateMagicalMeeple();
+    } else if (newTheme === 'default') {
+      activateDefaultCosmetics();
+    }
   }
 }
 
 function deactivateMagicalMeeple() {
-  currentlyActive = false;
-  
   if (meepleObserver) {
     meepleObserver.disconnect();
     meepleObserver = null;
@@ -46,13 +59,16 @@ function deactivateMagicalMeeple() {
   
   replacementIntervals.forEach(interval => clearInterval(interval));
   replacementIntervals = [];
+  
+  document.querySelectorAll('[data-free-cosmetic]').forEach(el => el.remove());
 }
 
 function activateMagicalMeeple() {
-  if (currentlyActive) return;
-  currentlyActive = true;
-  
   startMeepleReplacer();
+}
+
+function activateDefaultCosmetics() {
+  startCowboyHatInjector();
 }
 
 function startMeepleReplacer() {
@@ -102,7 +118,7 @@ function startMeepleReplacer() {
   setTimeout(replaceUserMeepleOnly, 1000);
   
   meepleObserver = new MutationObserver(() => {
-    if (currentlyActive) {
+    if (currentTheme === 'magical') {
       replaceUserMeepleOnly();
     }
   });
@@ -113,8 +129,65 @@ function startMeepleReplacer() {
   });
   
   const interval = setInterval(() => {
-    if (currentlyActive) {
+    if (currentTheme === 'magical') {
       replaceUserMeepleOnly();
+    }
+  }, 3000);
+  
+  replacementIntervals.push(interval);
+}
+
+
+function startCowboyHatInjector() {
+  const cowboyHatUrl = chrome.runtime.getURL('assets/cowboyHat.png');
+  
+  function addCowboyHat() {
+    const navbarContainer = document.querySelector('#navbar-meeple-container') || 
+                           document.querySelector('.navbar .meeple-avatar');
+    
+    if (!navbarContainer) return;
+    if (navbarContainer.querySelector('[data-free-cosmetic="Cowboy Hat"]')) return;
+
+    const baseMeeple = navbarContainer.querySelector('img[src*="meeple"]');
+    if (!baseMeeple) return;
+
+    const hatImg = document.createElement('img');
+    hatImg.src = cowboyHatUrl;
+    hatImg.alt = 'Cowboy Hat';
+    hatImg.dataset.freeCosmetic = 'Cowboy Hat';
+    hatImg.style.position = 'absolute';
+    hatImg.style.top = baseMeeple.style.top || '0px';
+    hatImg.style.left = baseMeeple.style.left || '0px';
+    hatImg.style.width = baseMeeple.style.width || `${baseMeeple.offsetWidth || 84}px`;
+    hatImg.style.height = baseMeeple.style.height || `${baseMeeple.offsetHeight || 84}px`;
+    hatImg.style.objectFit = 'contain';
+    hatImg.style.pointerEvents = 'none';
+    hatImg.style.filter = 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))';
+    
+    const baseZIndex = parseInt(baseMeeple.style.zIndex) || 1;
+    hatImg.style.zIndex = `${baseZIndex + 1}`;
+    
+    navbarContainer.appendChild(hatImg);
+  }
+  
+  addCowboyHat();
+  setTimeout(addCowboyHat, 500);
+  setTimeout(addCowboyHat, 1000);
+  
+  meepleObserver = new MutationObserver(() => {
+    if (currentTheme === 'default') {
+      addCowboyHat();
+    }
+  });
+  
+  meepleObserver.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+  
+  const interval = setInterval(() => {
+    if (currentTheme === 'default') {
+      addCowboyHat();
     }
   }, 3000);
   

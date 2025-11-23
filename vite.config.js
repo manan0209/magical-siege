@@ -46,6 +46,10 @@ export default defineConfig({
           copyFileSync('assets/meeple-orange.png', 'dist/assets/meeple-orange.png');
         }
         
+        if (existsSync('assets/cowboyHat.png')) {
+          copyFileSync('assets/cowboyHat.png', 'dist/assets/cowboyHat.png');
+        }
+        
         if (existsSync('public/handcursor.cur')) {
           copyFileSync('public/handcursor.cur', 'dist/handcursor.cur');
         }
