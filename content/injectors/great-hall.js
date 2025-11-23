@@ -1,6 +1,7 @@
 import { DOMExtractor } from '../utils/dom-extractor.js';
 import { DOMInjector } from '../utils/dom-injector.js';
 import { TimeUtils } from '../utils/time.js';
+import { injectXRayButtons } from './xray-scanner.js';
 
 export function injectGreatHallEnhancements() {
   if (document.getElementById('ms-voting-banner')) {
@@ -88,6 +89,9 @@ function enhanceProjectCards() {
   if (projectCards.length === 0) {
     return;
   }
+
+  const mainContainer = document.querySelector('main') || document.body;
+  injectXRayButtons(mainContainer, '.project-card, [data-project]');
   
   projectCards.forEach((card, index) => {
     if (card.dataset.msEnhanced) {

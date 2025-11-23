@@ -1,6 +1,7 @@
 import { Settings } from '../utils/storage.js';
 import { Theme } from '../utils/theme.js';
 import { TimeUtils } from '../utils/time.js';
+import { injectXRayButtons, createEmbeddedXRay } from './xray-scanner.js';
 
 export function injectGlobalEnhancements() {
   initializeTheme();
@@ -10,6 +11,77 @@ export function injectGlobalEnhancements() {
   injectWeekCountdown();
   setupKeyboardShortcuts();
   setupMessageListener();
+  injectXRayOnReviewPage();
+}
+
+function injectXRayOnReviewPage() {
+  if (!window.location.pathname.startsWith('/review')) {
+    return;
+  }
+
+  if (window.location.pathname.match(/\/review\/projects\/\d+/)) {
+    injectXRayOnIndividualProject();
+  } else {
+    const checkForProjects = () => {
+      const mainContainer = document.querySelector('main') || document.body;
+      const projectCards = document.querySelectorAll('.project-card, [data-project], .review-project');
+      
+      if (projectCards.length > 0) {
+        injectXRayButtons(mainContainer, '.project-card, [data-project], .review-project');
+      } else {
+        setTimeout(checkForProjects, 500);
+      }
+    };
+
+    setTimeout(checkForProjects, 1000);
+  }
+}
+
+function injectXRayOnIndividualProject() {
+  const checkForCommitSection = () => {
+    const repoButton = document.querySelector('a[href*="github.com"]');
+    
+    if (!repoButton) {
+      setTimeout(checkForCommitSection, 500);
+      return;
+    }
+
+    const repoUrl = repoButton.href;
+    
+    const commitLabel = Array.from(document.querySelectorAll('.detail-label')).find(el => 
+      el.textContent.includes('GitHub Commit Activity')
+    );
+
+    if (!commitLabel) {
+      setTimeout(checkForCommitSection, 500);
+      return;
+    }
+
+    const detailField = commitLabel.closest('.detail-field');
+    if (!detailField) {
+      setTimeout(checkForCommitSection, 500);
+      return;
+    }
+
+    const commitGraph = detailField.querySelector('#commit-graph');
+    if (commitGraph) {
+      commitGraph.remove();
+    }
+
+    commitLabel.textContent = 'Repository X-Ray Analysis';
+    
+    const xrayContainer = document.createElement('div');
+    xrayContainer.id = 'xray-embedded-container';
+    xrayContainer.style.cssText = `
+      margin-top: 1rem;
+    `;
+
+    detailField.appendChild(xrayContainer);
+
+    createEmbeddedXRay(repoUrl, xrayContainer);
+  };
+
+  setTimeout(checkForCommitSection, 1000);
 }
 
 //if you are here, jk i am on track this week, i might not even buy merc this week and already have like 102 coins with me I am rich and happy :yayyy:

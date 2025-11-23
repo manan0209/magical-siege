@@ -1,4 +1,5 @@
 import { API } from '../utils/api.js';
+import { injectXRayButtons } from './xray-scanner.js';
 
 export function injectArmoryEnhancements() {
   if (document.querySelector('.ms-search-bar')) {
@@ -203,6 +204,9 @@ function filterProjects(query) {
 
 async function enhanceProjectCardsWithAPI() {
   const projectCards = document.querySelectorAll('.project-card');
+
+  const mainContainer = document.querySelector('main') || document.body;
+  injectXRayButtons(mainContainer, '.project-card');
   
   const projectData = [];
   const cardProjectMap = new Map();

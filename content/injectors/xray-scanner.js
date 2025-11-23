@@ -316,3 +316,174 @@ export function injectXRayButtons(container, selector) {
     card.appendChild(button);
   });
 }
+
+
+//yo cool stonemasons are gonna love this... :cupcakes :p
+
+export async function createEmbeddedXRay(repoUrl, targetElement) {
+  const repoInfo = api.parseRepoURL(repoUrl);
+  if (!repoInfo) {
+    targetElement.innerHTML = '<div class="xray-error">Invalid GitHub URL</div>';
+    return;
+  }
+
+  const container = document.createElement('div');
+  container.className = 'xray-embedded';
+  container.style.cssText = `
+    background: #1a1a1a;
+    border: 2px solid #3a3a3a;
+    border-radius: 8px;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 13px;
+    color: #d4d4d4;
+    overflow: hidden;
+  `;
+
+  container.innerHTML = `
+    <div style="padding: 12px 16px; border-bottom: 1px solid #3a3a3a; background: #252525;">
+      <div style="font-weight: bold; letter-spacing: 0.5px;">
+        REPOSITORY ANALYSIS: ${repoInfo.owner}/${repoInfo.repo}
+      </div>
+    </div>
+    <div style="display: flex; border-bottom: 1px solid #3a3a3a; background: #1f1f1f;">
+      <button class="xray-embed-tab active" data-tab="commits" style="
+        padding: 10px 20px;
+        background: none;
+        border: none;
+        border-right: 1px solid #3a3a3a;
+        color: #4a9eff;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+        background: #1a1a1a;
+        border-bottom: 2px solid #4a9eff;
+      ">COMMITS</button>
+      <button class="xray-embed-tab" data-tab="files" style="
+        padding: 10px 20px;
+        background: none;
+        border: none;
+        border-right: 1px solid #3a3a3a;
+        color: #808080;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+      ">FILES</button>
+      <button class="xray-embed-tab" data-tab="deps" style="
+        padding: 10px 20px;
+        background: none;
+        border: none;
+        border-right: 1px solid #3a3a3a;
+        color: #808080;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+      ">DEPS</button>
+      <button class="xray-embed-tab" data-tab="activity" style="
+        padding: 10px 20px;
+        background: none;
+        border: none;
+        color: #808080;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+      ">ACTIVITY</button>
+    </div>
+    <div class="xray-embed-content" style="padding: 16px; max-height: 600px; overflow-y: auto; line-height: 1.5;">
+      <div class="xray-loading">Loading commits...</div>
+    </div>
+  `;
+
+  targetElement.innerHTML = '';
+  targetElement.appendChild(container);
+
+  const tabs = container.querySelectorAll('.xray-embed-tab');
+  const content = container.querySelector('.xray-embed-content');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', async () => {
+      tabs.forEach(t => {
+        t.style.background = 'none';
+        t.style.color = '#808080';
+        t.style.borderBottom = 'none';
+        t.classList.remove('active');
+      });
+      tab.style.background = '#1a1a1a';
+      tab.style.color = '#4a9eff';
+      tab.style.borderBottom = '2px solid #4a9eff';
+      tab.classList.add('active');
+
+      content.innerHTML = '<div class="xray-loading">Loading...</div>';
+      await loadEmbeddedTabContent(repoInfo, tab.dataset.tab, content);
+    });
+
+    tab.addEventListener('mouseenter', () => {
+      if (!tab.classList.contains('active')) {
+        tab.style.background = '#2a2a2a';
+        tab.style.color = '#d4d4d4';
+      }
+    });
+
+    tab.addEventListener('mouseleave', () => {
+      if (!tab.classList.contains('active')) {
+        tab.style.background = 'none';
+        tab.style.color = '#808080';
+      }
+    });
+  });
+
+  await loadEmbeddedTabContent(repoInfo, 'commits', content);
+}
+
+async function loadEmbeddedTabContent(repoInfo, tabName, content) {
+  try {
+    let html = '';
+
+    switch (tabName) {
+      case 'files':
+        const tree = await api.getFileTree(repoInfo.owner, repoInfo.repo);
+        html = renderFileTree(tree);
+        break;
+
+      case 'commits':
+        const commits = await api.getCommits(repoInfo.owner, repoInfo.repo);
+        html = renderCommits(commits);
+        break;
+
+      case 'deps':
+        const deps = await api.getDependencies(repoInfo.owner, repoInfo.repo);
+        html = renderDependencies(deps);
+        break;
+
+      case 'activity':
+        const activity = await api.getActivity(repoInfo.owner, repoInfo.repo);
+        html = renderActivity(activity);
+        break;
+    }
+
+    content.innerHTML = html;
+    
+    if (tabName === 'files') {
+      attachEmbeddedTreeListeners(content, repoInfo);
+    }
+
+  } catch (error) {
+    content.innerHTML = `<div class="xray-error">ERROR: ${error.message}</div>`;
+  }
+}
+
+function attachEmbeddedTreeListeners(content, repoInfo) {
+  content.querySelectorAll('.xray-dir').forEach(dir => {
+    dir.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const path = dir.dataset.path;
+      fileTreeState[path] = !fileTreeState[path];
+      const tree = await api.getFileTree(repoInfo.owner, repoInfo.repo);
+      content.innerHTML = renderFileTree(tree);
+      attachEmbeddedTreeListeners(content, repoInfo);
+    });
+  });
+}
