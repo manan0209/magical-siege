@@ -9,7 +9,26 @@ export function injectGreatHallEnhancements() {
   }
 
   injectVotingTimerBanner();
-  enhanceProjectCards();
+  
+  const observer = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.type === 'childList' || mutation.type === 'attributes') {
+        const dialogueBox = document.querySelector('.dialogue-box[data-visible="true"]');
+        if (dialogueBox && mutation.type === 'attributes') {
+          setTimeout(() => {
+            injectDialogueXRay();
+          }, 100);
+        }
+      }
+    }
+  });
+  
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['data-visible']
+  });
 }
 
 function injectVotingTimerBanner() {
@@ -84,14 +103,14 @@ function injectVotingTimerBanner() {
 }
 
 function enhanceProjectCards() {
-  const projectCards = document.querySelectorAll('.project-card, [data-project]');
+  const projectCards = document.querySelectorAll('.project-card, [data-project], .voting-project-card');
   
   if (projectCards.length === 0) {
     return;
   }
 
-  const mainContainer = document.querySelector('main') || document.body;
-  injectXRayButtons(mainContainer, '.project-card, [data-project]');
+  const mainContainer = document.querySelector('.voting-panel, .projects-grid, main') || document.body;
+  injectXRayButtons(mainContainer, '.project-card, [data-project], .voting-project-card');
   
   projectCards.forEach((card, index) => {
     if (card.dataset.msEnhanced) {
@@ -146,6 +165,124 @@ function enhanceProjectCards() {
     
     detectTechnology(card);
   });
+}
+
+let cachedVotes = null;
+
+function extractVotesFromPage() {
+  if (cachedVotes) return cachedVotes;
+  
+  const scripts = document.querySelectorAll('script');
+  for (const script of scripts) {
+    const content = script.textContent;
+    if (content.includes('const votes = ')) {
+      const match = content.match(/const votes = (\[[\s\S]*?\]);/);
+      if (match) {
+        try {
+          cachedVotes = JSON.parse(match[1]);
+          return cachedVotes;
+        } catch (e) {
+          console.warn('Failed to parse votes:', e);
+        }
+      }
+    }
+  }
+  return null;
+}
+
+function getCurrentStep() {
+  const dialogueText = document.querySelector('.dialogue-text, #dialogueText')?.textContent || '';
+  
+  if (dialogueText.includes('four diplomats')) {
+    return 1;
+  }
+  
+  if (dialogueText.includes('vote on each project') || dialogueText.includes('allocate your stars')) {
+    return 6;
+  }
+  
+  const votes = extractVotesFromPage();
+  if (!votes) return null;
+  
+  for (let i = 0; i < votes.length; i++) {
+    const vote = votes[i];
+    if (vote.project) {
+      const projectName = vote.project.name;
+      const projectDescription = vote.project.description || '';
+      
+      if (dialogueText.includes(projectName)) {
+        return i + 2;
+      }
+      
+      if (projectDescription && dialogueText.includes(projectDescription.substring(0, 50))) {
+        return i + 2;
+      }
+    }
+  }
+  
+  return null;
+}
+
+function injectDialogueXRay() {
+  const dialogueBox = document.querySelector('.dialogue-box[data-visible="true"]');
+  if (!dialogueBox) return;
+  
+  const existingBtn = dialogueBox.querySelector('.xray-scan-btn');
+  if (existingBtn) {
+    existingBtn.remove();
+  }
+  
+  const dialogueActions = dialogueBox.querySelector('#dialogueActions, .actions');
+  if (!dialogueActions) return;
+  
+  const viewCodeBtn = Array.from(dialogueActions.querySelectorAll('button')).find(btn => 
+    btn.textContent.toLowerCase().includes('view code')
+  );
+  
+  if (!viewCodeBtn) return;
+  
+  const votes = extractVotesFromPage();
+  if (!votes) {
+    console.log('[X-RAY] No votes found');
+    return;
+  }
+  
+  const currentStep = getCurrentStep();
+  console.log('[X-RAY] Current step:', currentStep);
+  
+  if (!currentStep || currentStep < 2 || currentStep > 5) return;
+  
+  const voteIndex = currentStep - 2;
+  const vote = votes[voteIndex];
+  
+  console.log('[X-RAY] Vote index:', voteIndex, 'Vote:', vote);
+  
+  if (!vote || !vote.project || !vote.project.repo_url) return;
+  
+  const repoUrl = vote.project.repo_url;
+  
+  console.log('[X-RAY] Repo URL:', repoUrl);
+  
+  if (!repoUrl.includes('github.com')) return;
+  
+  const xrayBtn = document.createElement('button');
+  xrayBtn.className = 'xray-scan-btn xray-dialogue-btn';
+  xrayBtn.textContent = '[X-RAY]';
+  xrayBtn.dataset.repoUrl = repoUrl;
+  xrayBtn.title = 'Scan repository structure';
+  xrayBtn.style.cssText = `
+    position: absolute !important;
+    top: 8px !important;
+    right: 8px !important;
+    z-index: 100 !important;
+    margin: 0 !important;
+    padding: 4px 8px !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: auto !important;
+  `;
+  
+  dialogueBox.appendChild(xrayBtn);
 }
 
 function detectTechnology(card) {

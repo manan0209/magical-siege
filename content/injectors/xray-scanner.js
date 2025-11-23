@@ -301,11 +301,32 @@ export function injectXRayButtons(container, selector) {
   cards.forEach(card => {
     if (card.querySelector('.xray-scan-btn')) return;
 
-    const repoLink = card.querySelector('a[href*="github.com"]');
-    if (!repoLink) return;
-
-    const repoUrl = repoLink.href;
+    let repoUrl = null;
     
+    const repoLink = card.querySelector('a[href*="github.com"]');
+    if (repoLink) {
+      repoUrl = repoLink.href;
+    }
+    
+    if (!repoUrl) {
+      const repoButton = card.querySelector('button[data-url*="github.com"], .project-link-btn[data-url*="github.com"]');
+      if (repoButton && repoButton.dataset.url) {
+        repoUrl = repoButton.dataset.url;
+      }
+    }
+    
+    if (!repoUrl) {
+      const codeButton = card.querySelector('button:not(.xray-scan-btn)');
+      if (codeButton) {
+        const buttonText = codeButton.textContent.toLowerCase();
+        if ((buttonText.includes('view code') || buttonText.includes('code')) && codeButton.dataset.url) {
+          repoUrl = codeButton.dataset.url;
+        }
+      }
+    }
+    
+    if (!repoUrl || !repoUrl.includes('github.com')) return;
+
     const button = document.createElement('button');
     button.className = 'xray-scan-btn';
     button.textContent = '[X-RAY]';
