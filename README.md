@@ -2,6 +2,22 @@
 
 This project is an update!
 
+week 12 update : 
+
+First of all before I begin to explain the main xray machine, from this week onwards I will be giving free cosmetics each week, for week 12 I have unlocked cowboyhat for free for you :)!!
+![cupcakes](demo-assets/cowboycupcakes.png)
+
+What i did this week -> For this week, I made an awesome X-ray machine for both siegers and reviewers, Now you get a x-ray button on each project card and with which you can run a deep scan on the project to uncover its hidden framework behind it, I literally gave up this time building it, because I was not able to implement it anywhere apart from armory page, bec olive hasnt updated code still, so I tried like 100 times with diff strategies to inject this thing in great hall and stonemason page!!
+
+Howdy Liege! hope you like this weeks update!!
+
+here are some snapshots as gif just doesnt justify the quality!!
+
+![week 12](demo-assets/xray1.png)
+![week 12](demo-assets/xray2.png)
+![week 12](demo-assets/xray3.png)
+![week 12](demo-assets/xray4.png)
+
 week 11 update :
 
 LORE > [Couldnt do as much as i had hoped (I had mocks lined up this week and i am gonna be cooked in following three weeks as well :cryin)] 
