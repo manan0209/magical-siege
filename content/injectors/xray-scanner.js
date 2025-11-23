@@ -145,7 +145,7 @@ async function loadTabContent(tabName) {
 }
 
 function renderFileTree(tree, level = 0) {
-  if (!tree || tree.length === 0) {
+  if (!tree || !Array.isArray(tree) || tree.length === 0) {
     return '<div class="xray-empty">No files found</div>';
   }
 
@@ -176,7 +176,7 @@ function renderFileTree(tree, level = 0) {
 }
 
 function countFiles(node) {
-  if (!node.children) return 0;
+  if (!node.children || !Array.isArray(node.children)) return 0;
   
   let count = 0;
   node.children.forEach(child => {
@@ -204,7 +204,7 @@ function attachTreeListeners() {
 }
 
 function renderCommits(commits) {
-  if (!commits || commits.length === 0) {
+  if (!commits || !Array.isArray(commits) || commits.length === 0) {
     return '<div class="xray-empty">No commits found</div>';
   }
 
@@ -227,8 +227,8 @@ function renderCommits(commits) {
 }
 
 function renderDependencies(deps) {
-  const hasProduction = deps.production && deps.production.length > 0;
-  const hasDevelopment = deps.development && deps.development.length > 0;
+  const hasProduction = deps.production && Array.isArray(deps.production) && deps.production.length > 0;
+  const hasDevelopment = deps.development && Array.isArray(deps.development) && deps.development.length > 0;
 
   if (!hasProduction && !hasDevelopment) {
     return '<div class="xray-empty">No package.json found or no dependencies</div>';
@@ -254,7 +254,7 @@ function renderDependencies(deps) {
 }
 
 function renderActivity(weeks) {
-  if (!weeks || weeks.length === 0) {
+  if (!weeks || !Array.isArray(weeks) || weeks.length === 0) {
     return '<div class="xray-empty">No activity data available</div>';
   }
 
