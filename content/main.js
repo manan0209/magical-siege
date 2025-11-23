@@ -8,6 +8,7 @@ import { injectMagicalMeeple } from './injectors/magical-meeple.js';
 import { injectFallTheme } from './injectors/fall-theme.js';
 import { injectSpookyDoor } from './injectors/spooky-door.js';
 import { injectTreasuryGrid } from './injectors/treasury-grid.js';
+import { initXRayScanner } from './injectors/xray-scanner.js';
 
 const PAGES = {
   KEEP: '/keep',
@@ -40,6 +41,7 @@ class MagicalSiege {
     injectMagicalMeeple();
     injectSpookyDoor();
     injectTreasuryGrid();
+    initXRayScanner();
 
     if (!this.currentPage) {
       return;

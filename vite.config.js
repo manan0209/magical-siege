@@ -33,6 +33,7 @@ export default defineConfig({
         copyFileSync('styles/theme-dark.css', 'dist/styles/theme-dark.css');
         copyFileSync('styles/theme-space.css', 'dist/styles/theme-space.css');
         copyFileSync('styles/animations.css', 'dist/styles/animations.css');
+        copyFileSync('styles/xray-modal.css', 'dist/styles/xray-modal.css');
         
         if (!existsSync('dist/assets/icons')) {
           mkdirSync('dist/assets/icons', { recursive: true });
