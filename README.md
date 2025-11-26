@@ -2,6 +2,10 @@
 
 This project is an update!
 
+
+https://github.com/user-attachments/assets/a3c982c0-e458-40a1-b42d-c4f1a636d798
+
+
 week 12 update : 
 
 First of all before I begin to explain the main xray machine, from this week onwards I will be giving free cosmetics each week, for week 12 I have unlocked cowboyhat for free for you :)!!
