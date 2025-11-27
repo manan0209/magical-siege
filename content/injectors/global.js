@@ -160,7 +160,8 @@ async function updateThemeIndicator() {
   const themeNames = {
     default: 'Default',
     magical: 'Magical',
-    dark: 'Dark'
+    dark: 'Dark',
+    space: 'Space'
   };
   
   indicator.textContent = `Theme: ${themeNames[theme]}`;
@@ -173,6 +174,10 @@ async function updateThemeIndicator() {
     indicator.style.background = 'rgba(139, 92, 246, 0.1)';
     indicator.style.color = '#6D28D9';
     indicator.style.borderColor = '#8B5CF6';
+  } else if (theme === 'space') {
+    indicator.style.background = 'rgba(0, 0, 0, 0.8)';
+    indicator.style.color = '#00d9ff';
+    indicator.style.borderColor = '#00d9ff';
   } else {
     indicator.style.background = 'rgba(255,255,255,0.95)';
     indicator.style.color = '#3b2a1a';

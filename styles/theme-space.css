@@ -453,3 +453,195 @@ body.ms-theme-space #ms-treasury-button {
   color: #00d9ff !important;
   box-shadow: 0 0 12px rgba(0, 217, 255, 0.4), 0 0 24px rgba(0, 217, 255, 0.2) !important;
 }
+
+body.ms-theme-space .filters-and-leaderboard-container {
+  background: rgba(15, 23, 42, 0.85) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+body.ms-theme-space .filters-section {
+  background: rgba(10, 15, 30, 0.6) !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .leaderboard-section {
+  background: rgba(10, 15, 30, 0.6) !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .review-container {
+  background: transparent !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .review-header {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .project-badges {
+  background: rgba(15, 23, 42, 0.6) !important;
+}
+
+body.ms-theme-space .project-badges span,
+body.ms-theme-space .project-status {
+  background: rgba(0, 217, 255, 0.2) !important;
+  color: #00d9ff !important;
+  text-shadow: 0 0 8px rgba(0, 217, 255, 0.5);
+}
+
+body.ms-theme-space .project-status.status-submitted {
+  background: rgba(0, 217, 255, 0.25) !important;
+  color: #4aeaff !important;
+}
+
+body.ms-theme-space .project-status.status-approved {
+  background: rgba(16, 185, 129, 0.25) !important;
+  color: #10b981 !important;
+}
+
+body.ms-theme-space .project-status.status-rejected {
+  background: rgba(239, 68, 68, 0.25) !important;
+  color: #ef4444 !important;
+}
+
+body.ms-theme-space .project-meta {
+  color: rgba(224, 230, 237, 0.7) !important;
+}
+
+body.ms-theme-space .project-owner {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .filters-section h3,
+body.ms-theme-space .leaderboard-section h3 {
+  color: #00d9ff !important;
+  text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+}
+
+body.ms-theme-space .filter-button,
+body.ms-theme-space .filter-option {
+  background: rgba(0, 217, 255, 0.1) !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .filter-button:hover,
+body.ms-theme-space .filter-option:hover {
+  background: rgba(0, 217, 255, 0.2) !important;
+}
+
+body.ms-theme-space .filter-button.active,
+body.ms-theme-space .filter-option.active {
+  background: rgba(0, 217, 255, 0.3) !important;
+  color: #00d9ff !important;
+}
+
+body.ms-theme-space .projects-grid {
+  background: transparent !important;
+}
+
+body.ms-theme-space .review-index-page * {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .review-index-page a {
+  color: #00d9ff !important;
+}
+
+body.ms-theme-space .review-index-page a:hover {
+  color: #4aeaff !important;
+}
+
+/* Review Detail Page Sections */
+body.ms-theme-space .review-detail-container {
+  background: transparent !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .review-detail-header {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .detail-section {
+  background: rgba(15, 23, 42, 0.85) !important;
+  backdrop-filter: blur(10px) !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .detail-section h2,
+body.ms-theme-space .detail-section h3,
+body.ms-theme-space .detail-section h4 {
+  color: #00d9ff !important;
+  text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+}
+
+body.ms-theme-space .detail-section p,
+body.ms-theme-space .detail-section div,
+body.ms-theme-space .detail-section span {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .detail-section a {
+  color: #00d9ff !important;
+}
+
+body.ms-theme-space .detail-section a:hover {
+  color: #4aeaff !important;
+}
+
+body.ms-theme-space .logs-section {
+  background: rgba(15, 23, 42, 0.85) !important;
+  backdrop-filter: blur(10px) !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .logs-section h2,
+body.ms-theme-space .logs-section h3 {
+  color: #00d9ff !important;
+  text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+}
+
+body.ms-theme-space .log-entry {
+  background: rgba(10, 15, 30, 0.6) !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .log-timestamp {
+  color: rgba(224, 230, 237, 0.7) !important;
+}
+
+body.ms-theme-space .log-action {
+  color: #00d9ff !important;
+}
+
+body.ms-theme-space .review-actions {
+  background: rgba(15, 23, 42, 0.85) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+body.ms-theme-space .review-actions button {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .review-actions textarea {
+  background: rgba(10, 15, 30, 0.6) !important;
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .detail-field {
+  color: #e0e6ed !important;
+}
+
+body.ms-theme-space .detail-label {
+  color: rgba(224, 230, 237, 0.7) !important;
+}
+
+body.ms-theme-space .status-badge {
+  background: rgba(0, 217, 255, 0.2) !important;
+  color: #00d9ff !important;
+  text-shadow: 0 0 8px rgba(0, 217, 255, 0.5);
+}
+
+body.ms-theme-space .status-badge.status-submitted {
+  background: rgba(0, 217, 255, 0.25) !important;
+  color: #4aeaff !important;
+}

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Magical Siege",
-  "version": "1.2.0",
+  "version": "1.6.0",
   "description": "Make your siege magical, powerful, and beautiful",
   "icons": {
     "16": "assets/icons/icon-16.png",
@@ -16,7 +16,8 @@
   "host_permissions": [
     "https://siege.hackclub.com/*",
     "https://waka.hackclub.com/*",
-    "https://*.beeceptor.com/*"
+    "https://*.beeceptor.com/*",
+    "https://api.github.com/*"
   ],
   "background": {
     "scripts": ["background.js"],
@@ -31,7 +32,9 @@
         "styles/theme-default.css",
         "styles/theme-magical.css",
         "styles/theme-dark.css",
-        "styles/animations.css"
+        "styles/theme-space.css",
+        "styles/animations.css",
+        "styles/xray-modal.css"
       ],
       "run_at": "document_end"
     }
