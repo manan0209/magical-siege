@@ -1,0 +1,106 @@
+body.ms-theme-winter {
+  --ms-winter-primary: #e0f2fe;
+  --ms-winter-secondary: #bae6fd;
+  --ms-winter-accent: #0ea5e9;
+  --ms-winter-glass: rgba(255, 255, 255, 0.15);
+  --ms-winter-border: rgba(255, 255, 255, 0.3);
+  --ms-winter-shadow: rgba(14, 165, 233, 0.1);
+  
+  background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%) !important;
+  min-height: 100vh;
+}
+
+body.ms-theme-winter .home-container {
+  background: transparent !important;
+}
+
+body.ms-theme-winter .home-card,
+body.ms-theme-winter .project-card {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(14, 165, 233, 0.1),
+              0 1px 2px rgba(255, 255, 255, 0.5) inset !important;
+  transition: all 0.3s ease !important;
+}
+
+body.ms-theme-winter .home-card:hover,
+body.ms-theme-winter .project-card:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  transform: translateY(-4px) !important;
+  box-shadow: 0 12px 48px rgba(14, 165, 233, 0.15),
+              0 1px 2px rgba(255, 255, 255, 0.5) inset !important;
+}
+
+body.ms-theme-winter .home-section-title,
+body.ms-theme-winter .home-card h2,
+body.ms-theme-winter .home-card h3 {
+  color: #0c4a6e !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+body.ms-theme-winter .home-card p,
+body.ms-theme-winter .home-card span,
+body.ms-theme-winter .home-card div:not(.submit-button) {
+  color: #0c4a6e !important;
+}
+
+body.ms-theme-winter .submit-button {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  color: #0c4a6e !important;
+  border-radius: 12px !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.1) !important;
+}
+
+body.ms-theme-winter .submit-button:hover {
+  background: rgba(255, 255, 255, 0.35) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 24px rgba(14, 165, 233, 0.2) !important;
+}
+
+body.ms-theme-winter nav,
+body.ms-theme-winter header {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+body.ms-theme-winter .project-badge {
+  background: rgba(14, 165, 233, 0.2) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: #0c4a6e !important;
+}
+
+body.ms-theme-winter input,
+body.ms-theme-winter textarea,
+body.ms-theme-winter select {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: #0c4a6e !important;
+}
+
+body.ms-theme-winter input::placeholder,
+body.ms-theme-winter textarea::placeholder {
+  color: rgba(12, 74, 110, 0.6) !important;
+}
+
+body.ms-theme-winter a {
+  color: #0369a1 !important;
+}
+
+body.ms-theme-winter a:hover {
+  color: #0284c7 !important;
+}
