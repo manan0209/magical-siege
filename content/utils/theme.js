@@ -34,6 +34,17 @@ export const Theme = {
         '--ms-space-border': 'rgba(0, 217, 255, 0.3)',
         '--ms-space-accent': '#00d9ff'
       }
+    },
+    winter: {
+      name: 'Winter',
+      vars: {
+        '--ms-winter-primary': '#e0f2fe',
+        '--ms-winter-secondary': '#bae6fd',
+        '--ms-winter-accent': '#0ea5e9',
+        '--ms-winter-glass': 'rgba(255, 255, 255, 0.15)',
+        '--ms-winter-border': 'rgba(255, 255, 255, 0.3)',
+        '--ms-winter-shadow': 'rgba(14, 165, 233, 0.1)'
+      }
     }
   },
 
@@ -49,7 +60,7 @@ export const Theme = {
 
     const theme = this.THEMES[themeName];
     
-    document.body.classList.remove('ms-theme-default', 'ms-theme-magical', 'ms-theme-dark', 'ms-theme-space');
+    document.body.classList.remove('ms-theme-default', 'ms-theme-magical', 'ms-theme-dark', 'ms-theme-space', 'ms-theme-winter');
     document.body.classList.add(`ms-theme-${themeName}`);
     
     Object.entries(theme.vars).forEach(([key, value]) => {
@@ -64,21 +75,31 @@ export const Theme = {
       this.removeFlashlightEffect();
       this.removeDarkCursor();
       this.removeSpaceCursor();
+      this.removeWinterBackground();
     } else if (themeName === 'dark') {
       this.removeMagicalCursor();
       this.applyFlashlightEffect();
       this.applyDarkCursor();
       this.removeSpaceCursor();
+      this.removeWinterBackground();
     } else if (themeName === 'space') {
       this.removeMagicalCursor();
       this.removeFlashlightEffect();
       this.removeDarkCursor();
       this.applySpaceCursor();
+      this.removeWinterBackground();
+    } else if (themeName === 'winter') {
+      this.removeMagicalCursor();
+      this.removeFlashlightEffect();
+      this.removeDarkCursor();
+      this.removeSpaceCursor();
+      this.applyWinterBackground();
     } else {
       this.removeMagicalCursor();
       this.removeFlashlightEffect();
       this.removeDarkCursor();
       this.removeSpaceCursor();
+      this.removeWinterBackground();
     }
     
     return true;
@@ -237,7 +258,7 @@ export const Theme = {
 
   async cycleTheme() {
     const current = await this.getCurrentTheme();
-    const themes = ['default', 'magical', 'dark', 'space'];
+    const themes = ['default', 'magical', 'dark', 'space', 'winter'];
     const currentIndex = themes.indexOf(current);
     const nextIndex = (currentIndex + 1) % themes.length;
     const nextTheme = themes[nextIndex];
@@ -259,5 +280,31 @@ export const Theme = {
 
   isDarkTheme(themeName) {
     return themeName !== 'default';
+  },
+
+  applyWinterBackground() {
+    const existingVideo = document.getElementById('winter-video-bg');
+    if (existingVideo) {
+      return;
+    }
+
+    const video = document.createElement('video');
+    video.id = 'winter-video-bg';
+    video.autoplay = true;
+    video.loop = true;
+    video.muted = true;
+    video.playsInline = true;
+    
+    const videoUrl = chrome.runtime.getURL('assets/w1.mp4');
+    video.src = videoUrl;
+    
+    document.body.insertBefore(video, document.body.firstChild);
+  },
+
+  removeWinterBackground() {
+    const video = document.getElementById('winter-video-bg');
+    if (video) {
+      video.remove();
+    }
   }
 };

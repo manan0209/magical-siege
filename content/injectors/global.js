@@ -161,7 +161,8 @@ async function updateThemeIndicator() {
     default: 'Default',
     magical: 'Magical',
     dark: 'Dark',
-    space: 'Space'
+    space: 'Space',
+    winter: 'Winter'
   };
   
   indicator.textContent = `Theme: ${themeNames[theme]}`;
@@ -178,6 +179,11 @@ async function updateThemeIndicator() {
     indicator.style.background = 'rgba(0, 0, 0, 0.8)';
     indicator.style.color = '#00d9ff';
     indicator.style.borderColor = '#00d9ff';
+  } else if (theme === 'winter') {
+    indicator.style.background = 'rgba(255, 255, 255, 0.15)';
+    indicator.style.backdropFilter = 'blur(20px)';
+    indicator.style.color = '#0c4a6e';
+    indicator.style.borderColor = 'rgba(255, 255, 255, 0.3)';
   } else {
     indicator.style.background = 'rgba(255,255,255,0.95)';
     indicator.style.color = '#3b2a1a';
@@ -265,6 +271,12 @@ async function updateTreasuryButton() {
   } else if (theme === 'magical') {
     treasuryBtn.style.background = 'rgba(139, 92, 246, 0.1)';
     treasuryBtn.style.color = '#6D28D9';
+    treasuryBtn.style.borderColor = '#d4a574';
+    treasuryBtn.style.boxShadow = '0 0 12px rgba(212, 165, 116, 0.6), 0 0 24px rgba(212, 165, 116, 0.3)';
+  } else if (theme === 'winter') {
+    treasuryBtn.style.background = 'rgba(255, 255, 255, 0.15)';
+    treasuryBtn.style.backdropFilter = 'blur(20px)';
+    treasuryBtn.style.color = '#0c4a6e';
     treasuryBtn.style.borderColor = '#d4a574';
     treasuryBtn.style.boxShadow = '0 0 12px rgba(212, 165, 116, 0.6), 0 0 24px rgba(212, 165, 116, 0.3)';
   } else {
@@ -361,6 +373,11 @@ function applyCountdownTheme(container, element, urgency) {
     container.style.background = 'rgba(139, 92, 246, 0.1)';
     container.style.borderColor = urgency === 'critical' ? '#ef4444' : urgency === 'warning' ? '#f59e0b' : '#8B5CF6';
     element.style.color = urgency === 'critical' ? '#ef4444' : urgency === 'warning' ? '#f59e0b' : '#6D28D9';
+  } else if (theme === 'winter') {
+    container.style.background = 'rgba(255, 255, 255, 0.15)';
+    container.style.backdropFilter = 'blur(20px)';
+    container.style.borderColor = urgency === 'critical' ? '#ef4444' : urgency === 'warning' ? '#f59e0b' : 'rgba(255, 255, 255, 0.3)';
+    element.style.color = urgency === 'critical' ? '#ef4444' : urgency === 'warning' ? '#f59e0b' : '#0c4a6e';
   } else {
     container.style.background = 'rgba(255,255,255,0.95)';
     container.style.borderColor = urgency === 'critical' ? '#ef4444' : urgency === 'warning' ? '#f59e0b' : 'rgba(64,43,32,0.75)';

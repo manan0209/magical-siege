@@ -32,6 +32,7 @@ export default defineConfig({
         copyFileSync('styles/theme-magical.css', 'dist/styles/theme-magical.css');
         copyFileSync('styles/theme-dark.css', 'dist/styles/theme-dark.css');
         copyFileSync('styles/theme-space.css', 'dist/styles/theme-space.css');
+        copyFileSync('styles/theme-winter.css', 'dist/styles/theme-winter.css');
         copyFileSync('styles/animations.css', 'dist/styles/animations.css');
         copyFileSync('styles/xray-modal.css', 'dist/styles/xray-modal.css');
         
@@ -48,6 +49,14 @@ export default defineConfig({
         
         if (existsSync('assets/cowboyHat.png')) {
           copyFileSync('assets/cowboyHat.png', 'dist/assets/cowboyHat.png');
+        }
+        
+        if (existsSync('assets/w1.mp4')) {
+          copyFileSync('assets/w1.mp4', 'dist/assets/w1.mp4');
+        }
+        
+        if (existsSync('assets/w2.mp4')) {
+          copyFileSync('assets/w2.mp4', 'dist/assets/w2.mp4');
         }
         
         if (existsSync('public/handcursor.cur')) {
