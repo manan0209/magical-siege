@@ -51,8 +51,8 @@ export default defineConfig({
           copyFileSync('assets/cowboyHat.png', 'dist/assets/cowboyHat.png');
         }
         
-        if (existsSync('assets/snow.webp')) {
-          copyFileSync('assets/snow.webp', 'dist/assets/snow.webp');
+        if (existsSync('assets/sailorHat.png')) {
+          copyFileSync('assets/sailorHat.png', 'dist/assets/sailorHat.png');
         }
         
         if (existsSync('public/handcursor.cur')) {

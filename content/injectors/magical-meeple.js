@@ -32,6 +32,7 @@ function getCurrentTheme() {
   if (document.body.classList.contains('ms-theme-magical')) return 'magical';
   if (document.body.classList.contains('ms-theme-dark')) return 'dark';
   if (document.body.classList.contains('ms-theme-space')) return 'space';
+  if (document.body.classList.contains('ms-theme-winter')) return 'winter';
   
   return 'default';
 }
@@ -47,6 +48,8 @@ function checkThemeAndActivate() {
       activateMagicalMeeple();
     } else if (newTheme === 'default') {
       activateDefaultCosmetics();
+    } else if (newTheme === 'winter') {
+      activateWinterCosmetics();
     }
   }
 }
@@ -69,6 +72,10 @@ function activateMagicalMeeple() {
 
 function activateDefaultCosmetics() {
   startCowboyHatInjector();
+}
+
+function activateWinterCosmetics() {
+  startSailorHatInjector();
 }
 
 function startMeepleReplacer() {
@@ -188,6 +195,62 @@ function startCowboyHatInjector() {
   const interval = setInterval(() => {
     if (currentTheme === 'default') {
       addCowboyHat();
+    }
+  }, 3000);
+  
+  replacementIntervals.push(interval);
+}
+
+function startSailorHatInjector() {
+  const sailorHatUrl = chrome.runtime.getURL('assets/sailorHat.png');
+  
+  function addSailorHat() {
+    const navbarContainer = document.querySelector('#navbar-meeple-container') || 
+                           document.querySelector('.navbar .meeple-avatar');
+    
+    if (!navbarContainer) return;
+    if (navbarContainer.querySelector('[data-free-cosmetic="Sailor Hat"]')) return;
+
+    const baseMeeple = navbarContainer.querySelector('img[src*="meeple"]');
+    if (!baseMeeple) return;
+
+    const hatImg = document.createElement('img');
+    hatImg.src = sailorHatUrl;
+    hatImg.alt = 'Sailor Hat';
+    hatImg.dataset.freeCosmetic = 'Sailor Hat';
+    hatImg.style.position = 'absolute';
+    hatImg.style.top = baseMeeple.style.top || '0px';
+    hatImg.style.left = baseMeeple.style.left || '0px';
+    hatImg.style.width = baseMeeple.style.width || `${baseMeeple.offsetWidth || 84}px`;
+    hatImg.style.height = baseMeeple.style.height || `${baseMeeple.offsetHeight || 84}px`;
+    hatImg.style.objectFit = 'contain';
+    hatImg.style.pointerEvents = 'none';
+    hatImg.style.filter = 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))';
+    
+    const baseZIndex = parseInt(baseMeeple.style.zIndex) || 1;
+    hatImg.style.zIndex = `${baseZIndex + 1}`;
+    
+    navbarContainer.appendChild(hatImg);
+  }
+  
+  addSailorHat();
+  setTimeout(addSailorHat, 500);
+  setTimeout(addSailorHat, 1000);
+  
+  meepleObserver = new MutationObserver(() => {
+    if (currentTheme === 'winter') {
+      addSailorHat();
+    }
+  });
+  
+  meepleObserver.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+  
+  const interval = setInterval(() => {
+    if (currentTheme === 'winter') {
+      addSailorHat();
     }
   }, 3000);
   
