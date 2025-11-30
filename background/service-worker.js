@@ -152,6 +152,81 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     });
     return true;
   }
+  
+  if (message.type === 'FETCH_FULL_LEADERBOARD') {
+    fetchFullLeaderboard(message.currentWeek, message.userName)
+      .then(data => sendResponse(data))
+      .catch(error => sendResponse({ success: false, error: error.message }));
+    return true;
+  }
 });
+
+async function fetchFullLeaderboard(currentWeek, userName) {
+  try {
+    const projectsResponse = await fetch('https://siege.hackclub.com/api/public-beta/projects');
+    if (!projectsResponse.ok) {
+      throw new Error(`Failed to fetch projects: ${projectsResponse.status}`);
+    }
+    const projectsRaw = await projectsResponse.json();
+    const projectsData = Array.isArray(projectsRaw) ? projectsRaw : (projectsRaw.projects || []);
+
+    if (!Array.isArray(projectsData) || projectsData.length === 0) {
+      throw new Error('No projects data available');
+    }
+
+    const currentWeekProjects = projectsData.filter(p => {
+      const weekMatch = p.week_badge_text?.match(/Week (\d+)/);
+      return weekMatch && parseInt(weekMatch[1]) === currentWeek;
+    });
+
+    const userIds = [...new Set(currentWeekProjects.map(p => p.user?.id).filter(id => id))];
+
+    const userDataPromises = userIds.map(async (id) => {
+      try {
+        const response = await fetch(`https://siege.hackclub.com/api/public-beta/user/${id}`);
+        if (!response.ok) return null;
+        return await response.json();
+      } catch (error) {
+        console.error(`Failed to fetch user ${id}:`, error);
+        return null;
+      }
+    });
+
+    const usersData = await Promise.all(userDataPromises);
+
+    const leaderboard = usersData
+      .filter(user => user && user.id)
+      .map(user => ({
+        id: user.id,
+        username: user.display_name || user.name,
+        name: user.name,
+        display_name: user.display_name,
+        coins: user.coins || 0,
+        source: 'api'
+      }))
+      .sort((a, b) => b.coins - a.coins)
+      .map((user, index) => ({
+        ...user,
+        rank: index + 1
+      }));
+
+    const userEntry = leaderboard.find(u =>
+      u.display_name === userName || u.name === userName || u.username === userName
+    );
+
+    return {
+      success: true,
+      data: {
+        rank: userEntry?.rank || null,
+        coins: userEntry?.coins || 0,
+        totalUsers: leaderboard.length,
+        fullLeaderboard: leaderboard
+      }
+    };
+  } catch (error) {
+    console.error('Leaderboard fetch error:', error);
+    return { success: false, error: error.message };
+  }
+}
 
 console.log('Magical Siege service worker loaded');

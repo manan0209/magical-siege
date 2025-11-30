@@ -1,8 +1,15 @@
-import { API } from './api.js';
-
 const API_STORAGE_KEY = 'ms_api_leaderboard';
 const LOCAL_STORAGE_KEY = 'ms_local_leaderboard';
-const CACHE_DURATION = 2 * 60 * 1000;
+const CACHE_DURATION = 40 * 60 * 60 * 1000;
+
+function getCurrentWeek() {
+  const week4StartDate = new Date('2025-09-22');
+  const now = new Date();
+  const timeDiff = now.getTime() - week4StartDate.getTime();
+  const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+  const weeksDiff = Math.floor(daysDiff / 7);
+  return 4 + weeksDiff;
+}
 
 async function getLeaderboard() {
   const cached = getCachedLeaderboard();
@@ -10,24 +17,38 @@ async function getLeaderboard() {
     return cached;
   }
 
+  const currentWeek = getCurrentWeek();
+  const userNameElement = document.querySelector('.user-name');
+  const userName = userNameElement ? userNameElement.textContent.trim() : 'Anonymous';
+
   try {
-    const response = await API.getLeaderboard();
-    
-    if (response && response.leaderboard) {
-      const apiUsers = response.leaderboard.map((user, index) => ({
-        username: user.display_name || user.name,
+    const response = await new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage({
+        type: 'FETCH_FULL_LEADERBOARD',
+        currentWeek: currentWeek,
+        userName: userName
+      }, (response) => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve(response);
+        }
+      });
+    });
+
+    if (response && response.success && response.data) {
+      const leaderboard = response.data.fullLeaderboard.map(user => ({
+        username: user.username,
         display_name: user.display_name,
         name: user.name,
         userId: user.id,
-        slackId: user.slack_id,
         coins: user.coins,
-        position: index + 1,
-        role: user.rank,
-        source: 'api'
+        position: user.rank,
+        source: user.source || 'api'
       }));
 
       const localUsers = getLocalLeaderboard();
-      const merged = mergeLeaderboards(apiUsers, localUsers);
+      const merged = mergeLeaderboards(leaderboard, localUsers);
       
       cacheLeaderboard(merged);
       return merged;
@@ -35,7 +56,7 @@ async function getLeaderboard() {
 
     return getLocalLeaderboard();
   } catch (error) {
-    console.error('Failed to fetch leaderboard from API:', error);
+    console.error('Sad to tell ya that I failed to fetch leaderboard:(', error);
     return getCachedLeaderboard() || getLocalLeaderboard();
   }
 }
@@ -178,7 +199,6 @@ function clearLeaderboardCache() {
   try {
     localStorage.removeItem(API_STORAGE_KEY);
     localStorage.removeItem(API_STORAGE_KEY + '_timestamp');
-    API.clearCache();
   } catch (error) {
     console.error('Failed to clear cache:', error);
   }
