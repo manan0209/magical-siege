@@ -51,7 +51,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["assets/*", "styles/*", "handcursor.cur", "Handpointer.cur", "door.png", "door-creak.mp3", "follow-red-dot.mp4", "assets/w1.mp4", "assets/w2.mp4"],
+      "resources": ["assets/*", "styles/*", "handcursor.cur", "Handpointer.cur", "door.png", "door-creak.mp3", "follow-red-dot.mp4"],
       "matches": ["https://siege.hackclub.com/*"]
     }
   ]

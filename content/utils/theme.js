@@ -38,12 +38,12 @@ export const Theme = {
     winter: {
       name: 'Winter',
       vars: {
-        '--ms-winter-primary': '#e0f2fe',
+        '--ms-winter-primary': '#EDF3F8',
         '--ms-winter-secondary': '#bae6fd',
-        '--ms-winter-accent': '#0ea5e9',
+        '--ms-winter-accent': '#1C4C6B',
         '--ms-winter-glass': 'rgba(255, 255, 255, 0.15)',
         '--ms-winter-border': 'rgba(255, 255, 255, 0.3)',
-        '--ms-winter-shadow': 'rgba(14, 165, 233, 0.1)'
+        '--ms-winter-shadow': 'rgba(28, 76, 107, 0.1)'
       }
     }
   },
@@ -283,28 +283,10 @@ export const Theme = {
   },
 
   applyWinterBackground() {
-    const existingVideo = document.getElementById('winter-video-bg');
-    if (existingVideo) {
-      return;
-    }
-
-    const video = document.createElement('video');
-    video.id = 'winter-video-bg';
-    video.autoplay = true;
-    video.loop = true;
-    video.muted = true;
-    video.playsInline = true;
     
-    const videoUrl = chrome.runtime.getURL('assets/w1.mp4');
-    video.src = videoUrl;
-    
-    document.body.insertBefore(video, document.body.firstChild);
   },
 
   removeWinterBackground() {
-    const video = document.getElementById('winter-video-bg');
-    if (video) {
-      video.remove();
-    }
+    
   }
 };

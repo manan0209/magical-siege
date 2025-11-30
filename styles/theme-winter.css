@@ -1,43 +1,25 @@
 body.ms-theme-winter {
-  --ms-winter-primary: #e0f2fe;
+  --ms-winter-primary: #EDF3F8;
   --ms-winter-secondary: #bae6fd;
-  --ms-winter-accent: #0ea5e9;
-  --ms-winter-glass: rgba(255, 255, 255, 0.15);
-  --ms-winter-border: rgba(255, 255, 255, 0.3);
-  --ms-winter-shadow: rgba(14, 165, 233, 0.1);
+  --ms-winter-accent: #1C4C6B;
+  --ms-winter-glass: rgba(255, 255, 255, 0.4);
+  --ms-winter-border: rgba(28, 76, 107, 0.15);
+  --ms-winter-shadow: rgba(28, 76, 107, 0.1);
   
-  background: #1a1a2e !important;
+  background: #EDF3F8 !important;
+  color: #1C4C6B !important;
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
 }
 
-body.ms-theme-winter::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  pointer-events: none;
-}
-
-body.ms-theme-winter #winter-video-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-  opacity: 0.7;
-  filter: brightness(1.1);
-}
-
 body.ms-theme-winter main,
 body.ms-theme-winter .main-content,
-body.ms-theme-winter .home-container {
+body.ms-theme-winter .home-container,
+body.ms-theme-winter .projects-container,
+body.ms-theme-winter .market-container,
+body.ms-theme-winter .great-hall-container,
+body.ms-theme-winter .castle-container {
   background: transparent !important;
   position: relative;
   z-index: 1;
@@ -45,91 +27,414 @@ body.ms-theme-winter .home-container {
 
 body.ms-theme-winter .home-card,
 body.ms-theme-winter .project-card {
-  background: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.6) !important;
   backdrop-filter: blur(20px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border: none !important;
   border-radius: 16px !important;
-  box-shadow: 0 8px 32px rgba(14, 165, 233, 0.1),
-              0 1px 2px rgba(255, 255, 255, 0.5) inset !important;
+  box-shadow: 0 4px 20px rgba(28, 76, 107, 0.08),
+              0 1px 3px rgba(28, 76, 107, 0.12) !important;
   transition: all 0.3s ease !important;
 }
 
 body.ms-theme-winter .home-card:hover,
 body.ms-theme-winter .project-card:hover {
-  background: rgba(255, 255, 255, 0.25) !important;
-  border-color: rgba(255, 255, 255, 0.5) !important;
+  background: rgba(255, 255, 255, 0.75) !important;
   transform: translateY(-4px) !important;
-  box-shadow: 0 12px 48px rgba(14, 165, 233, 0.15),
-              0 1px 2px rgba(255, 255, 255, 0.5) inset !important;
+  box-shadow: 0 8px 30px rgba(28, 76, 107, 0.12),
+              0 2px 6px rgba(28, 76, 107, 0.15) !important;
 }
 
-body.ms-theme-winter .home-section-title,
+body.ms-theme-winter .home-card-body,
+body.ms-theme-winter .project-card-body {
+  background: transparent !important;
+  color: #1C4C6B !important;
+}
+
+body.ms-theme-winter .home-section-title {
+  color: #1C4C6B !important;
+  text-shadow: none !important;
+}
+
+body.ms-theme-winter .home-title,
+body.ms-theme-winter .home-progress-top,
+body.ms-theme-winter .home-progress-bottom,
+body.ms-theme-winter .home-card-title,
 body.ms-theme-winter .home-card h2,
 body.ms-theme-winter .home-card h3 {
-  color: #0c4a6e !important;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  color: #1C4C6B !important;
 }
 
 body.ms-theme-winter .home-card p,
 body.ms-theme-winter .home-card span,
-body.ms-theme-winter .home-card div:not(.submit-button) {
-  color: #0c4a6e !important;
+body.ms-theme-winter .home-card div:not(.submit-button),
+body.ms-theme-winter .home-card * {
+  color: #1C4C6B !important;
 }
 
-body.ms-theme-winter .submit-button {
-  background: rgba(255, 255, 255, 0.2) !important;
+body.ms-theme-winter .submit-button,
+body.ms-theme-winter button:not(#ms-fab):not(#ms-theme-toggle) {
+  background: rgba(28, 76, 107, 0.15) !important;
   backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.4) !important;
-  color: #0c4a6e !important;
+  border: none !important;
+  color: #1C4C6B !important;
   border-radius: 12px !important;
   transition: all 0.3s ease !important;
-  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.1) !important;
+  box-shadow: 0 2px 10px rgba(28, 76, 107, 0.1) !important;
+  font-weight: 500 !important;
 }
 
-body.ms-theme-winter .submit-button:hover {
-  background: rgba(255, 255, 255, 0.35) !important;
-  border-color: rgba(255, 255, 255, 0.6) !important;
+body.ms-theme-winter .submit-button:hover,
+body.ms-theme-winter button:not(#ms-fab):not(#ms-theme-toggle):hover {
+  background: rgba(28, 76, 107, 0.25) !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 6px 24px rgba(14, 165, 233, 0.2) !important;
+  box-shadow: 0 4px 20px rgba(28, 76, 107, 0.15) !important;
+}
+
+body.ms-theme-winter .home-button {
+  background: rgba(28, 76, 107, 0.15) !important;
+  border: none !important;
+  color: #1C4C6B !important;
+}
+
+body.ms-theme-winter .home-button:hover {
+  background: rgba(28, 76, 107, 0.25) !important;
 }
 
 body.ms-theme-winter nav,
-body.ms-theme-winter header {
-  background: rgba(255, 255, 255, 0.1) !important;
+body.ms-theme-winter header,
+body.ms-theme-winter .nav,
+body.ms-theme-winter .castle-nav,
+body.ms-theme-winter .home-nav,
+body.ms-theme-winter aside,
+body.ms-theme-winter [class*="nav"],
+body.ms-theme-winter [class*="sidebar"] {
+  background: rgba(255, 255, 255, 0.7) !important;
   backdrop-filter: blur(20px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-bottom: 1px solid rgba(28, 76, 107, 0.12) !important;
+  border-right: 1px solid rgba(28, 76, 107, 0.12) !important;
+  box-shadow: 0 2px 10px rgba(28, 76, 107, 0.08) !important;
 }
 
-body.ms-theme-winter .project-badge {
-  background: rgba(14, 165, 233, 0.2) !important;
-  backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  color: #0c4a6e !important;
+body.ms-theme-winter nav *,
+body.ms-theme-winter header *,
+body.ms-theme-winter .castle-nav *,
+body.ms-theme-winter .home-nav *,
+body.ms-theme-winter aside * {
+  color: #1C4C6B !important;
+}
+
+body.ms-theme-winter nav a,
+body.ms-theme-winter .castle-nav a,
+body.ms-theme-winter .home-nav a,
+body.ms-theme-winter aside a {
+  color: #1C4C6B !important;
+  transition: all 0.2s ease !important;
+}
+
+body.ms-theme-winter nav a:hover,
+body.ms-theme-winter .castle-nav a:hover,
+body.ms-theme-winter .home-nav a:hover,
+body.ms-theme-winter aside a:hover {
+  color: #2d6d95 !important;
+  background: rgba(28, 76, 107, 0.08) !important;
+}
+
+body.ms-theme-winter nav a.active,
+body.ms-theme-winter .castle-nav a.active,
+body.ms-theme-winter .home-nav a.active,
+body.ms-theme-winter aside a.active {
+  background: rgba(28, 76, 107, 0.15) !important;
+  color: #1C4C6B !important;
+}
+
+body.ms-theme-winter .user-name,
+body.ms-theme-winter .user-info {
+  color: #1C4C6B !important;
+}
+
+body.ms-theme-winter .project-badge,
+body.ms-theme-winter .project-badges span,
+body.ms-theme-winter .project-status {
+  background: rgba(28, 76, 107, 0.15) !important;
+  color: #1C4C6B !important;
+  border: none !important;
+}
+
+body.ms-theme-winter .project-badges {
+  background: transparent !important;
 }
 
 body.ms-theme-winter input,
 body.ms-theme-winter textarea,
 body.ms-theme-winter select {
-  background: rgba(255, 255, 255, 0.2) !important;
+  background: rgba(255, 255, 255, 0.6) !important;
   backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  color: #0c4a6e !important;
+  border: 1px solid rgba(28, 76, 107, 0.15) !important;
+  color: #1C4C6B !important;
+  transition: all 0.2s ease !important;
 }
 
 body.ms-theme-winter input::placeholder,
 body.ms-theme-winter textarea::placeholder {
-  color: rgba(12, 74, 110, 0.6) !important;
+  color: rgba(28, 76, 107, 0.5) !important;
+}
+
+body.ms-theme-winter input:focus,
+body.ms-theme-winter textarea:focus,
+body.ms-theme-winter select:focus {
+  border-color: rgba(28, 76, 107, 0.3) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(28, 76, 107, 0.1) !important;
+}
+
+body.ms-theme-winter .home-checkbox {
+  border-color: rgba(28, 76, 107, 0.3) !important;
+  background: transparent !important;
+}
+
+body.ms-theme-winter .home-checkbox:checked {
+  background: rgba(28, 76, 107, 0.2) !important;
+}
+
+body.ms-theme-winter .home-checkbox:checked::after {
+  border-color: #1C4C6B !important;
 }
 
 body.ms-theme-winter a {
-  color: #0369a1 !important;
+  color: #1C4C6B !important;
+  transition: color 0.2s ease !important;
 }
 
 body.ms-theme-winter a:hover {
-  color: #0284c7 !important;
+  color: #2d6d95 !important;
+}
+
+body.ms-theme-winter #ms-treasury-button {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: none !important;
+  color: #1C4C6B !important;
+  box-shadow: 0 4px 16px rgba(28, 76, 107, 0.12) !important;
+}
+
+body.ms-theme-winter #ms-treasury-button:hover {
+  background: rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 0 6px 24px rgba(28, 76, 107, 0.18) !important;
+}
+
+body.ms-theme-winter #ms-fab {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: none !important;
+  color: #1C4C6B !important;
+  box-shadow: 0 4px 20px rgba(28, 76, 107, 0.2) !important;
+}
+
+body.ms-theme-winter #ms-fab:hover {
+  background: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 6px 30px rgba(28, 76, 107, 0.3) !important;
+}
+
+body.ms-theme-winter #ms-fab-button {
+  background: rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 4px 20px rgba(28, 76, 107, 0.2) !important;
+  color: #1C4C6B !important;
+}
+
+body.ms-theme-winter #ms-fab-menu {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: none !important;
+  box-shadow: 0 8px 32px rgba(28, 76, 107, 0.2) !important;
+}
+
+body.ms-theme-winter #ms-fab-menu button {
+  color: #1C4C6B !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(28, 76, 107, 0.1) !important;
+}
+
+body.ms-theme-winter #ms-fab-menu button:hover {
+  background: rgba(28, 76, 107, 0.1) !important;
+}
+
+body.ms-theme-winter #ms-week-countdown,
+body.ms-theme-winter .ms-countdown-badge {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: none !important;
+  color: #1C4C6B !important;
+  box-shadow: 0 4px 16px rgba(28, 76, 107, 0.12) !important;
+}
+
+body.ms-theme-winter #ms-week-countdown > div,
+body.ms-theme-winter #ms-countdown-time {
+  color: #1C4C6B !important;
+}
+
+body.ms-theme-winter #ms-theme-indicator,
+body.ms-theme-winter .ms-theme-indicator {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: none !important;
+  color: #1C4C6B !important;
+  box-shadow: 0 2px 10px rgba(28, 76, 107, 0.1) !important;
+}
+
+body.ms-theme-winter #ms-global-rank {
+  background: rgba(255, 255, 255, 0.7) !important;
+  border: none !important;
+  color: #1C4C6B !important;
+}
+
+body.ms-theme-winter #ms-global-rank span {
+  color: #1C4C6B !important;
+}
+
+body.ms-theme-winter h1,
+body.ms-theme-winter h2,
+body.ms-theme-winter h3,
+body.ms-theme-winter h4,
+body.ms-theme-winter h5,
+body.ms-theme-winter h6,
+body.ms-theme-winter p,
+body.ms-theme-winter span,
+body.ms-theme-winter div,
+body.ms-theme-winter label,
+body.ms-theme-winter .home-collapse-title,
+body.ms-theme-winter .home-row-sm,
+body.ms-theme-winter .home-checkrow,
+body.ms-theme-winter .home-info,
+body.ms-theme-winter .home-list,
+body.ms-theme-winter .home-row,
+body.ms-theme-winter .home-checkrow-help,
+body.ms-theme-winter .home-header,
+body.ms-theme-winter .home-center,
+body.ms-theme-winter .home-full,
+body.ms-theme-winter .home-collapse-content,
+body.ms-theme-winter .home-thisweek-title,
+body.ms-theme-winter .project-header,
+body.ms-theme-winter .project-title,
+body.ms-theme-winter .project-card-title,
+body.ms-theme-winter .project-card-description,
+body.ms-theme-winter .project-time,
+body.ms-theme-winter .project-tag {
+  color: #1C4C6B !important;
+}
+
+body.ms-theme-winter .project-description {
+  color: rgba(28, 76, 107, 0.85) !important;
+}
+
+body.ms-theme-winter .project-updated,
+body.ms-theme-winter .project-meta {
+  color: rgba(28, 76, 107, 0.7) !important;
+}
+
+body.ms-theme-winter .project-owner,
+body.ms-theme-winter .home-user,
+body.ms-theme-winter .home-amount {
+  color: #1C4C6B !important;
+}
+
+body.ms-theme-winter .home-leader-item {
+  border-bottom: 1px solid rgba(28, 76, 107, 0.1) !important;
+}
+
+body.ms-theme-winter .home-leader-item:hover {
+  background: rgba(28, 76, 107, 0.05) !important;
+}
+
+body.ms-theme-winter .home-rank {
+  background: rgba(28, 76, 107, 0.15) !important;
+  color: #1C4C6B !important;
+}
+
+body.ms-theme-winter .home-link-dotted {
+  color: #1C4C6B !important;
+  text-decoration-color: rgba(28, 76, 107, 0.4) !important;
+}
+
+body.ms-theme-winter .home-link-disabled {
+  color: rgba(28, 76, 107, 0.5) !important;
+}
+
+body.ms-theme-winter .home-muted {
+  opacity: 0.6 !important;
+}
+
+body.ms-theme-winter .modal,
+body.ms-theme-winter .dialog {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(30px) !important;
+  -webkit-backdrop-filter: blur(30px) !important;
+  border: none !important;
+  box-shadow: 0 16px 48px rgba(28, 76, 107, 0.2) !important;
+}
+
+body.ms-theme-winter .badge,
+body.ms-theme-winter .tag {
+  background: rgba(28, 76, 107, 0.15) !important;
+  color: #1C4C6B !important;
+  border: none !important;
+}
+
+body.ms-theme-winter footer {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-top: 1px solid rgba(28, 76, 107, 0.1) !important;
+  color: #1C4C6B !important;
+}
+
+body.ms-theme-winter .home-collapse {
+  background: transparent !important;
+}
+
+body.ms-theme-winter .home-two-col::after {
+  background: repeating-linear-gradient(to bottom, rgba(28, 76, 107, 0.2) 0 6px, transparent 6px 12px) !important;
+}
+
+body.ms-theme-winter .project-link {
+  border-color: rgba(28, 76, 107, 0.2) !important;
+  color: #1C4C6B !important;
+}
+
+body.ms-theme-winter .project-link:hover {
+  background: rgba(28, 76, 107, 0.1) !important;
+}
+
+body.ms-theme-winter .project-card * {
+  color: #1C4C6B !important;
+}
+
+body.ms-theme-winter .project-link * {
+  color: #1C4C6B !important;
+}
+
+body.ms-theme-winter * {
+  scrollbar-color: rgba(28, 76, 107, 0.3) rgba(255, 255, 255, 0.2);
+}
+
+body.ms-theme-winter ::-webkit-scrollbar {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+body.ms-theme-winter ::-webkit-scrollbar-thumb {
+  background: rgba(28, 76, 107, 0.3);
+  border-radius: 4px;
+}
+
+body.ms-theme-winter ::-webkit-scrollbar-thumb:hover {
+  background: rgba(28, 76, 107, 0.5);
 }
