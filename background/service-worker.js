@@ -174,10 +174,18 @@ async function fetchFullLeaderboard(currentWeek, userName) {
       throw new Error('No projects data available');
     }
 
-    const currentWeekProjects = projectsData.filter(p => {
+    let currentWeekProjects = projectsData.filter(p => {
       const weekMatch = p.week_badge_text?.match(/Week (\d+)/);
       return weekMatch && parseInt(weekMatch[1]) === currentWeek;
     });
+
+    if (currentWeekProjects.length < 50 && currentWeek > 4) {
+      console.log(`Week ${currentWeek} has only ${currentWeekProjects.length} projects (< 50), falling back to week ${currentWeek - 1}`);
+      currentWeekProjects = projectsData.filter(p => {
+        const weekMatch = p.week_badge_text?.match(/Week (\d+)/);
+        return weekMatch && parseInt(weekMatch[1]) === currentWeek - 1;
+      });
+    }
 
     const userIds = [...new Set(currentWeekProjects.map(p => p.user?.id).filter(id => id))];
 
