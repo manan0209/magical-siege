@@ -13,6 +13,81 @@ body.ms-theme-winter {
   overflow-x: hidden;
 }
 
+body.ms-theme-winter::before {
+  content: '';
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background: 
+    radial-gradient(ellipse 120px 60px at 5% 100%, #ffffff 40%, transparent 70%),
+    radial-gradient(ellipse 95px 48px at 18% 100%, #fefefe 35%, transparent 65%),
+    radial-gradient(ellipse 140px 70px at 32% 100%, #ffffff 45%, transparent 75%),
+    radial-gradient(ellipse 85px 42px at 47% 100%, #fcfcfc 30%, transparent 60%),
+    radial-gradient(ellipse 110px 55px at 58% 100%, #ffffff 40%, transparent 70%),
+    radial-gradient(ellipse 130px 65px at 73% 100%, #fefefe 42%, transparent 72%),
+    radial-gradient(ellipse 100px 50px at 85% 100%, #ffffff 38%, transparent 68%),
+    radial-gradient(ellipse 90px 45px at 96% 100%, #fcfcfc 33%, transparent 63%),
+    radial-gradient(ellipse 105px 52px at 12% 95%, #fafafa 25%, transparent 55%),
+    radial-gradient(ellipse 80px 40px at 25% 92%, #ffffff 20%, transparent 50%),
+    radial-gradient(ellipse 115px 58px at 41% 94%, #fefefe 28%, transparent 58%),
+    radial-gradient(ellipse 92px 46px at 54% 93%, #fcfcfc 22%, transparent 52%),
+    radial-gradient(ellipse 108px 54px at 68% 95%, #ffffff 26%, transparent 56%),
+    radial-gradient(ellipse 88px 44px at 79% 91%, #fafafa 20%, transparent 50%),
+    radial-gradient(ellipse 96px 48px at 91% 94%, #fefefe 24%, transparent 54%);
+  pointer-events: none;
+  z-index: 9998;
+  filter: drop-shadow(0 -3px 6px rgba(28, 76, 107, 0.08));
+  animation: snowAccumulationGrow 45s ease-out forwards, snowPileBreathe 4s ease-in-out 45s infinite;
+}
+
+@keyframes snowAccumulationGrow {
+  0% {
+    height: 0;
+    opacity: 0;
+  }
+  5% {
+    height: 10px;
+    opacity: 0.3;
+  }
+  15% {
+    height: 20px;
+    opacity: 0.5;
+  }
+  30% {
+    height: 35px;
+    opacity: 0.7;
+  }
+  50% {
+    height: 50px;
+    opacity: 0.85;
+  }
+  70% {
+    height: 65px;
+    opacity: 0.92;
+  }
+  85% {
+    height: 75px;
+    opacity: 0.97;
+  }
+  100% {
+    height: 80px;
+    opacity: 1;
+  }
+}
+
+@keyframes snowPileBreathe {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+
+
 body.ms-theme-winter main,
 body.ms-theme-winter .main-content,
 body.ms-theme-winter .home-container,
@@ -395,6 +470,65 @@ body.ms-theme-winter footer {
   -webkit-backdrop-filter: blur(20px) !important;
   border-top: 1px solid rgba(28, 76, 107, 0.1) !important;
   color: #1C4C6B !important;
+  position: relative;
+}
+
+body.ms-theme-winter footer::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background: 
+    radial-gradient(ellipse 75px 38px at 8% 100%, #ffffff 40%, transparent 70%),
+    radial-gradient(ellipse 60px 30px at 22% 100%, #fefefe 35%, transparent 65%),
+    radial-gradient(ellipse 85px 42px at 38% 100%, #ffffff 42%, transparent 72%),
+    radial-gradient(ellipse 52px 26px at 51% 100%, #fcfcfc 30%, transparent 60%),
+    radial-gradient(ellipse 70px 35px at 64% 100%, #ffffff 38%, transparent 68%),
+    radial-gradient(ellipse 80px 40px at 78% 100%, #fefefe 40%, transparent 70%),
+    radial-gradient(ellipse 65px 32px at 92% 100%, #ffffff 35%, transparent 65%),
+    radial-gradient(ellipse 55px 28px at 15% 95%, #fafafa 25%, transparent 55%),
+    radial-gradient(ellipse 48px 24px at 31% 92%, #ffffff 20%, transparent 50%),
+    radial-gradient(ellipse 68px 34px at 46% 94%, #fefefe 28%, transparent 58%),
+    radial-gradient(ellipse 58px 29px at 59% 93%, #fcfcfc 22%, transparent 52%),
+    radial-gradient(ellipse 72px 36px at 73% 95%, #ffffff 26%, transparent 56%),
+    radial-gradient(ellipse 50px 25px at 86% 91%, #fafafa 20%, transparent 50%);
+  pointer-events: none;
+  z-index: 10;
+  filter: drop-shadow(0 -2px 4px rgba(28, 76, 107, 0.06));
+  animation: footerSnowGrow 40s ease-out forwards;
+}
+
+@keyframes footerSnowGrow {
+  0% {
+    height: 0;
+    opacity: 0;
+  }
+  8% {
+    height: 8px;
+    opacity: 0.4;
+  }
+  20% {
+    height: 15px;
+    opacity: 0.6;
+  }
+  35% {
+    height: 22px;
+    opacity: 0.75;
+  }
+  55% {
+    height: 30px;
+    opacity: 0.88;
+  }
+  75% {
+    height: 38px;
+    opacity: 0.95;
+  }
+  100% {
+    height: 45px;
+    opacity: 1;
+  }
 }
 
 body.ms-theme-winter .home-collapse {
@@ -437,4 +571,50 @@ body.ms-theme-winter ::-webkit-scrollbar-thumb {
 
 body.ms-theme-winter ::-webkit-scrollbar-thumb:hover {
   background: rgba(28, 76, 107, 0.5);
+}
+
+body.ms-theme-winter::after {
+  content: '';
+  position: fixed;
+  top: -10%;
+  left: 0;
+  width: 100%;
+  height: 110%;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: 
+    radial-gradient(circle 2px, rgba(28, 76, 107, 0.4) 1px, transparent 2px),
+    radial-gradient(circle 1.5px, rgba(28, 76, 107, 0.3) 0.75px, transparent 1.5px),
+    radial-gradient(circle 1px, rgba(28, 76, 107, 0.25) 0.5px, transparent 1px),
+    radial-gradient(circle 2.5px, rgba(28, 76, 107, 0.35) 1.25px, transparent 2.5px),
+    radial-gradient(circle 1.2px, rgba(28, 76, 107, 0.2) 0.6px, transparent 1.2px),
+    radial-gradient(circle 1.8px, rgba(28, 76, 107, 0.32) 0.9px, transparent 1.8px);
+  background-size: 
+    220px 320px,
+    180px 280px,
+    140px 240px,
+    260px 360px,
+    160px 260px,
+    200px 300px;
+  background-position:
+    0 0,
+    60px 80px,
+    120px 40px,
+    40px 120px,
+    180px 60px,
+    100px 160px;
+  animation: snowfall 8s linear infinite;
+  will-change: background-position;
+}
+
+@keyframes snowfall {
+  to {
+    background-position:
+      0 320px,
+      60px 360px,
+      120px 280px,
+      40px 480px,
+      180px 320px,
+      100px 460px;
+  }
 }
