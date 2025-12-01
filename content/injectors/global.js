@@ -310,10 +310,10 @@ function injectWeekCountdown() {
   `;
   
   //ello, if you are seeing this, if you are seeing this, have a cupcake (nooo not mee please :hehe:)
-  
+  //yeah siege is ending soon :( happy and sad at the same time :()
   countdown.innerHTML = `
     <div style="font-size: 0.75rem; opacity: 0.7; margin-bottom: 0.25rem; text-align: center;">
-      Week Ends In
+      Siege Ends In
     </div>
     <div id="ms-countdown-time" style="font-size: 1.25rem; font-weight: 700; font-family: 'Jaini', serif; text-align: center;">
       Loading...
