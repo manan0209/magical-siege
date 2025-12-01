@@ -2,11 +2,21 @@
 
 This project is an update!
 
+have a cupcake :)
 
-https://github.com/user-attachments/assets/a3c982c0-e458-40a1-b42d-c4f1a636d798
+week 13 update : 
 
+Claim your free cosmetic of this week "The cool Sailor's Hat" !!
+
+![cupcakes](demo-assets/salorhat.png)
+
+What i did this week -> For this week, I tried to make a cozy winter theme, I implemented snowy bg with snowfall and also snow accumulation in the footer and also tried my hands at frosted glass ui (ik its bad but yeaa, I just came back from exam lol!) Other than that I have updated the lb to go full lb now :yayay , also I fixed a lot of bugs this week, which were making magical siege a funny one :hehe
+
+Also, I have planned something super awesome for the final week, I cant wait for y'all to see it #)
 
 week 12 update : 
+
+https://github.com/user-attachments/assets/a3c982c0-e458-40a1-b42d-c4f1a636d798
 
 First of all before I begin to explain the main xray machine, from this week onwards I will be giving free cosmetics each week, for week 12 I have unlocked cowboyhat for free for you :)!!
 ![cupcakes](demo-assets/cowboycupcakes.png)
