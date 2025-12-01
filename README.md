@@ -6,6 +6,10 @@ have a cupcake :)
 
 week 13 update : 
 
+
+https://github.com/user-attachments/assets/3e16cd3e-8a83-4651-b3a6-edd8bef69ee6
+
+
 Claim your free cosmetic of this week "The cool Sailor's Hat" !!
 
 ![cupcakes](demo-assets/salorhat.png)
