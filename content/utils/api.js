@@ -96,5 +96,177 @@ export const API = {
         localStorage.removeItem(key);
       }
     });
+  },
+
+  async getAllUserProjects(userId, onProgress = null) {
+    try {
+      const userData = await this.getUser(userId);
+      if (!userData || !userData.projects) {
+        return [];
+      }
+
+      const total = userData.projects.length;
+      const projectsWithDetails = [];
+
+      for (let i = 0; i < userData.projects.length; i++) {
+        try {
+          const details = await this.getProject(userData.projects[i].id);
+          projectsWithDetails.push(details);
+          
+          if (onProgress) {
+            onProgress({
+              current: i + 1,
+              total,
+              percentage: Math.round(((i + 1) / total) * 100)
+            });
+          }
+        } catch (error) {
+          console.error(`Failed to fetch project ${userData.projects[i].id}:`, error);
+          projectsWithDetails.push(userData.projects[i]);
+        }
+      }
+
+      return projectsWithDetails;
+    } catch (error) {
+      console.error('Failed to fetch all cupcakes projects:', error);
+      return [];
+    }
+  },
+
+  async getDetailedProject(projectId, options = {}) {
+    const { retries = 3, retryDelay = 1000 } = options;
+    
+    for (let attempt = 0; attempt < retries; attempt++) {
+      try {
+        const project = await this.getProject(projectId);
+        return project;
+      } catch (error) {
+        if (attempt === retries - 1) {
+          throw error;
+        }
+        await new Promise(resolve => setTimeout(resolve, retryDelay * (attempt + 1)));
+      }
+    }
+  },
+
+  async batchFetchProjects(projectIds, options = {}) {
+    const { batchSize = 5, onProgress = null } = options;
+    const results = [];
+    
+    for (let i = 0; i < projectIds.length; i += batchSize) {
+      const batch = projectIds.slice(i, i + batchSize);
+      const batchResults = await Promise.allSettled(
+        batch.map(id => this.getDetailedProject(id))
+      );
+      
+      batchResults.forEach((result, index) => {
+        if (result.status === 'fulfilled') {
+          results.push(result.value);
+        } else {
+          console.error(`Failed to fetch cupcake ${batch[index]}:`, result.reason);
+          results.push(null);
+        }
+      });
+      
+      if (onProgress) {
+        onProgress({
+          current: Math.min(i + batchSize, projectIds.length),
+          total: projectIds.length,
+          percentage: Math.round((Math.min(i + batchSize, projectIds.length) / projectIds.length) * 100)
+        });
+      }
+    }
+    
+    return results.filter(r => r !== null);
+  },
+
+  async getUserWithProjects(userId, options = {}) {
+    const { includeDetails = true, onProgress = null } = options;
+    
+    try {
+      const userData = await this.getUser(userId);
+      if (!userData) {
+        return null;
+      }
+
+      if (!includeDetails || !userData.projects || userData.projects.length === 0) {
+        return userData;
+      }
+
+      const projectIds = userData.projects.map(p => p.id);
+      const detailedProjects = await this.batchFetchProjects(projectIds, {
+        onProgress
+      });
+
+      return {
+        ...userData,
+        projects: detailedProjects
+      };
+    } catch (error) {
+      console.error('Failed to fetch cupcake with projects:', error);
+      return null;
+    }
+  },
+
+  async getHackatimeStats(slackId, options = {}) {
+    const { range = 'all_time' } = options;
+    const HACKATIME_API_BASE = 'https://api.hackatime.com/api/v1';
+    
+    try {
+      const url = `${HACKATIME_API_BASE}/users/${slackId}/stats/${range}`;
+      return await this.fetchWithCache(url, {}, 300000);
+    } catch (error) {
+      console.error('Failed to fetch Hackatime stats:', error);
+      return null;
+    }
+  },
+
+  async getWrappedData(userId, slackId, options = {}) {
+    const { onProgress = null } = options;
+    
+    try {
+      if (onProgress) onProgress({ stage: 'user', percentage: 0 });
+      
+      const userData = await this.getUser(userId);
+      if (!userData) {
+        throw new Error('User not found');
+      }
+
+      if (onProgress) onProgress({ stage: 'projects', percentage: 20 });
+      
+      const projects = await this.getAllUserProjects(userId, (progress) => {
+        if (onProgress) {
+          onProgress({
+            stage: 'projects',
+            percentage: 20 + Math.round(progress.percentage * 0.5)
+          });
+        }
+      });
+
+      if (onProgress) onProgress({ stage: 'leaderboard', percentage: 70 });
+      
+      const leaderboard = await this.getLeaderboard();
+
+      if (onProgress) onProgress({ stage: 'shop', percentage: 80 });
+      
+      const shopItems = await this.getShopItems();
+
+      if (onProgress) onProgress({ stage: 'hackatime', percentage: 90 });
+      
+      const hackatimeStats = slackId ? await this.getHackatimeStats(slackId) : null;
+
+      if (onProgress) onProgress({ stage: 'complete', percentage: 100 });
+
+      return {
+        user: userData,
+        projects,
+        leaderboard,
+        shop: shopItems,
+        hackatime: hackatimeStats
+      };
+    } catch (error) {
+      console.error('Failed to fetch wrapped data:', error);
+      throw error;
+    }
   }
 };
