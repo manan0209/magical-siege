@@ -1,13 +1,16 @@
 const ALARM_NAMES = {
   DEADLINE_CHECK: 'deadlineCheck',
   VOTING_CHECK: 'votingCheck',
-  SYNC_DATA: 'syncData'
+  SYNC_DATA: 'syncData',
+  WRAPPED_CACHE: 'wrappedCache'
 };
 
 const NOTIFICATION_IDS = {
   DEADLINE_SOON: 'deadlineSoon',
   VOTING_STARTED: 'votingStarted',
-  VOTING_ENDING: 'votingEnding'
+  VOTING_ENDING: 'votingEnding',
+  WRAPPED_READY: 'wrappedReady',
+  WRAPPED_ACHIEVEMENT: 'wrappedAchievement'
 };
 
 chrome.runtime.onInstalled.addListener(async (details) => {
@@ -35,6 +38,10 @@ async function setupAlarms() {
   chrome.alarms.create(ALARM_NAMES.SYNC_DATA, {
     periodInMinutes: 5
   });
+  
+  chrome.alarms.create(ALARM_NAMES.WRAPPED_CACHE, {
+    periodInMinutes: 360
+  });
 }
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
@@ -53,6 +60,8 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     if (userSettings.autoSync !== false) {
       await syncCachedData();
     }
+  } else if (alarm.name === ALARM_NAMES.WRAPPED_CACHE) {
+    await refreshWrappedCache();
   }
 });
 
@@ -159,6 +168,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .catch(error => sendResponse({ success: false, error: error.message }));
     return true;
   }
+  
+  if (message.type === 'GENERATE_WRAPPED') {
+    generateWrappedData(message.userId, message.slackId)
+      .then(data => sendResponse(data))
+      .catch(error => sendResponse({ success: false, error: error.message }));
+    return true;
+  }
+  
+  if (message.type === 'GET_WRAPPED_STATUS') {
+    getWrappedStatus()
+      .then(data => sendResponse(data))
+      .catch(error => sendResponse({ success: false, error: error.message }));
+    return true;
+  }
+  
+  if (message.type === 'UNLOCK_ACHIEVEMENT') {
+    handleAchievementUnlock(message.achievement)
+      .then(() => sendResponse({ success: true }))
+      .catch(error => sendResponse({ success: false, error: error.message }));
+    return true;
+  }
 });
 
 async function fetchFullLeaderboard(currentWeek, userName) {
@@ -234,6 +264,156 @@ async function fetchFullLeaderboard(currentWeek, userName) {
   } catch (error) {
     console.error('Leaderboard fetch error:', error);
     return { success: false, error: error.message };
+  }
+}
+
+async function refreshWrappedCache() {
+  try {
+    const result = await chrome.storage.local.get(['siege_wrapped_data', 'siege_user_id', 'siege_slack_id']);
+    
+    if (!result.siege_user_id) {
+      return;
+    }
+    
+    const lastGenerated = result.siege_wrapped_data?.generatedAt || 0;
+    const hoursSinceGeneration = (Date.now() - lastGenerated) / (1000 * 60 * 60);
+    
+    if (hoursSinceGeneration < 6) {
+      return;
+    }
+    
+    await generateWrappedData(result.siege_user_id, result.siege_slack_id);
+    
+  } catch (error) {
+    console.error('Failed to refresh wrapped cache:', error);
+  }
+}
+
+async function generateWrappedData(userId, slackId = null) {
+  try {
+    const SIEGE_API_BASE = 'https://siege.hackclub.com/api/public-beta';
+    const HACKATIME_API_BASE = 'https://api.hackatime.com/api/v1';
+    
+    const userResponse = await fetch(`${SIEGE_API_BASE}/user/${userId}`);
+    if (!userResponse.ok) throw new Error('Failed to fetch user data');
+    const userData = await userResponse.json();
+    
+    const projectIds = userData.projects?.map(p => p.id) || [];
+    const projects = [];
+    
+    for (const id of projectIds) {
+      try {
+        const projectResponse = await fetch(`${SIEGE_API_BASE}/project/${id}`);
+        if (projectResponse.ok) {
+          const project = await projectResponse.json();
+          projects.push(project);
+        }
+      } catch (error) {
+        console.error(`Failed to fetch project ${id}:`, error);
+      }
+    }
+    
+    const leaderboardResponse = await fetch(`${SIEGE_API_BASE}/leaderboard`);
+    const leaderboard = leaderboardResponse.ok ? await leaderboardResponse.json() : null;
+    
+    let hackatimeStats = null;
+    if (slackId) {
+      try {
+        const hackatimeResponse = await fetch(`${HACKATIME_API_BASE}/users/${slackId}/stats/all_time`);
+        if (hackatimeResponse.ok) {
+          hackatimeStats = await hackatimeResponse.json();
+        }
+      } catch (error) {
+        console.error('Failed to fetch Hackatime stats:', error);
+      }
+    }
+    
+    const wrappedData = {
+      version: '1.0.0',
+      generatedAt: Date.now(),
+      userId: userId,
+      slackId: slackId,
+      user: userData,
+      projects: projects,
+      leaderboard: leaderboard,
+      hackatime: hackatimeStats
+    };
+    
+    await chrome.storage.local.set({
+      siege_wrapped_data: wrappedData,
+      siege_user_id: userId,
+      siege_slack_id: slackId,
+      siege_wrapped_last_generated: Date.now()
+    });
+    
+    await showNotification(
+      NOTIFICATION_IDS.WRAPPED_READY,
+      'Siege Wrapped Ready',
+      'Your Siege Wrap has been updated and is ready to view!'
+    );
+    
+    return { success: true, data: wrappedData };
+    
+  } catch (error) {
+    console.error('Failed to generate wrapped data:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+async function getWrappedStatus() {
+  try {
+    const result = await chrome.storage.local.get(['siege_wrapped_data', 'siege_wrapped_last_generated']);
+    
+    if (!result.siege_wrapped_data) {
+      return { 
+        success: true, 
+        status: 'not_generated',
+        lastGenerated: null 
+      };
+    }
+    
+    const lastGenerated = result.siege_wrapped_last_generated || result.siege_wrapped_data.generatedAt;
+    const hoursSinceGeneration = (Date.now() - lastGenerated) / (1000 * 60 * 60);
+    const isStale = hoursSinceGeneration > 24;
+    
+    return {
+      success: true,
+      status: isStale ? 'stale' : 'ready',
+      lastGenerated: lastGenerated,
+      hoursSinceGeneration: Math.round(hoursSinceGeneration * 10) / 10
+    };
+    
+  } catch (error) {
+    console.error('Failed to get wrapped status:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+async function handleAchievementUnlock(achievement) {
+  try {
+    const result = await chrome.storage.local.get('siege_unlocked_achievements');
+    const unlocked = result.siege_unlocked_achievements || [];
+    
+    if (!unlocked.find(a => a.id === achievement.id)) {
+      unlocked.push({
+        ...achievement,
+        unlockedAt: Date.now()
+      });
+      
+      await chrome.storage.local.set({
+        siege_unlocked_achievements: unlocked
+      });
+      
+      await showNotification(
+        NOTIFICATION_IDS.WRAPPED_ACHIEVEMENT,
+        `Achievement Unlocked: ${achievement.name}`,
+        achievement.description
+      );
+    }
+    
+  } catch (error) {
+    console.error('Failed to handle achievement unlock:', error);
+    throw error;
   }
 }
 
