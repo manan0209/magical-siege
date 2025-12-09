@@ -1,8 +1,14 @@
 # Magical Siege
 
-This project is an update!
+This is the final update! #)
 
-have a cupcake :)
+week 14 update (Cant belive siege is ending...) the awesome wrapup! : 
+
+![wrapped](image.png)
+
+What i did this week -> For this week, I made countless number of wrapped versions, and tried to integrate them with the extension as well as I tried countless number of ways to make it as awesome as possible but apis made me mad as hell, idk how am i alive after being tortured this long :cryin but yeah this is finally over and i am happy with it :)
+
+have a cupcake :cupcakes
 
 week 13 update : 
 
