@@ -55,6 +55,25 @@ export default defineConfig({
           copyFileSync('assets/sailorHat.png', 'dist/assets/sailorHat.png');
         }
         
+        if (existsSync('assets/wrapped.mp3')) {
+          copyFileSync('assets/wrapped.mp3', 'dist/assets/wrapped.mp3');
+        }
+        if (existsSync('assets/scroll.webp')) {
+          copyFileSync('assets/scroll.webp', 'dist/assets/scroll.webp');
+        }
+        if (existsSync('assets/castle.webp')) {
+          copyFileSync('assets/castle.webp', 'dist/assets/castle.webp');
+        }
+        if (existsSync('assets/mini-castle.webp')) {
+          copyFileSync('assets/mini-castle.webp', 'dist/assets/mini-castle.webp');
+        }
+        if (existsSync('assets/coin.png')) {
+          copyFileSync('assets/coin.png', 'dist/assets/coin.png');
+        }
+        if (existsSync('assets/mystereeple.webp')) {
+          copyFileSync('assets/mystereeple.webp', 'dist/assets/mystereeple.webp');
+        }
+        
         if (existsSync('public/handcursor.cur')) {
           copyFileSync('public/handcursor.cur', 'dist/handcursor.cur');
         }

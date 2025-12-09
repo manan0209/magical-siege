@@ -189,6 +189,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .catch(error => sendResponse({ success: false, error: error.message }));
     return true;
   }
+  
+  if (message.type === 'FETCH_HACKATIME_STATS') {
+    fetchHackatimeStats(message.slackId)
+      .then(data => sendResponse(data))
+      .catch(error => sendResponse({ success: false, error: error.message }));
+    return true;
+  }
 });
 
 async function fetchFullLeaderboard(currentWeek, userName) {
@@ -239,6 +246,7 @@ async function fetchFullLeaderboard(currentWeek, userName) {
         username: user.display_name || user.name,
         name: user.name,
         display_name: user.display_name,
+        slack_id: user.slack_id,
         coins: user.coins || 0,
         source: 'api'
       }))
@@ -414,6 +422,32 @@ async function handleAchievementUnlock(achievement) {
   } catch (error) {
     console.error('Failed to handle achievement unlock:', error);
     throw error;
+  }
+}
+
+async function fetchHackatimeStats(slackId) {
+  try {
+    const HACKATIME_API_BASE = 'https://api.hackatime.com/api/v1';
+    const hackatimeResponse = await fetch(`${HACKATIME_API_BASE}/users/${slackId}/stats/all_time`);
+    
+    if (!hackatimeResponse.ok) {
+      throw new Error(`Hackatime API returned ${hackatimeResponse.status}`);
+    }
+    
+    const hackatime = await hackatimeResponse.json();
+    
+    return {
+      success: true,
+      data: {
+        totalSeconds: hackatime.data.total_seconds,
+        topLanguage: hackatime.data.languages?.[0] || null,
+        topEditor: hackatime.data.editors?.[0] || null,
+        languages: hackatime.data.languages?.slice(0, 5) || []
+      }
+    };
+  } catch (error) {
+    console.error('Failed to fetch Hackatime stats:', error);
+    return { success: false, error: error.message };
   }
 }
 

@@ -9,6 +9,7 @@ import { injectFallTheme } from './injectors/fall-theme.js';
 import { injectSpookyDoor } from './injectors/spooky-door.js';
 import { injectTreasuryGrid } from './injectors/treasury-grid.js';
 import { initXRayScanner } from './injectors/xray-scanner.js';
+import { injectWrappedTrigger } from './injectors/wrapped.js';
 
 const PAGES = {
   KEEP: '/keep',
@@ -42,6 +43,7 @@ class MagicalSiege {
     injectSpookyDoor();
     injectTreasuryGrid();
     initXRayScanner();
+    injectWrappedTrigger();
 
     if (!this.currentPage) {
       return;

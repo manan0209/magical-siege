@@ -42,6 +42,7 @@ async function getLeaderboard() {
         display_name: user.display_name,
         name: user.name,
         userId: user.id,
+        slack_id: user.slack_id,
         coins: user.coins,
         position: user.rank,
         source: user.source || 'api'
