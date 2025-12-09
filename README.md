@@ -5,7 +5,8 @@ This is the final update! #)
 week 14 update (Cant belive siege is ending...) the awesome wrapup! : 
 
 
-Uploading Screen Recording 2025-12-09 at 11.34.13 AM.mov…
+https://github.com/user-attachments/assets/641e8d4f-b423-4f9e-85f1-de06a85a4b8a
+
 
 
 What i did this week -> For this week, I made countless number of wrapped versions, and tried to integrate them with the extension as well as I tried countless number of ways to make it as awesome as possible but apis made me mad as hell, idk how am i alive after being tortured this long :cryin but yeah this is finally over and i am happy with it :)
